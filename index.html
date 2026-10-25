@@ -423,14 +423,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.11 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.12 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.11';
+const VER='2.12';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1191,7 +1191,14 @@ setInterval(()=>{if(!document.hidden&&S.data&&Date.now()-S.data._at>15*60e3)load
   const c=LS.get('cache',null);
   if(c&&c.k===key(S.loc)){S.data=c.j;S.offline=true;render()}   // instant paint, then refresh
   load();
-  if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+  if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
+    const had=!!navigator.serviceWorker.controller; let reloaded=false;
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{ if(had&&!reloaded){reloaded=true;location.reload()} });   // new version took over: load it
+    navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{
+      r.update().catch(()=>{});
+      document.addEventListener('visibilitychange',()=>{ if(!document.hidden) r.update().catch(()=>{}) });
+    }).catch(()=>{})
+  }
 })();
 </script>
 </body>
