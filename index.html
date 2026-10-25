@@ -611,6 +611,8 @@ body.dayv .now::after{content:"";position:absolute;inset:-7px;border:4px solid #
 
 body.dayv #strip .ph h2,body.dayv #hourly .ph h2{color:#ffd04a}
 body.dayv #pager{display:none}
+/* v2.43: breathing room between the yellow frame and the text on a day page (phones) */
+@media (max-width:900px){ body.dayv .now{padding:10px 12px 12px} body.dayv .nowbody{margin-top:6px} }
 body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shadow:none;font-size:11.5px;padding:6px 8px}
 @media (min-width:901px){ body.dayv #daily .drow.viewing{box-shadow:0 0 0 2px #ffd04a} }
 </style>
@@ -703,14 +705,14 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.42 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.43 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.42';
+const VER='2.43';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1262,7 +1264,9 @@ function ground(j,C,idx){
   const back=(arr,n)=>{let t=0;if(!arr)return 0;for(let i=Math.max(0,idx-n);i<=idx;i++)t+=arr[i]??0;return t};
   const r3=back(H.precipitation,3)+(C.precipitation||0), r12=back(H.precipitation,12), sn12=back(H.snowfall,12);
   const depth=H.snow_depth?.[idx]??0, wetNow=WET(code)||(C.precipitation||0)>0, snowNow=SNOWY(code);
-  if(depth>=0.02||(snowNow&&T<=1)||(sn12>=1&&T<=1)){
+  // v2.43: model snow depth alone is often a stale grid value on dry days; count it as snow cover only when snow actually fell in the last 48 h
+  const cover=depth>=0.02&&back(H.snowfall,48)>=0.5;
+  if(cover||(snowNow&&T<=1)||(sn12>=1&&T<=1)){
     if(T>1&&(wetNow||r3>0.3)) return {t:'Slushy',c:'#c9a8ff'};
     return {t:'Snowy',c:'#ffffff'};
   }
@@ -1270,7 +1274,7 @@ function ground(j,C,idx){
   if(sn12>=0.3) return {t:'Slushy',c:'#c9a8ff'};
   if(wetNow||r3>=0.5) return r3>=4?{t:'Puddles',c:'#5a95ff'}:{t:'Wet',c:'#46b0ff'};
   if(r3>0.05||r12>=0.5) return {t:'Damp',c:'#9ad9ff'};
-  if(T<=1&&!C.is_day&&(C.cloud_cover??100)<40&&(C.relative_humidity_2m??0)>=85) return {t:'Frosty',c:'#c4f1ff'};
+  if(T<=0||(T<=1&&!C.is_day&&(C.cloud_cover??100)<40&&(C.relative_humidity_2m??0)>=85)) return {t:'Frosty',c:'#c4f1ff'};   // v2.43: dry but at or below freezing = Frosty
   return {t:'Dry',c:'#ffd04a'};
 }
 const DROP='<svg viewBox="0 0 12 12"><path d="M6 1C6 1 2 5.6 2 8a4 4 0 0 0 8 0C10 5.6 6 1 6 1z"/></svg>';
