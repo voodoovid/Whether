@@ -703,14 +703,14 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.41 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.42 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.39';
+const VER='2.42';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
