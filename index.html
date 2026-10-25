@@ -351,6 +351,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .scol .uv b{font-size:33px}
   .wd .ws{font-size:22px}
   .wd .ww{font-size:19px;min-height:0}
+
+  /* v2.14: shoe conditions box is back, with a high-heel icon */
+  .st .gr{display:flex;align-items:center;gap:7px;font-size:30px;font-weight:700;line-height:1.1;color:#fff}
+  .st .gr b{font-weight:700}
+  .st .gr svg{width:30px;height:30px;flex:none;fill:var(--c,#fff);filter:drop-shadow(0 0 1px rgba(0,0,0,.85))}
+  .scol .sh svg{width:24px;height:24px}
 }
 /* very short screens: let the page scroll rather than clip */
 @media (max-width:900px) and (max-height:700px){
@@ -447,14 +453,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.13 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.14 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.13';
+const VER='2.14';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -870,6 +876,7 @@ function render(){
   $('#nowSide').innerHTML=
     st('Feels like',fT(feel),'big')+
     st('UV index',`<span style="color:${uvI.c}">${uvR}</span><small>${uvI.l}</small>`,'uvt')+
+    st('Shoe Conditions',`<span class="gr" style="--c:${gr.c}">${SHOE}<b>${gr.t}</b></span>`)+
     st('Wind',`${fW(C.wind_speed_10m)}<small>${wUnit()}</small>`,'wind',esc(windWord(C.wind_speed_10m,C.wind_gusts_10m)));
   // rain/snow so far today, shown beside the condition when it's coming down
   let sofar=0; H.time.forEach((t,i)=>{if(t.startsWith(D.time[0])&&i<=idx)sofar+=H.precipitation[i]??0});
@@ -901,7 +908,7 @@ function rainWord(mm){
 }
 /* wind in words (km/h; gusts nudge it up) */
 const WSHORT={'Dead calm':'Calm','Gentle breeze':'Gentle','Flags flapping':'Flags flap','Hat may fly off':'Hat flies','Umbrella wrecker':'No umbrellas','Hold on tight':'Hold on','Trees bending':'Trees bend'};
-const SHOE='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 16.5v-4c0-.7.5-1.3 1.2-1.4 2.2-.3 3.6-1.3 4.3-3.1l1.3.4c.6 1.2 1.7 1.9 3.1 2 1.5.2 2.8.9 4.1 2.1.9.8 2 1.3 3.2 1.4.8.1 1.4.8 1.4 1.6v1c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1z"/><rect x="2" y="17.2" width="20" height="2.2" rx="1.1"/></svg>';
+const SHOE='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.2 4 L5.6 3.6 C5.9 7.4 7.6 9.4 10.2 10.6 C12.6 11.7 14 12.8 15.8 13.7 C18 14.8 20.4 15.6 22 18 C22.6 19 22.3 20.6 20.6 20.9 L17 21 C15 21 13.6 20.2 12.2 18.6 C10.8 17 9 16 7 15.6 L5.5 21.8 L4.3 21.8 L4.6 12.4 C3.6 9.4 3.2 7 3.2 4 Z"/></svg>';
 function windWord(ws,gust){
   const e=Math.max(ws||0,(gust||0)*.65);
   if(e<2)  return 'Dead calm';
@@ -1203,7 +1210,7 @@ function fitText(){
   const inner=el=>{const cs=getComputedStyle(el);return el.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)};
   const nb=document.querySelector('.nowbody'), ns=document.querySelector('.nowside');
   const leftAvail=nb&&ns?nb.clientWidth-ns.offsetWidth-14:0;
-  document.querySelectorAll('.bigt,.scol .tp,.st .k,.st .v,.st .w,.cond,.hilo,.upd,.scol .tm,.scol .fl,.rc .p,.rc .mm,.rc .aw,.sh,.scol .uv,.wd .ws,.wd .ww,#strip .ph h2,.hint,.loc span,.brand .t1').forEach(el=>{
+  document.querySelectorAll('.bigt,.scol .tp,.st .gr,.st .k,.st .v,.st .w,.cond,.hilo,.upd,.scol .tm,.scol .fl,.rc .p,.rc .mm,.rc .aw,.sh,.scol .uv,.wd .ws,.wd .ww,#strip .ph h2,.hint,.loc span,.brand .t1').forEach(el=>{
     el.style.fontSize='';
     const left=el.closest('.nowmain'); let avail=left?leftAvail:inner(el.parentElement);
     if(el.classList.contains('bigt')){ const ic=el.parentElement.querySelector('.ic'); avail=leftAvail-(ic?ic.getBoundingClientRect().width-22:0)-8 }
