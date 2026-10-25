@@ -583,6 +583,17 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 .upd .evt.ghost{visibility:hidden}
 .pager{font-size:12px;padding:2px 10px;letter-spacing:.3px;transform:translateY(4px)}
 .pager.on{transform:none}
+/* v2.31: version tag moves into the 24-hour header on phones; columns tighten to fit short screens */
+.vph{display:none}
+@media (max-width:900px){
+  .brand .vtag{display:none}
+  .vph{display:inline-block;margin:0 auto;color:#fff;font-size:12px}
+  body.fit1 .rc .ch{height:38px} body.fit1 .scol .ic{font-size:44px} body.fit1 .scol{padding:5px 0 7px}
+  body.fit2 .rc .ch{height:28px} body.fit2 .scol .ic{font-size:38px} body.fit2 .scol .tp{font-size:34px} body.fit2 .wd .ww{min-height:0} body.fit2 .rc{gap:2px}
+  body.fit3 .st{padding:5px 11px 6px} body.fit3 .nowside{gap:4px}
+  body.fit3 .bigt{font-size:min(88px,21vw)} body.fit3 .cond{margin-top:6px} body.fit3 .scol .fl{margin-top:-6px}
+  body.fit4 #app{gap:6px} body.fit4 .nowmain{margin-top:6px} body.fit4 .scol .uv b{font-size:26px} body.fit4 .scol .tm{font-size:16px}
+}
 </style>
 </head>
 <body>
@@ -644,7 +655,7 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
     </div>
     <div class="tiles" id="tiles"></div>
     <section class="panel glass" id="strip">
-      <div class="ph"><h2>Next 24 hours</h2><span class="hint" id="hint">Swipe ›</span></div>
+      <div class="ph"><h2>Next 24 hours</h2><span class="vtag vph" id="vtag2"></span><span class="hint" id="hint">Swipe ›</span></div>
       <div id="sscroll"><div id="scols"></div></div>
     </section>
   </section>
@@ -672,14 +683,14 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.30 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.31 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.30';
+const VER='2.31';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1137,7 +1148,7 @@ function render(){
   $('#cond').innerHTML=esc(ct)+(falling?` <span class="acc">${acc}</span>`:'');
 
   renderStrip(j,C); renderHourly(j); renderDaily(j); renderReadout();
-  fitText(); reservePager();
+  fitText(); fitStrip(); reservePager();
   slideIn();
 }
 /* Tonight: everything from 6 to 10 PM rolled into one (tomorrow's evening once it's past 10 PM) */
@@ -1494,6 +1505,15 @@ function cycleLoc(dir){
 
 /* shrink any text that would be too wide for its box (so nothing wraps or clips) */
 const phoneMQ=matchMedia('(max-width:900px)');
+/* phones: if the 24-hour columns don't fit above the bottom edge (iPhone top inset, big text), tighten step by step until they do */
+function fitStrip(){
+  const b=document.body, c=document.querySelector('.scol');
+  ['fit1','fit2','fit3','fit4'].forEach(k=>b.classList.remove(k));
+  if(!matchMedia('(max-width:900px)').matches||b.classList.contains('d10')||!c||!c.clientHeight) return;
+  for(let i=1;i<=4;i++){ if(c.scrollHeight-c.clientHeight<=1) break; b.classList.add('fit'+i) }
+}
+addEventListener('resize',()=>requestAnimationFrame(fitStrip));
+addEventListener('load',()=>requestAnimationFrame(fitStrip));
 function fitText(){
   if(!phoneMQ.matches) return;
   const rg=document.createRange();
@@ -1532,7 +1552,7 @@ function slideIn(){
   els.forEach(el=>{ el.style.opacity=''; el.animate([{transform:`translateY(${D*70}px)`,opacity:0},{transform:'none',opacity:1}],{duration:400,easing:'cubic-bezier(.2,.85,.25,1)'}) });
   setTimeout(()=>{cycling=false},420);
 }
-$('#vtag').textContent='v'+VER;
+$('#vtag').textContent='v'+VER; $('#vtag2').textContent='v'+VER;
 function setBarH(){const r=document.documentElement.style, b=document.querySelector('.bar').getBoundingClientRect(), l=$('#locBtn').getBoundingClientRect(), top=Math.round(b.bottom+6);
   r.setProperty('--barH',top+'px'); if(l.height) r.setProperty('--locPad',Math.max(0,Math.round(l.top-top))+'px')}
 function set10(on){
