@@ -544,6 +544,21 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 .shh{color:#fff;font-size:12.5px;padding:12px 4px 6px}
 .ver{color:#fff;opacity:.85}
 #saved .row.lift{background:rgba(255,255,255,.3)}
+/* v2.25: High (feels) / Low (feels); 10-day sits on the same sky and glass boxes as Today */
+.dhl b em{font-style:normal;font-weight:700;margin-left:.3em}
+@media (min-width:901px){ .dhl{gap:16px} }
+@media (max-width:900px){
+  .dhl{grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:6px}
+  .dhl b{font-size:calc(23px*var(--dk,1))}
+  body.d10 .now,body.d10 #strip{opacity:0}
+  #daily.panel.glass{background:none;border:0;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none}
+  .drow{border-bottom:1px solid rgba(255,255,255,.18)}
+  .drow.today{background:rgba(255,255,255,.08);border-radius:16px}
+  .dx{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);border-radius:16px;
+    box-shadow:0 6px 16px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.2);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+  .dx>small{font-size:12.5px}
+  .dd b,.dd span,.dw,.dhl,.dx{text-shadow:var(--ol)}
+}
 </style>
 </head>
 <body>
@@ -617,7 +632,7 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
     <section class="panel glass" id="daily">
       <div class="ph"><h2>10-day forecast</h2><button class="loc dloc" id="dlocBtn" aria-label="Change location"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span id="dlocName"></span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><button class="dclose" id="d10close">Done</button></div>
       <div class="dcols dhead" id="dcols">
-        <span>Day</span><span>Sky</span><span>High · Low · Feels like</span>
+        <span>Day</span><span>Sky</span><span>High · Low (feels like)</span>
         <span class="ctr">Rain</span><span class="ctr">Shoe</span><span class="ctr">Wind</span><span class="ctr">UV</span>
       </div>
       <div id="drows"></div>
@@ -632,14 +647,14 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.24 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.25 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.24';
+const VER='2.25';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -768,6 +783,11 @@ const FX=(()=>{
       gr.addColorStop(0,`rgba(${col},.55)`);gr.addColorStop(.55,`rgba(${col},.28)`);gr.addColorStop(1,`rgba(${col},0)`);
       g.fillStyle=gr; g.beginPath(); g.arc(px,py,r+40,0,7); g.fill();
     }
+    // feather all four edges so no puff ever shows a hard, straight edge
+    g.globalCompositeOperation='destination-in';
+    const fv=g.createLinearGradient(0,0,0,h);fv.addColorStop(0,'rgba(0,0,0,0)');fv.addColorStop(.3,'#000');fv.addColorStop(.7,'#000');fv.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=fv;g.fillRect(0,0,w,h);
+    const fh=g.createLinearGradient(0,0,w,0);fh.addColorStop(0,'rgba(0,0,0,0)');fh.addColorStop(.2,'#000');fh.addColorStop(.8,'#000');fh.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=fh;g.fillRect(0,0,w,h);
+    g.globalCompositeOperation='source-over';
     return c;
   }
   function mistImg(){
@@ -1269,7 +1289,7 @@ function renderDaily(j){
       <div class="dd"><b>${d===0?'Today':dayName(date)}</b><span>${dayDate(date)}</span></div>
       <div class="ds">${ico(w.i)}<span>${esc(w.t)}</span></div>
       <div class="dw">${esc(w.t).replace('Thunderstorms','Thunder&shy;storms')}</div>
-      <div class="dhl"><span class="hi"><small>High</small><b>${fT(D.temperature_2m_max[d])}</b></span><span class="lo"><small>Low</small><b>${fT(D.temperature_2m_min[d])}</b></span><span class="fe"><small>Feels like</small><b><span>${fT(fHi)}</span><span>${fT(fLo)}</span></b></span></div>
+      <div class="dhl"><span class="hi"><small>High (feels)</small><b>${fT(D.temperature_2m_max[d])}<em>(${fT(fHi)})</em></b></span><span class="lo"><small>Low (feels)</small><b>${fT(D.temperature_2m_min[d])}<em>(${fT(fLo)})</em></b></span></div>
       <div class="dm">
         ${x('Rain',`${DROP}${pp==null?'–':pp+'%'}`,sum>0?`${fP(sum)} · ${rw.t}`:'None',sum>0?rw.c:'')}
         ${x('Shoe',`${SHOE}<span style="color:${gd.c}">${gd.t}</span>`,'','','shoe')}
@@ -1475,7 +1495,7 @@ $('#d10close').onclick=()=>set10(false);
   // off: where the 10-day sits (px, + = right of screen, - = left); side: which edge it lives on
   const paint=(off,side)=>{ const p=1-Math.abs(off)/W();
     dl.style.transform=`translateX(${off}px)`;
-    M.forEach(el=>{el.style.transform=`translateX(${(-22*side*p).toFixed(2)}%)`;el.style.opacity=(1-.7*p).toFixed(3)}) };
+    M.forEach(el=>{el.style.transform=`translateX(${(-22*side*p).toFixed(2)}%)`;el.style.opacity=(1-p).toFixed(3)}) };
   now.addEventListener('touchstart',start('now'),{passive:true});
   dl.addEventListener('touchstart',start('daily'),{passive:true});
   addEventListener('touchmove',e=>{
