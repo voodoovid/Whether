@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Whether">
 <meta name="theme-color" id="themeColor" content="#0a1226">
 <meta name="format-detection" content="telephone=no">
-<title>Whether</title>
+<title>Whether (or not)</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -46,6 +46,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex:none}
 .brand{display:flex;align-items:center;gap:9px;font-size:24px;font-weight:800;letter-spacing:-.4px;text-shadow:0 1px 8px rgba(0,0,0,.25)}
 .brand img{width:32px;height:32px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.ttl{display:flex;flex-direction:column;align-items:center;line-height:1}
+.t2{font-size:.56em;font-weight:700;letter-spacing:.4px;color:#f4b942;margin-top:3px;text-shadow:none}
 .loc{display:inline-flex;align-items:center;gap:7px;font-size:17px;font-weight:700;padding:5px 12px 5px 8px;margin:-4px 0 0 -8px;border-radius:999px;min-width:0;max-width:100%;align-self:flex-start;background:rgba(255,255,255,.12)}
 .loc span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .loc svg{width:16px;height:16px;flex:none;fill:#fff}
@@ -194,57 +196,63 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .now.glass{background:none;border:0;border-radius:0;-webkit-backdrop-filter:none;backdrop-filter:none}
   .now{padding:0 4px;text-shadow:0 1px 12px rgba(0,0,0,.28)}
   .loc{margin:0;align-self:flex-start;text-shadow:none}
-  .nowbody{display:grid;grid-template-columns:auto auto;justify-content:space-around;align-items:center;gap:18px;margin-top:14px}
-  .nowmain{display:flex;flex-direction:column;min-width:0}
+  .nowbody{display:grid;grid-template-columns:auto auto;justify-content:space-between;align-items:start;gap:12px;margin-top:10px}
+  .nowmain{display:flex;flex-direction:column;min-width:0;align-self:center}
   .nowtop{gap:6px;margin-left:-4px}
   .nowtop .ic{font-size:min(68px,16vw)}
   .bigt{font-size:min(108px,25vw);letter-spacing:-5px;line-height:.9}
   .cond{font-size:22px;margin-top:10px;line-height:1.2}
   .hilo{font-size:19px;color:rgba(255,255,255,.95);font-weight:700;margin-top:5px}
   .upd{font-size:12px;margin-top:5px}
-  .nowside{display:flex;flex-direction:column;gap:13px;padding-left:18px;border-left:1px solid rgba(255,255,255,.24)}
-  .st .k{font-size:10.5px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--mute);white-space:nowrap}
+  .nowside{display:flex;flex-direction:column;gap:7px;width:min(168px,40vw)}
+  .st{padding:7px 12px 8px;border-radius:16px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);
+    box-shadow:0 6px 16px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.2);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);text-shadow:none}
+  .st .k{font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,.78);white-space:nowrap}
   .st .v{font-size:26px;font-weight:700;letter-spacing:-.3px;line-height:1.1;font-variant-numeric:tabular-nums;white-space:nowrap}
   .st .v small{font-size:13px;font-weight:700;color:var(--mute);margin-left:4px;letter-spacing:0}
-  .st.big .v{font-size:58px;font-weight:300;letter-spacing:-2px;line-height:1}
+  .st .w{font-size:13.5px;font-weight:700;color:#d6e6fa;line-height:1.15;margin-top:1px}
+  .st.big .v{font-size:46px;font-weight:300;letter-spacing:-2px;line-height:1.02}
+  .st.uvt .v{font-size:46px;font-weight:700;letter-spacing:-1px;line-height:1.02}
+  .st.uvt .v small{font-size:16px;color:#fff}
 
   /* hourly verticals: 4 on screen, swipe for 24 */
-  #strip{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;padding:12px 8px 10px}
-  #strip .ph{padding:0 8px;justify-content:space-between;align-items:center;margin-bottom:8px}
-  .hint{font-size:17px;font-weight:800;color:rgba(255,255,255,.85);transition:opacity .3s}
+  #strip{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;padding:10px 6px 8px}
+  #strip .ph{padding:0 8px;justify-content:space-between;align-items:center;margin-bottom:6px}
+  #strip .ph h2{font-size:20px}
+  .hint{font-size:18px;font-weight:800;color:rgba(255,255,255,.85);transition:opacity .3s}
   .hint.gone{opacity:0}
   #sscroll{flex:1;min-height:0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   #sscroll::-webkit-scrollbar{display:none}
   #scols{display:grid;grid-auto-flow:column;grid-auto-columns:25%;height:100%}
-  .scol{scroll-snap-align:start;margin:0 3px;border-radius:22px;background:rgba(255,255,255,.06);text-align:center;font-variant-numeric:tabular-nums;
-    display:flex;flex-direction:column;justify-content:space-between;align-items:stretch;padding:10px 0 12px;overflow:hidden;min-height:0}
+  .scol{scroll-snap-align:start;margin:0 2px;border-radius:20px;background:rgba(255,255,255,.06);text-align:center;font-variant-numeric:tabular-nums;
+    display:flex;flex-direction:column;justify-content:space-between;align-items:stretch;padding:8px 0 10px;overflow:hidden;min-height:0}
   .scol.nt{background:rgba(0,6,22,.16)}
   .scol.cur{background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.26)}
   .scol>*{display:flex;align-items:center;justify-content:center;min-width:0;flex:none}
-  .scol .tm{font-size:14px;font-weight:700;color:var(--mute);white-space:nowrap}
+  .scol .tm{font-size:17px;font-weight:700;color:var(--mute);white-space:nowrap}
   .scol .tm.hl{color:#fff;font-weight:800}
-  .scol .ic{font-size:40px}
-  .scol .tp{font-size:28px;font-weight:700;letter-spacing:-.5px;line-height:1}
-  .scol .fl{font-size:12px;font-weight:700;color:var(--mute);white-space:nowrap;margin-top:-6px}
-  .scol .fl b{color:#fff;font-weight:800;margin-left:3px}
-  .rc{flex-direction:column;gap:3px}
-  .rc .p{font-size:16px;font-weight:800;color:#d5ecff;display:flex;align-items:center;gap:3px}
-  .rc .p svg{width:11px;height:11px;fill:#5fb4ff}
+  .scol .ic{font-size:54px}
+  .scol .tp{font-size:40px;font-weight:700;letter-spacing:-.5px;line-height:1}
+  .scol .fl{font-size:15px;font-weight:700;color:var(--mute);white-space:nowrap;margin-top:-4px}
+  .scol .fl b{color:#fff;font-weight:800;margin-left:4px}
+  .rc{flex-direction:column;gap:4px;padding:0 3px}
+  .rc .p{font-size:21px;font-weight:800;color:#d5ecff;display:flex;align-items:center;gap:4px}
+  .rc .p svg{width:13px;height:13px;fill:#5fb4ff}
   .rc .p.z{color:rgba(255,255,255,.45)}
-  .rc .ch{position:relative;width:100%;height:40px}
+  .rc .ch{position:relative;width:100%;height:68px;border-radius:9px;overflow:hidden;background:rgba(0,12,34,.38);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
   .rc .ch svg{position:absolute;inset:0;width:100%;height:100%}
-  .rc .ch b{position:absolute;left:50%;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px rgba(80,170,255,.45)}
-  .rc .mm{font-size:17px;font-weight:800;white-space:nowrap;margin-top:3px}
-  .rc .mm small{font-size:12px;font-weight:700;color:var(--mute);margin-left:2px}
+  .rc .ch b{position:absolute;left:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px rgba(60,165,255,.8),0 0 10px rgba(110,190,255,.9)}
+  .rc .mm{font-size:23px;font-weight:800;white-space:nowrap;margin-top:2px}
+  .rc .mm small{font-size:14px;font-weight:700;color:var(--mute);margin-left:2px}
   .rc .mm.z{color:rgba(255,255,255,.45)}
-  .rc .aw{font-size:13px;font-weight:800;white-space:nowrap;text-shadow:0 1px 6px rgba(0,0,0,.35)}
-  .scol .uv{font-size:13px;font-weight:700;color:var(--mute);gap:5px}
-  .scol .uv b{font-size:20px;font-weight:800}
-  .wd{flex-direction:column;gap:2px;padding:0 4px}
-  .wd .ws{font-size:17px;font-weight:800;display:flex;align-items:center;gap:4px;white-space:nowrap}
-  .wd .ws small{font-size:11px;font-weight:700;color:var(--mute)}
-  .wd .ws svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
-  .wd .ww{font-size:11.5px;font-weight:700;color:#cfe0f5;line-height:1.2;min-height:28px;display:flex;align-items:center}
+  .rc .aw{font-size:16px;font-weight:800;white-space:nowrap;text-shadow:0 1px 6px rgba(0,0,0,.35)}
+  .scol .uv{font-size:15px;font-weight:700;color:var(--mute);gap:6px}
+  .scol .uv b{font-size:30px;font-weight:800}
+  .wd{flex-direction:column;gap:2px;padding:0 3px}
+  .wd .ws{font-size:23px;font-weight:800;display:flex;align-items:center;gap:4px;white-space:nowrap}
+  .wd .ws small{font-size:13px;font-weight:700;color:var(--mute)}
+  .wd .ws svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .wd .ww{font-size:14px;font-weight:700;color:#cfe0f5;line-height:1.18;min-height:34px;display:flex;align-items:center;text-align:center}
 
   /* 10-day button + full-screen 10-day view */
   #btn10{display:block;padding:6px 11px;border-radius:999px;font-size:13px;font-weight:800;background:var(--glass);border:1px solid var(--edge);white-space:nowrap}
@@ -300,7 +308,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 <div id="app">
   <section id="left">
     <div class="bar">
-      <div class="brand"><img src="icon-192.png" alt="" width="32" height="32"><span>Whether</span><span class="vtag" id="vtag"></span></div>
+      <div class="brand"><img src="icon-192.png" alt="" width="32" height="32"><div class="ttl"><span class="t1">Whether</span><span class="t2">(or not)</span></div><span class="vtag" id="vtag"></span></div>
       <div class="tools">
         <button id="btn10" aria-label="10-day forecast">10-Day</button>
         <div class="seg" role="group" aria-label="Units"><button id="uC">°C</button><button id="uF">°F</button></div>
@@ -361,14 +369,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div id="results"></div>
     <div class="shh" id="savedH">Saved</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.4 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.5 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.4';
+const VER='2.5';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -748,11 +756,12 @@ function render(){
     tile('Sunset',t12(D.sunset[0]),D.sunset[1]?`Tomorrow ${clock(D.sunset[1])}`:'');
 
   const uvI=uvInfo(uvNow), uvR=Math.max(0,Math.round(uvNow)), gr=ground(j,C,idx);
-  const st=(k,v,cls='')=>`<div class="st ${cls}"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+  const st=(k,v,cls='',w='')=>`<div class="st ${cls}"><div class="k">${k}</div><div class="v">${v}</div>${w?`<div class="w">${w}</div>`:''}</div>`;
   $('#nowSide').innerHTML=
     st('Feels like',fT(feel),'big')+
-    st('UV index',`<span style="color:${uvI.c}">${uvR}</span><small>${uvI.l}</small>`)+
-    st('Ground',`<span style="color:${gr.c}">${gr.t}</span>`);
+    st('UV index',`<span style="color:${uvI.c}">${uvR}</span><small>${uvI.l}</small>`,'uvt')+
+    st('Ground Conditions',`<span style="color:${gr.c}">${gr.t}</span>`)+
+    st('Wind',`${fW(C.wind_speed_10m)}<small>${wUnit()}</small>`,'',esc(windWord(C.wind_speed_10m,C.wind_gusts_10m)));
   // rain/snow so far today, shown beside the condition when it's coming down
   let sofar=0; H.time.forEach((t,i)=>{if(t.startsWith(D.time[0])&&i<=idx)sofar+=H.precipitation[i]??0});
   const falling=WET(C.weather_code)||SNOWY(C.weather_code)||(C.precipitation||0)>0;
@@ -827,11 +836,12 @@ function renderStrip(j,C){
     const l=(pr(Math.max(0,i-1))+pv)/2, r=(pv+pr(Math.min(N-1,i+1)))/2;
     const line=`M0 ${Y(l)} L50 ${Y(pv)} L100 ${Y(r)}`;
     const chart=`<div class="ch"><svg viewBox="0 0 100 34" preserveAspectRatio="none">
-        <defs><linearGradient id="rgr${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4aa8ff" stop-opacity=".75"/><stop offset="1" stop-color="#4aa8ff" stop-opacity=".12"/></linearGradient></defs>
-        <line x1="0" x2="100" y1="18" y2="18" stroke="rgba(255,255,255,.16)" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>
-        <line x1="0" x2="100" y1="32" y2="32" stroke="rgba(255,255,255,.22)" vector-effect="non-scaling-stroke"/>
+        <defs><linearGradient id="rgr${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4db0ff" stop-opacity=".95"/><stop offset="1" stop-color="#2a7fe0" stop-opacity=".35"/></linearGradient></defs>
+        <line x1="0" x2="100" y1="4" y2="4" stroke="rgba(255,255,255,.28)" stroke-dasharray="2 3" vector-effect="non-scaling-stroke"/>
+        <line x1="0" x2="100" y1="18" y2="18" stroke="rgba(255,255,255,.36)" stroke-dasharray="2 3" vector-effect="non-scaling-stroke"/>
         <path d="${line} L100 34 L0 34 Z" fill="url(#rgr${i})"/>
-        <path d="${line}" fill="none" stroke="#8fd0ff" stroke-width="2.2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+        <path d="${line}" fill="none" stroke="#e6f5ff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+        <line x1="0" x2="100" y1="32" y2="32" stroke="rgba(255,255,255,.55)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
       </svg><b style="top:${(+Y(pv)/34*100).toFixed(1)}%"></b></div>`;
     const rw=rainWord(mm);
     const uv=Math.max(0,H.uv_index[k]??0), ui=uvInfo(uv);
