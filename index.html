@@ -570,6 +570,12 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
     -webkit-backdrop-filter:blur(18px) saturate(1.35);backdrop-filter:blur(18px) saturate(1.35)}
   .drow.today{border-color:rgba(255,255,255,.4)}
 }
+/* v2.27: Current / Tonight switch; counter centred on it */
+.curk.mode{display:inline-flex;align-self:flex-start;flex:none;gap:2px;padding:3px;margin:0 0 8px 0;border-radius:999px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);
+  box-shadow:0 6px 16px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.2);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);text-shadow:none;letter-spacing:0}
+.curk.mode button{padding:5px 11px;border-radius:999px;font-size:12.5px;font-weight:800;letter-spacing:.5px;white-space:nowrap;text-transform:uppercase;color:#fff;
+  text-shadow:-1px -1px 0 rgba(0,0,0,.55),1px -1px 0 rgba(0,0,0,.55),-1px 1px 0 rgba(0,0,0,.55),1px 1px 0 rgba(0,0,0,.55);transition:background .2s}
+.curk.mode button.on{background:rgba(255,255,255,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
 </style>
 </head>
 <body>
@@ -615,9 +621,10 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
       <div class="pager" id="pager" aria-live="polite"></div>
       <div class="nowbody">
         <div class="nowmain">
+          <div class="curk mode" id="mode" role="group" aria-label="Show"><button data-m="now" class="on">Current</button><button data-m="eve">Tonight</button></div>
           <div class="nowtop">
             <div id="nowIcon"></div>
-            <div class="bigw"><div class="curk">Current</div><div class="bigt" id="bigT">–°</div></div>
+            <div class="bigw"><div class="bigt" id="bigT">–°</div></div>
           </div>
           <div>
             <div class="cond" id="cond">&nbsp;</div>
@@ -658,14 +665,14 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.26 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.27 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.26';
+const VER='2.27';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1063,24 +1070,26 @@ function render(){
   // new place: every time view goes back to "now"
   if(S._shown!==key(S.loc)){ S._shown=key(S.loc); S.sel=0;
     ['#sscroll','#hscroll'].forEach(q=>{const el=$(q); if(el) el.scrollLeft=0}); const dr=$('#drows'); if(dr) dr.scrollTop=0;
-    const h=$('#hint'); if(h) h.classList.remove('gone') }
+    const h=$('#hint'); if(h) h.classList.remove('gone'); S.mode='now' }
   rainPass(j);
   const e=$('#err'); if(e) e.remove(); $('#right').style.display=''; $('.now').style.display=''; $('#tiles').style.display=''; $('#strip').style.visibility='';
   const H=j.hourly,D=j.daily,C=PREVIEW?{...j.current,...PREVIEW}:j.current;
   const nowStr=C.time.slice(0,13)+':00';
   let idx=H.time.findIndex(t=>t>=nowStr); if(idx<0) idx=0; idx=Math.min(idx,H.time.length-24); S.idx=idx;
-  applySky(C); FX.set(fxCfg(C));
+  const E=S.mode==='eve'?evening(j,C):null, V=E?E.C:C;   // V = what the top section shows
+  document.querySelectorAll('#mode button').forEach(b=>b.classList.toggle('on',b.dataset.m===(E?'eve':'now')));
+  applySky(V); FX.set(fxCfg(V));
 
   $('#locName').textContent=S.loc.name;
   $('#uC').classList.toggle('on',met()); $('#uF').classList.toggle('on',!met());
-  $('#upd').textContent=(S.offline?'Offline · saved ':'Updated ')+new Date(j._at).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  $('#upd').textContent=(E?(E.tom?'Tomorrow':'Tonight')+' 6–10 PM · ':'')+(S.offline?'Offline · saved ':'Updated ')+new Date(j._at).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
 
-  const w=wx(C.weather_code,C.is_day);
+  const w=wx(V.weather_code,V.is_day);
   $('#nowIcon').innerHTML=icoA(w.i);
-  $('#bigT').textContent=fT(C.temperature_2m);
-  $('#hilo').innerHTML=`High <b>${fT(D.temperature_2m_max[0])}</b>&nbsp; · &nbsp;Low <b>${fT(D.temperature_2m_min[0])}</b>`;
+  $('#bigT').textContent=fT(V.temperature_2m);
+  $('#hilo').innerHTML=`High <b>${fT(E?E.hi:D.temperature_2m_max[0])}</b>&nbsp; · &nbsp;Low <b>${fT(E?E.lo:D.temperature_2m_min[0])}</b>`;
 
-  const feel=C.apparent_temperature, act=C.temperature_2m;
+  const feel=V.apparent_temperature, act=V.temperature_2m;
   const dF=Math.round(nT(feel))-Math.round(nT(act));
   const feelSub=dF===0?'Same as actual':`${Math.abs(dF)}° ${dF<0?'colder':'warmer'} than actual`;
   const dp=dewPoint(act,C.relative_humidity_2m);
@@ -1104,21 +1113,42 @@ function render(){
     tile('Sunrise',t12(D.sunrise[0]),dlTxt)+
     tile('Sunset',t12(D.sunset[0]),D.sunset[1]?`Tomorrow ${clock(D.sunset[1])}`:'');
 
-  const uvI=uvInfo(uvNow), uvR=Math.max(0,Math.round(uvNow)), gr=ground(j,C,idx);
+  const uvS=E?E.uv:uvNow, uvI=uvInfo(uvS), uvR=Math.max(0,Math.round(uvS)), gr=ground(j,V,E?E.end:idx);
   const st=(k,v,cls='',w='')=>`<div class="st ${cls}"><div class="k">${k}</div><div class="v">${v}</div>${w?`<div class="w">${w}</div>`:''}</div>`;
   $('#nowSide').innerHTML=
     st('Feels like',fT(feel),'big')+
     st('Shoe Conditions',`<span class="gr" style="--c:${gr.c}">${SHOE}<b>${gr.t}</b></span>`)+
     st('UV index',`<span style="color:${uvI.c}">${uvR}</span><small>${uvI.l}</small>`,'uvt')+
-    st('Wind',`${fW(C.wind_speed_10m)}<small>${wUnit()}</small>`,'wind',esc(windWord(C.wind_speed_10m,C.wind_gusts_10m)));
+    st('Wind',`${fW(V.wind_speed_10m)}<small>${wUnit()}</small>`,'wind',esc(windWord(V.wind_speed_10m,V.wind_gusts_10m)));
   // rain/snow so far today, shown beside the condition when it's coming down
   let sofar=0; H.time.forEach((t,i)=>{if(t.startsWith(D.time[0])&&i<=idx)sofar+=H.precipitation[i]??0});
-  const falling=WET(C.weather_code)||SNOWY(C.weather_code)||(C.precipitation||0)>0;
-  $('#cond').innerHTML=esc(w.t)+(falling?` <span class="acc">${sofar>0?fP(sofar)+' today':'just started'}</span>`:'');
+  const falling=WET(V.weather_code)||SNOWY(V.weather_code)||(V.precipitation||0)>0;
+  const ct=(w.i==='rain'||w.i==='thunder')?w.t+' - No Silk':w.t;
+  const acc=E?(E.mm>0?fP(E.mm):`${Math.round(E.pop)}% chance`):(sofar>0?fP(sofar)+' today':'just started');
+  $('#cond').innerHTML=esc(ct)+(falling?` <span class="acc">${acc}</span>`:'');
 
   renderStrip(j,C); renderHourly(j); renderDaily(j); renderReadout();
   fitText();
   slideIn();
+}
+/* Tonight: everything from 6 to 10 PM rolled into one (tomorrow's evening once it's past 10 PM) */
+function evening(j,C){
+  const H=j.hourly, hr=+C.time.slice(11,13), tom=hr>=22, day=tom?j.daily.time[1]:C.time.slice(0,10);
+  if(!day) return null;
+  const ix=[]; H.time.forEach((t,i)=>{if(t.startsWith(day)){const h=+t.slice(11,13); if(h>=18&&h<=22) ix.push(i)}});
+  if(!ix.length) return null;
+  const g=k=>ix.map(i=>H[k]?.[i]).filter(v=>v!=null);
+  const avg=a=>a.length?a.reduce((s,v)=>s+v,0)/a.length:null, mx=a=>a.length?Math.max(...a):0;
+  const pr=ix.filter(i=>+H.time[i].slice(11,13)>=19).map(i=>H.precipitation[i]??0);   // hourly totals ending 7 PM ... 10 PM
+  const wetI=ix.filter(i=>WET(H.weather_code[i])||SNOWY(H.weather_code[i]));
+  let code;
+  if(wetI.length){ wetI.sort((a,b)=>(H.precipitation[b]??0)-(H.precipitation[a]??0)||H.weather_code[b]-H.weather_code[a]); code=H.weather_code[wetI[0]] }
+  else { const n={}; ix.forEach(i=>{const c=H.weather_code[i]; n[c]=(n[c]||0)+1}); code=+Object.keys(n).sort((a,b)=>n[b]-n[a]||b-a)[0] }
+  const T=g('temperature_2m');
+  return {tom, end:ix[ix.length-1], hi:mx(T), lo:Math.min(...T), uv:mx(g('uv_index')), mm:pr.reduce((s,v)=>s+v,0), pop:mx(g('precipitation_probability')),
+    C:{...C, temperature_2m:avg(T), apparent_temperature:avg(g('apparent_temperature')), relative_humidity_2m:avg(g('relative_humidity_2m')),
+      weather_code:code, is_day:avg(g('is_day'))>=.5?1:0, cloud_cover:avg(g('cloud_cover')), precipitation:mx(pr),
+      wind_speed_10m:mx(g('wind_speed_10m')), wind_gusts_10m:mx(g('wind_gusts_10m')), wind_direction_10m:H.wind_direction_10m?.[ix[Math.floor(ix.length/2)]]??C.wind_direction_10m}};
 }
 const tile=(k,v,s,extra='')=>`<div class="tile glass"><div class="k">${k}</div><div class="v">${v}</div>${extra}<div class="s">${s}</div></div>`;
 
@@ -1473,9 +1503,9 @@ function fitText(){
 addEventListener('resize',()=>requestAnimationFrame(fitText));
 function showPager(){
   const el=$('#pager'); if(!el||!S.pg) return; el.textContent=S.pg; S.pg='';
-  const now=el.offsetParent, lb=$('#locBtn');
+  const now=el.offsetParent, lb=$('#locBtn'), cu=$('#mode');
   if(now&&lb){const nr=now.getBoundingClientRect(), r=lb.getBoundingClientRect(), w=el.offsetWidth;
-    el.style.left=Math.max(0,Math.min(nr.width-w,Math.round(r.left-nr.left+r.width/2-w/2)))+'px';
+    const cr=cu?cu.getBoundingClientRect():r; el.style.left=Math.max(0,Math.min(nr.width-w,Math.round(cr.left-nr.left+cr.width/2-w/2)))+'px';
     el.style.top=Math.round(r.bottom-nr.top+8)+'px'}
   el.classList.add('on'); clearTimeout(showPager._t); showPager._t=setTimeout(()=>el.classList.remove('on'),2200);
 }
@@ -1544,6 +1574,7 @@ $('#d10close').onclick=()=>set10(false);
 $('#locBtn').onclick=openSheet; $('#dlocBtn').onclick=openSheet;
 {const ln=$('#locName'),sync=()=>{$('#dlocName').textContent=ln.textContent}; sync(); new MutationObserver(sync).observe(ln,{childList:true,characterData:true,subtree:true})} $('#shClose').onclick=closeSheet;
 $('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet()});
+document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>{if(S.mode===b.dataset.m)return; S.mode=b.dataset.m; render()});
 $('#uC').onclick=()=>{S.units='metric';LS.set('units','metric');render()};
 $('#uF').onclick=()=>{S.units='imperial';LS.set('units','imperial');render()};
 $('#refresh').onclick=()=>load(true);
