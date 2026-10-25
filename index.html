@@ -303,7 +303,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .wd .ws{font-size:21px}
   .st .k{font-size:12.5px;letter-spacing:.6px;color:#fff;white-space:normal;line-height:1.15}
   .st .w{font-size:16px;color:#fff;margin-top:3px}
-  .st   .st   #strip .ph h2{font-size:22px}
+  .st .gr{color:#fff}
+  .st .gr i{display:inline-block;width:.42em;height:.42em;border-radius:50%;margin-right:.22em;vertical-align:.12em;box-shadow:0 0 0 1.5px rgba(0,0,0,.45)}
+  #strip .ph h2{font-size:22px}
   .wd .ww{font-size:16.5px;color:#fff;min-height:38px;line-height:1.12}
   .bigt,.nowtop .bigt{text-shadow:-1.5px -1.5px 0 rgba(0,0,0,.6),1.5px -1.5px 0 rgba(0,0,0,.6),-1.5px 1.5px 0 rgba(0,0,0,.6),1.5px 1.5px 0 rgba(0,0,0,.6),0 3px 10px rgba(0,0,0,.35)}
   .cond,.hilo,.upd,.cond .acc{text-shadow:var(--ol)}
@@ -351,7 +353,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .wd .ww{font-size:19px;min-height:0}
 
   /* v2.14: shoe conditions box is back, with a high-heel icon */
-  .st   .st   .st .gr svg{width:30px;height:30px;flex:none;fill:var(--c,#fff);filter:drop-shadow(0 0 1px rgba(0,0,0,.85))}
+  .st .gr{display:flex;align-items:center;gap:7px;font-size:30px;font-weight:700;line-height:1.1;color:#fff}
+  .st .gr b{font-weight:700}
+  .st .gr svg{width:30px;height:30px;flex:none;fill:var(--c,#fff);filter:drop-shadow(0 0 1px rgba(0,0,0,.85))}
   .scol .sh svg{width:27px;height:27px}
 
   /* v2.15: Feels like box reads bigger */
@@ -727,7 +731,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.45 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.46 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -761,7 +765,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.45';
+const VER='2.46';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
