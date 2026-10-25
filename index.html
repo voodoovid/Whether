@@ -559,6 +559,17 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
   .dx>small{font-size:12.5px}
   .dd b,.dd span,.dw,.dhl,.dx{text-shadow:var(--ol)}
 }
+/* v2.26: each 10-day row is its own dark glass card (same as Next 24 hours), sky shows between; place counter centred under the location */
+.now{position:relative}
+.pager{left:0;top:0;padding:5px 15px;font-size:15px;font-weight:800;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);
+  box-shadow:0 6px 16px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.2);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  text-shadow:-1px -1px 0 rgba(0,0,0,.55),1px -1px 0 rgba(0,0,0,.55),-1px 1px 0 rgba(0,0,0,.55),1px 1px 0 rgba(0,0,0,.55);font-variant-numeric:tabular-nums}
+@media (max-width:900px){
+  #drows{gap:8px;padding-bottom:max(8px,env(safe-area-inset-bottom))}
+  .drow,.drow.today{background:var(--glass);border:1px solid var(--edge);border-radius:20px;
+    -webkit-backdrop-filter:blur(18px) saturate(1.35);backdrop-filter:blur(18px) saturate(1.35)}
+  .drow.today{border-color:rgba(255,255,255,.4)}
+}
 </style>
 </head>
 <body>
@@ -647,14 +658,14 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.25 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.26 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.25';
+const VER='2.26';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1462,6 +1473,10 @@ function fitText(){
 addEventListener('resize',()=>requestAnimationFrame(fitText));
 function showPager(){
   const el=$('#pager'); if(!el||!S.pg) return; el.textContent=S.pg; S.pg='';
+  const now=el.offsetParent, lb=$('#locBtn');
+  if(now&&lb){const nr=now.getBoundingClientRect(), r=lb.getBoundingClientRect(), w=el.offsetWidth;
+    el.style.left=Math.max(0,Math.min(nr.width-w,Math.round(r.left-nr.left+r.width/2-w/2)))+'px';
+    el.style.top=Math.round(r.bottom-nr.top+8)+'px'}
   el.classList.add('on'); clearTimeout(showPager._t); showPager._t=setTimeout(()=>el.classList.remove('on'),2200);
 }
 function slideIn(){
