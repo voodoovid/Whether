@@ -202,14 +202,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .nowtop .ic{font-size:min(68px,16vw)}
   .bigt{font-size:min(108px,25vw);letter-spacing:-5px;line-height:.9}
   .cond{font-size:22px;margin-top:10px;line-height:1.2}
-  .hilo{font-size:19px;color:rgba(255,255,255,.95);font-weight:700;margin-top:5px}
-  .upd{font-size:12px;margin-top:5px}
+  .hilo{font-size:21px;color:#fff;font-weight:800;margin-top:6px;white-space:nowrap}
+  .upd{font-size:16px;color:#fff;font-weight:600;margin-top:6px}
   .nowside{display:flex;flex-direction:column;gap:7px;width:min(168px,40vw)}
   .st{padding:7px 12px 8px;border-radius:16px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);
     box-shadow:0 6px 16px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.2);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);text-shadow:none}
   .st .k{font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,.78);white-space:nowrap}
   .st .v{font-size:26px;font-weight:700;letter-spacing:-.3px;line-height:1.1;font-variant-numeric:tabular-nums;white-space:nowrap}
-  .st .v small{font-size:13px;font-weight:700;color:var(--mute);margin-left:4px;letter-spacing:0}
+  .st .v small{font-size:13px;font-weight:700;color:#fff;margin-left:4px;letter-spacing:0}
   .st .w{font-size:13.5px;font-weight:700;color:#d6e6fa;line-height:1.15;margin-top:1px}
   .st.big .v{font-size:46px;font-weight:300;letter-spacing:-2px;line-height:1.02}
   .st.uvt .v{font-size:46px;font-weight:700;letter-spacing:-1px;line-height:1.02}
@@ -250,7 +250,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .scol .uv b{font-size:30px;font-weight:800}
   .wd{flex-direction:column;gap:2px;padding:0 3px}
   .wd .ws{font-size:23px;font-weight:800;display:flex;align-items:center;gap:4px;white-space:nowrap}
-  .wd .ws small{font-size:13px;font-weight:700;color:var(--mute)}
+  .wd .ws small{font-size:13px;font-weight:700;color:#fff}
   .wd .ws svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
   .wd .ww{font-size:14px;font-weight:700;color:#cfe0f5;line-height:1.18;min-height:34px;display:flex;align-items:center;text-align:center}
 
@@ -294,6 +294,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .st .gr i{display:inline-block;width:.42em;height:.42em;border-radius:50%;margin-right:.22em;vertical-align:.12em;box-shadow:0 0 0 1.5px rgba(0,0,0,.45)}
   #strip .ph h2{font-size:22px}
   .wd .ww{font-size:16.5px;color:#fff;min-height:38px;line-height:1.12}
+  .bigt,.nowtop .bigt{text-shadow:-1.5px -1.5px 0 rgba(0,0,0,.6),1.5px -1.5px 0 rgba(0,0,0,.6),-1.5px 1.5px 0 rgba(0,0,0,.6),1.5px 1.5px 0 rgba(0,0,0,.6),0 3px 10px rgba(0,0,0,.35)}
+  .cond,.hilo,.upd,.cond .acc{text-shadow:var(--ol)}
 }
 /* very short screens: let the page scroll rather than clip */
 @media (max-width:900px) and (max-height:700px){
@@ -389,14 +391,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div id="results"></div>
     <div class="shh" id="savedH">Saved</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.7 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.8 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.7';
+const VER='2.8';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -757,8 +759,17 @@ function showError(){
 function toast(t){const m=$('#msg');if(!t){m.hidden=true;return}m.textContent=t;m.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>m.hidden=true,3500)}
 
 /* ---------- render ---------- */
+function rainPass(j){
+  const fix=(o,pk,probK,thr)=>{ if(!o||!o.weather_code||!o[probK]) return;
+    o.weather_code=o.weather_code.map((c,i)=>{ if(PCODE(c)) return c;
+      const pr=o[probK][i]??0, mm=o[pk]?.[i]??0;
+      if(mm>=2.5) return 63; if(mm>=0.1||pr>=Math.max(thr,50)) return 61; if(pr>=thr) return 80; return c}) };
+  fix(j.hourly,'precipitation','precipitation_probability',40);
+  fix(j.daily,'precipitation_sum','precipitation_probability_max',60);
+}
 function render(){
   const j=S.data; if(!j) return;
+  rainPass(j);
   const e=$('#err'); if(e) e.remove(); $('#right').style.display=''; $('.now').style.display=''; $('#tiles').style.display=''; $('#strip').style.visibility='';
   const H=j.hourly,D=j.daily,C=PREVIEW?{...j.current,...PREVIEW}:j.current;
   const nowStr=C.time.slice(0,13)+':00';
@@ -803,7 +814,7 @@ function render(){
   $('#nowSide').innerHTML=
     st('Feels like',fT(feel),'big')+
     st('UV index',`<span style="color:${uvI.c}">${uvR}</span><small>${uvI.l}</small>`,'uvt')+
-    st('Ground',`<span class="gr"><i style="background:${gr.c}"></i>${gr.t}</span>`)+
+    st('Shoe Conditions',`<span class="gr"><i style="background:${gr.c}"></i>${gr.t}</span>`)+
     st('Wind',`${fW(C.wind_speed_10m)}<small>${wUnit()}</small>`,'',esc(windWord(C.wind_speed_10m,C.wind_gusts_10m)));
   // rain/snow so far today, shown beside the condition when it's coming down
   let sofar=0; H.time.forEach((t,i)=>{if(t.startsWith(D.time[0])&&i<=idx)sofar+=H.precipitation[i]??0});
