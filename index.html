@@ -495,11 +495,12 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
   .dx>:last-child{margin-bottom:auto}
   .dx.shoe b{gap:5px}
   /* Today <-> 10-day slides sideways and can follow your finger */
-  #daily{transform:translateX(100%);transition:transform .38s cubic-bezier(.2,.8,.2,1),visibility 0s .38s}
+  #daily{transform:translateX(var(--d10off,100%));transition:transform .38s cubic-bezier(.2,.8,.2,1),visibility 0s .38s}
   body.d10 #daily{transform:none;transition:transform .38s cubic-bezier(.2,.8,.2,1)}
   #daily.drag{transition:none!important;visibility:visible!important}
+  #daily .dclose{display:none!important}
   .now,#strip{transition:transform .38s cubic-bezier(.2,.8,.2,1),opacity .38s ease}
-  body.d10 .now,body.d10 #strip{transform:translateX(-22%);opacity:.3}
+  body.d10 .now,body.d10 #strip{transform:translateX(var(--d10m,-22%));opacity:.3}
   .now.drag,#strip.drag{transition:none!important}
 }
 @media (prefers-reduced-motion:reduce){ #daily,.now,#strip{transition:none!important} }
@@ -597,14 +598,14 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.22 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.23 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.22';
+const VER='2.23';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -994,6 +995,10 @@ function rainPass(j){
 }
 function render(){
   const j=S.data; if(!j) return;
+  // new place: every time view goes back to "now"
+  if(S._shown!==key(S.loc)){ S._shown=key(S.loc); S.sel=0;
+    ['#sscroll','#hscroll'].forEach(q=>{const el=$(q); if(el) el.scrollLeft=0}); const dr=$('#drows'); if(dr) dr.scrollTop=0;
+    const h=$('#hint'); if(h) h.classList.remove('gone') }
   rainPass(j);
   const e=$('#err'); if(e) e.remove(); $('#right').style.display=''; $('.now').style.display=''; $('#tiles').style.display=''; $('#strip').style.visibility='';
   const H=j.hourly,D=j.daily,C=PREVIEW?{...j.current,...PREVIEW}:j.current;
@@ -1420,7 +1425,8 @@ function set10(on){
   $('#btn10').textContent=on?'Today':'10-Day';
   $('#btn10').setAttribute('aria-label',on?'Back to today':'10-day forecast');
 }
-$('#btn10').onclick=()=>set10(!document.body.classList.contains('d10'));
+$('#btn10').onclick=()=>{const on=document.body.classList.contains('d10'); if(!on) d10Side(1); set10(!on)};
+function d10Side(dir){const r=document.documentElement.style; r.setProperty('--d10off',dir>0?'100%':'-100%'); r.setProperty('--d10m',dir>0?'-22%':'22%')}
 $('#d10close').onclick=()=>set10(false);
 /* ---- side swipe: left on Today's top section opens the 10-day, right anywhere on the 10-day goes back ---- */
 (function(){
@@ -1432,9 +1438,10 @@ $('#d10close').onclick=()=>set10(false);
     const on=isOn(); if((from==='now')===on){g=null;return}
     const t=e.touches[0]; g={x:t.clientX,y:t.clientY,t:Date.now(),on,lock:null,dx:0};
   };
-  const paint=off=>{ const p=1-off/W();
+  // off: where the 10-day sits (px, + = right of screen, - = left); side: which edge it lives on
+  const paint=(off,side)=>{ const p=1-Math.abs(off)/W();
     dl.style.transform=`translateX(${off}px)`;
-    M.forEach(el=>{el.style.transform=`translateX(${(-22*p).toFixed(2)}%)`;el.style.opacity=(1-.7*p).toFixed(3)}) };
+    M.forEach(el=>{el.style.transform=`translateX(${(-22*side*p).toFixed(2)}%)`;el.style.opacity=(1-.7*p).toFixed(3)}) };
   now.addEventListener('touchstart',start('now'),{passive:true});
   dl.addEventListener('touchstart',start('daily'),{passive:true});
   addEventListener('touchmove',e=>{
@@ -1446,13 +1453,17 @@ $('#d10close').onclick=()=>set10(false);
       if(!g.on) setBarH();
       dl.classList.add('drag'); M.forEach(el=>el.classList.add('drag'));
     }
-    e.preventDefault(); g.dx=dx;
-    paint(g.on?Math.max(0,dx):Math.max(0,W()+Math.min(0,dx)));
+    e.preventDefault();
+    if(!g.side) g.side=g.on?(dx>0?1:-1):(dx<0?1:-1);   // 1 = 10-day on the right, -1 = on the left
+    g.dx=dx; const w=W();
+    if(g.on) paint(g.side>0?Math.max(0,dx):Math.min(0,dx),g.side);
+    else paint(g.side>0?Math.max(0,w+Math.min(0,dx)):Math.min(0,-w+Math.max(0,dx)),g.side);
   },{passive:false});
   const end=()=>{
     if(!g) return; const G=g; g=null; if(G.lock!=='x') return;
     const dist=Math.abs(G.dx), v=dist/Math.max(1,Date.now()-G.t);
-    const right=G.on?G.dx>0:G.dx<0, go=right&&(dist>W()*.28||(v>.4&&dist>30));
+    const right=G.on?Math.sign(G.dx)===G.side:Math.sign(G.dx)===-G.side, go=right&&(dist>W()*.28||(v>.4&&dist>30));
+    d10Side(G.side);
     dl.classList.remove('drag'); M.forEach(el=>el.classList.remove('drag'));
     void dl.offsetWidth;                       // let the transition pick up from where the finger left it
     dl.style.transform=''; M.forEach(el=>{el.style.transform='';el.style.opacity=''});
