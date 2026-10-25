@@ -701,14 +701,14 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.34 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.35 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.34';
+const VER='2.35';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1667,8 +1667,6 @@ $('#d10close').onclick=()=>set10(false);
     M.forEach(el=>{el.style.transform=`translateX(${(-22*side*p).toFixed(2)}%)`;el.style.opacity=(1-p).toFixed(3)}) };
   now.addEventListener('touchstart',start('now'),{passive:true});
   dl.addEventListener('touchstart',start('daily'),{passive:true});
-  // day page: a swipe right from the left edge goes back (never over the hour strip, which only scrolls)
-  addEventListener('touchstart',e=>{ if(document.body.classList.contains('dayv')&&e.touches.length===1&&e.touches[0].clientX<32&&!e.target.closest('#strip,#hourly')) start('now')(e) },{passive:true});
   addEventListener('touchmove',e=>{
     if(!g) return; const t=e.touches[0], dx=t.clientX-g.x, dy=t.clientY-g.y;
     if(!g.lock){
