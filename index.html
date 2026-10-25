@@ -369,14 +369,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div id="results"></div>
     <div class="shh" id="savedH">Saved</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.5 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.6 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.5';
+const VER='2.6';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -668,7 +668,30 @@ const CURRENT='temperature_2m,apparent_temperature,relative_humidity_2m,weather_
 const key=l=>l.lat.toFixed(2)+','+l.lon.toFixed(2);
 /* Environment Canada GEM (incl. 2.5 km HRDPS) first for hyper-local detail; best_match fills anything GEM lacks (rain %, UV) */
 const MODELS=['gem_seamless','best_match'];
+/* GEM's single run can miss showers that other models (and the rain %) catch: if any model is wet or the chance is high, show rain */
+const PCODE=c=>WET(c)||SNOWY(c);
+function wetter(a,b){return PCODE(a)?a:PCODE(b)?b:a}
+function rainFix(o,sec){
+  if(!o) return;
+  const g=o['weather_code_gem_seamless'], b=o['weather_code_best_match'];
+  const pg=o['precipitation_gem_seamless']??o['precipitation_sum_gem_seamless'], pb=o['precipitation_best_match']??o['precipitation_sum_best_match'];
+  const pk=sec==='hourly'?'precipitation':sec==='daily'?'precipitation_sum':'precipitation';
+  const prob=o['precipitation_probability_best_match']??o['precipitation_probability_max_best_match'];
+  if(Array.isArray(g)){
+    o['weather_code_gem_seamless']=g.map((c,i)=>{
+      let code=wetter(c,b?.[i]);
+      const mm=Math.max(pg?.[i]??0,pb?.[i]??0), pr=prob?.[i]??0;
+      if(!PCODE(code)&&(mm>=0.1||pr>=(sec==='daily'?60:40))) code=mm>=2.5?63:mm>=0.5?61:pr>=60?61:80;
+      return code});
+    if(pg&&pb) o[pk+'_gem_seamless']=pg.map((v,i)=>Math.max(v??0,pb[i]??0));
+  } else if(g!=null){
+    let code=wetter(g,b); if(!PCODE(code)&&Math.max(pg??0,pb??0)>=0.1) code=61;
+    o['weather_code_gem_seamless']=code;
+    if(pg!=null&&pb!=null) o['precipitation_gem_seamless']=Math.max(pg,pb);
+  }
+}
 function mergeModels(j){
+  for(const s of ['current','hourly','daily']) rainFix(j[s],s);
   for(const sec of ['current','hourly','daily']){
     const o=j[sec]; if(!o) continue; const out={};
     const bases=new Set(Object.keys(o).map(k=>{for(const m of MODELS) if(k.endsWith('_'+m)) return k.slice(0,-m.length-1); return k}));
