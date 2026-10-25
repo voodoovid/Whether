@@ -615,6 +615,41 @@ body.dayv #pager{display:none}
 @media (max-width:900px){ body.dayv .now{padding:10px 12px 12px} body.dayv .nowbody{margin-top:6px} }
 body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shadow:none;font-size:11.5px;padding:6px 8px}
 @media (min-width:901px){ body.dayv #daily .drow.viewing{box-shadow:0 0 0 2px #ffd04a} }
+
+/* v2.43: "?" button and the quick guide */
+.rbtn.hq{font-size:17px;font-weight:800;color:#fff;line-height:1;padding:0;text-shadow:none}
+@media (max-width:900px){ .tools .rbtn{width:30px;height:30px} .tools{gap:5px} .tools .seg button{padding:5px 9px} .rbtn.hq{font-size:16px} }
+#guide{position:fixed;inset:0;z-index:55;display:flex;align-items:center;justify-content:center;background:rgba(2,6,14,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  padding:calc(env(safe-area-inset-top) + 10px) 12px calc(env(safe-area-inset-bottom) + 10px)}
+#guide[hidden]{display:none}
+#guide,#guide *{text-shadow:none}
+.gc{width:min(580px,100%);max-height:100%;display:flex;flex-direction:column;overflow:hidden;color:#fff;
+  background:rgba(13,23,43,.97);border:1px solid rgba(255,255,255,.18);border-radius:24px;box-shadow:0 28px 70px rgba(0,0,0,.55)}
+.gh{display:flex;align-items:center;gap:12px;flex:none;padding:16px 16px 14px;border-bottom:1px solid rgba(255,255,255,.12);background:linear-gradient(180deg,rgba(77,150,240,.30),rgba(77,150,240,0))}
+.gh img{width:40px;height:40px;border-radius:10px;flex:none;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+.gt{min-width:0}
+.gt h2{font-size:21px;font-weight:800;letter-spacing:-.2px;line-height:1.15}
+.gt p{font-size:12px;font-weight:600;color:rgba(255,255,255,.72);margin-top:2px}
+#gClose{margin-left:auto;flex:none;font-size:14px;font-weight:800;color:#fff;padding:8px 16px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28)}
+.gb{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:2px 16px 20px}
+.gs{margin-top:20px}
+.gs h3{font-size:11.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#ffd04a;margin:0 0 6px}
+.gn{font-size:14px;line-height:1.45;color:rgba(255,255,255,.84);margin:0 0 10px}
+.gi{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-top:1px solid rgba(255,255,255,.10)}
+.gi:first-of-type{border-top:0}
+.gk{flex:none;width:92px;box-sizing:border-box;text-align:center;font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#bfe0ff;background:rgba(77,150,240,.22);border:1px solid rgba(120,180,255,.35);border-radius:999px;padding:4px 8px;margin-top:1px;white-space:nowrap}
+.gi div b{display:block;font-size:15px;font-weight:800;line-height:1.25}
+.gi div span{display:block;font-size:13.5px;line-height:1.42;color:rgba(255,255,255,.78);margin-top:2px}
+.gl{display:grid;grid-template-columns:1fr;gap:1px;border-radius:14px;overflow:hidden;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10)}
+.gl.two{grid-template-columns:1fr 1fr}
+.gr{display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(255,255,255,.045);min-width:0}
+.gr i{flex:none;width:11px;height:11px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px rgba(255,255,255,.18)}
+.gr b{flex:none;font-size:14px;font-weight:800}
+.gr span{font-size:12.5px;color:rgba(255,255,255,.72);min-width:0;line-height:1.3}
+.gl .gr b{min-width:68px}
+.gl.w .gr b{min-width:136px}
+.gl.two .gr{flex-wrap:wrap;gap:2px 9px}
+@media (max-width:380px){ .gl.two{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
@@ -649,6 +684,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
         <button id="btn10" aria-label="10-day forecast">10-Day</button>
         <div class="seg" role="group" aria-label="Units"><button id="uC">°C</button><button id="uF">°F</button></div>
         <button class="rbtn" id="refresh" aria-label="Refresh"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg></button>
+        <button class="rbtn hq" id="helpBtn" aria-label="User guide" aria-haspopup="dialog">?</button>
       </div>
     </div>
     <div class="now glass">
@@ -705,14 +741,91 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.43 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.44 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+  </div>
+</div>
+<div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
+  <div class="gc">
+    <div class="gh">
+      <img src="icon-192.png" alt="" width="40" height="40">
+      <div class="gt"><h2 id="gTitle">Quick Guide</h2><p id="gVer">Whether (or not)</p></div>
+      <button id="gClose">Done</button>
+    </div>
+    <div class="gb">
+
+      <section class="gs">
+        <h3>Getting around</h3>
+        <div class="gi"><span class="gk">Switch</span><div><b>Current / Tonight</b><span>Current shows right now. Tonight rolls 6–10 PM into one summary (tomorrow evening once it is past 10 PM) and jumps the hourly panel to 6 PM.</span></div></div>
+        <div class="gi"><span class="gk">Swipe ←→</span><div><b>Hourly panel</b><span>Four hours at a time, out to 24 hours. Each column has temperature, rain, shoes, UV and wind.</span></div></div>
+        <div class="gi"><span class="gk">Tap</span><div><b>Location name</b><span>Search a city or postal code, use your current location, or pick a saved place. Hold a saved place and drag to reorder.</span></div></div>
+        <div class="gi"><span class="gk">Swipe ↑↓</span><div><b>Saved locations</b><span>Swipe up or down on the main screen to cycle through your saved places. A small counter shows which one you are on.</span></div></div>
+        <div class="gi"><span class="gk">Swipe ←</span><div><b>10-Day forecast</b><span>Swipe left, or tap 10-Day. Every day shows the same information as today. Swipe right, or tap Today, to return.</span></div></div>
+        <div class="gi"><span class="gk">Hold</span><div><b>Open a full day</b><span>Press and hold any day in the 10-Day list for its full page, framed in yellow. Use All day / Night to switch views. Leave with the date badge, the back button, or a swipe right.</span></div></div>
+        <div class="gi"><span class="gk">Tap</span><div><b>°C / °F and Refresh</b><span>Switch units at any time. Refresh reloads the forecast; if you are offline, the last saved forecast is shown and marked.</span></div></div>
+      </section>
+
+      <section class="gs">
+        <h3>Shoe conditions</h3>
+        <p class="gn">What the ground is likely to be like, from recent rain and snowfall, snow cover and temperature. Days show the worst conditions between 7 AM and 7 PM.</p>
+        <div class="gl">
+          <div class="gr"><i style="--c:#ffd04a"></i><b>Dry</b><span>No recent precipitation</span></div>
+          <div class="gr"><i style="--c:#c4f1ff"></i><b>Frosty</b><span>Dry, at or below freezing</span></div>
+          <div class="gr"><i style="--c:#9ad9ff"></i><b>Damp</b><span>Light recent rain</span></div>
+          <div class="gr"><i style="--c:#46b0ff"></i><b>Wet</b><span>Raining, or steady rain recently</span></div>
+          <div class="gr"><i style="--c:#5a95ff"></i><b>Puddles</b><span>Heavy recent rain</span></div>
+          <div class="gr"><i style="--c:#c9a8ff"></i><b>Slushy</b><span>Snow melting or mixed with rain</span></div>
+          <div class="gr"><i style="--c:#5ff0ff"></i><b>Icy</b><span>Freezing with a wet surface</span></div>
+          <div class="gr"><i style="--c:#ffffff"></i><b>Snowy</b><span>Snowing, or snow on the ground</span></div>
+        </div>
+      </section>
+
+      <section class="gs">
+        <h3>UV index</h3>
+        <div class="gl">
+          <div class="gr"><i style="--c:#4ed07a"></i><b>0–2</b><span>Low</span></div>
+          <div class="gr"><i style="--c:#f1d437"></i><b>3–5</b><span>Moderate</span></div>
+          <div class="gr"><i style="--c:#ff9a2e"></i><b>6–7</b><span>High</span></div>
+          <div class="gr"><i style="--c:#ff5a4f"></i><b>8–10</b><span>Very high</span></div>
+          <div class="gr"><i style="--c:#b583ff"></i><b>11+</b><span>Extreme</span></div>
+        </div>
+      </section>
+
+      <section class="gs">
+        <h3>Rain</h3>
+        <p class="gn">Each hour shows the chance of rain (%), the expected amount, and a small graph of the chance. The words describe the hourly amount: Zip (none), A smidge (under 0.3 mm), A bit (under 1), Steady (under 2.5), Lots (under 5), and heavier still, up to Yikes! at 10 mm or more.</p>
+      </section>
+
+      <section class="gs">
+        <h3>Wind</h3>
+        <p class="gn">The arrow points the way the wind is blowing. Gusts are taken into account in the wording. Ranges are in km/h (the app shows mph in °F mode).</p>
+        <div class="gl w">
+          <div class="gr"><b>Calm</b><span>under 2 km/h</span></div>
+          <div class="gr"><b>Gentle breeze</b><span>2–11</span></div>
+          <div class="gr"><b>Breezy</b><span>12–19</span></div>
+          <div class="gr"><b>Flags flapping</b><span>20–28</span></div>
+          <div class="gr"><b>Hat may fly off</b><span>29–38</span></div>
+          <div class="gr"><b>Umbrella wrecker</b><span>39–49</span></div>
+          <div class="gr"><b>Hold on tight</b><span>50–61</span></div>
+          <div class="gr"><b>Trees bending</b><span>62–74</span></div>
+          <div class="gr"><b>Stay inside!</b><span>75+</span></div>
+        </div>
+      </section>
+
+      <section class="gs">
+        <h3>Good to know</h3>
+        <div class="gi"><span class="gk">Data</span><div><b>Forecast source</b><span>Environment Canada GEM model, delivered by Open-Meteo.com. Feels like factors in wind and humidity.</span></div></div>
+        <div class="gi"><span class="gk">Days</span><div><b>Daytime values</b><span>Future days report daytime conditions (7 AM–7 PM). Use Night on a day page to see 6–10 PM.</span></div></div>
+        <div class="gi"><span class="gk">Install</span><div><b>Add to Home Screen</b><span>In Safari, tap Share, then Add to Home Screen, to run Whether full screen with its own icon.</span></div></div>
+      </section>
+
+    </div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.43';
+const VER='2.44';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1707,6 +1820,12 @@ $('#d10close').onclick=()=>set10(false);
   addEventListener('touchcancel',end,{passive:true});
 })();
 $('#locBtn').onclick=openSheet; $('#dlocBtn').onclick=openSheet;
+/* quick guide */
+function openGuide(){ $('#gVer').textContent='Whether (or not) · v'+VER; $('#guide').hidden=false; $('#guide .gb').scrollTop=0 }
+function closeGuide(){ $('#guide').hidden=true }
+$('#helpBtn').onclick=openGuide; $('#gClose').onclick=closeGuide;
+$('#guide').addEventListener('click',e=>{ if(e.target.id==='guide') closeGuide() });
+addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('#guide').hidden) closeGuide() });
 {const ln=$('#locName'),sync=()=>{$('#dlocName').textContent=ln.textContent}; sync(); new MutationObserver(sync).observe(ln,{childList:true,characterData:true,subtree:true})} $('#shClose').onclick=closeSheet;
 $('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet()});
 /* v2.40: Tonight jumps the hourly view forward to 6 PM (that day's, or tomorrow's after 10 PM); Current / All day jumps back to the start.
