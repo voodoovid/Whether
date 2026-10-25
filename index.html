@@ -416,14 +416,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.9 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.10 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.9';
+const VER='2.10';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -766,7 +766,7 @@ async function load(manual){
     if(!j.hourly||!j.daily||!j.current) throw new Error('bad data');
     trimPast(j);
     j._at=Date.now();
-    S.data=j; S.offline=false; S.sel=0;
+    S.data=j; S.offline=false; S.sel=0; MEM[key(S.loc)]=j;
     LS.set('cache',{k:key(S.loc),j});
     render();
   }catch(e){
@@ -781,7 +781,7 @@ function showError(){
     let e=$('#err'); if(!e){e=document.createElement('div');e.id='err';e.innerHTML='<div><div style="font-size:20px;color:#fff;font-weight:800;margin-bottom:6px">Can’t reach the forecast</div>Check your connection and try again.</div><button id="retry">Retry</button>';$('#app').appendChild(e);e.querySelector('#retry').onclick=()=>{load(true)}}
   }
 }
-function toast(t){const m=$('#msg');if(!t){m.hidden=true;return}m.textContent=t;m.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>m.hidden=true,3500)}
+function toast(t,ms=3500){const m=$('#msg');if(!t){m.hidden=true;return}m.textContent=t;m.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>m.hidden=true,ms)}
 
 /* ---------- render ---------- */
 function rainPass(j){
@@ -847,6 +847,7 @@ function render(){
   $('#cond').innerHTML=esc(w.t)+(falling?` <span class="acc">${sofar>0?fP(sofar)+' today':'just started'}</span>`:'');
 
   renderStrip(j,C); renderHourly(j); renderDaily(j); renderReadout();
+  slideIn();
 }
 const tile=(k,v,s,extra='')=>`<div class="tile glass"><div class="k">${k}</div><div class="v">${v}</div>${extra}<div class="s">${s}</div></div>`;
 
@@ -1136,13 +1137,32 @@ $('#gps').addEventListener('click',()=>{
   },{passive:true});
   app.addEventListener('touchcancel',()=>{g=null},{passive:true});
 })();
+const MEM={};                     // in-memory forecast per place, for instant swipes
+let cycling=false;
 function cycleLoc(dir){
   const L=S.saved; if(!L||L.length<2){toast(L&&L.length?'Only one saved place — add more with the location button':'Save places with the location button');return}
+  if(cycling) return;
   let i=L.findIndex(s=>key(s)===key(S.loc)); if(i<0) i=dir>0?-1:0;
   const n=(i+dir+L.length)%L.length, l=L[n];
   S.loc={name:l.name,lat:l.lat,lon:l.lon}; LS.set('loc',S.loc);
-  $('#locName').textContent=l.name; toast(`${l.name}  ·  ${n+1} of ${L.length}`);
-  S.data=null; load(true);
+  toast(`${l.name}  ·  ${n+1} of ${L.length}`,1400);
+  const els=[...document.querySelectorAll('#app .now,#app #strip')], D=dir>0?1:-1;
+  if(!els.length||!els[0].animate||matchMedia('(prefers-reduced-motion: reduce)').matches){ $('#locName').textContent=l.name; S.data=null; load(true); return }
+  cycling=true;
+  const outs=els.map(el=>el.animate([{transform:'none',opacity:1},{transform:`translateY(${-D*60}px)`,opacity:0}],{duration:190,easing:'cubic-bezier(.4,0,.8,.6)',fill:'forwards'}));
+  Promise.all(outs.map(a=>a.finished.catch(()=>{}))).then(()=>{
+    els.forEach(el=>el.style.opacity='0'); outs.forEach(a=>a.cancel());
+    S.slideIn=D; $('#locName').textContent=l.name;
+    const m=MEM[key(l)];
+    if(m){ S.data=m; S.offline=false; S.sel=0; render(); load() } else { S.data=null; load(true) }
+    setTimeout(()=>{ els.forEach(el=>el.style.opacity=''); S.slideIn=0; cycling=false },9000);
+  });
+}
+function slideIn(){
+  const D=S.slideIn; if(!D) return; S.slideIn=0;
+  const els=[...document.querySelectorAll('#app .now,#app #strip')];
+  els.forEach(el=>{ el.style.opacity=''; el.animate([{transform:`translateY(${D*70}px)`,opacity:0},{transform:'none',opacity:1}],{duration:400,easing:'cubic-bezier(.2,.85,.25,1)'}) });
+  setTimeout(()=>{cycling=false},420);
 }
 $('#vtag').textContent='v'+VER;
 $('#btn10').onclick=()=>document.body.classList.add('d10');
