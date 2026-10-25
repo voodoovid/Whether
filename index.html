@@ -518,14 +518,14 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.19 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.20 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.19';
+const VER='2.20';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -893,6 +893,11 @@ function rainPass(j){
       if(mm>=2.5) return 63; if(mm>=0.1||pr>=Math.max(thr,50)) return 61; if(pr>=thr) return 80; return c}) };
   fix(j.hourly,'precipitation','precipitation_probability',40);
   fix(j.daily,'precipitation_sum','precipitation_probability_max',60);
+  // when a model says rain will actually fall, the chance can't read as near zero
+  const floor=(o,pk,probK,steps)=>{ if(!o||!o[pk]||!o[probK]) return;
+    o[probK]=o[probK].map((p,i)=>{const mm=o[pk][i]??0;let f=0;for(const [m,v] of steps) if(mm>=m) f=v;return p==null?(f||null):Math.max(p,f)}) };
+  floor(j.hourly,'precipitation','precipitation_probability',[[0.1,40],[0.5,60],[2,80]]);
+  floor(j.daily,'precipitation_sum','precipitation_probability_max',[[0.2,40],[1,60],[5,80]]);
 }
 function render(){
   const j=S.data; if(!j) return;
@@ -1117,11 +1122,13 @@ function renderDaily(j){
     const uv=Math.max(0,D.uv_index_max[d]??max(H.uv_index)??0), ui=uvInfo(uv);
     // rain: chance, total, and how hard at its heaviest hour
     const pp=D.precipitation_probability_max[d], sum=D.precipitation_sum[d]??0, rw=rainWord(max(H.precipitation)??0);
-    // shoe: today = right now; other days = early afternoon
-    let gd;
-    if(d===0) gd=ground(j,C,S.idx);
-    else{ const k=ix.find(i=>H.time[i].slice(11,13)==='14')??ix[Math.floor(ix.length/2)];
-      gd=k==null?{t:'–',c:'#fff'}:ground(j,{temperature_2m:H.temperature_2m[k],weather_code:H.weather_code[k],precipitation:H.precipitation[k],is_day:1,cloud_cover:H.cloud_cover[k],relative_humidity_2m:H.relative_humidity_2m[k]},k); }
+    // shoe: the worst it gets between 7 AM and 7 PM (today: from now on)
+    const RANK={'Dry':0,'Frosty':1,'Damp':2,'Wet':3,'Puddles':4,'Slushy':5,'Icy':6,'Snowy':7};
+    let gd=d===0?ground(j,C,S.idx):null;
+    ix.forEach(k=>{const h=+H.time[k].slice(11,13); if(h<7||h>19||(d===0&&k<=S.idx)) return;
+      const g=ground(j,{temperature_2m:H.temperature_2m[k],weather_code:H.weather_code[k],precipitation:H.precipitation[k],is_day:H.is_day[k],cloud_cover:H.cloud_cover[k],relative_humidity_2m:H.relative_humidity_2m[k]},k);
+      if(!gd||(RANK[g.t]??0)>(RANK[gd.t]??0)) gd=g});
+    if(!gd) gd={t:'–',c:'#fff'};
     // wind: strongest of the day
     const ws=D.wind_speed_10m_max?.[d]??max(H.wind_speed_10m), gu=D.wind_gusts_10m_max?.[d]??max(H.wind_gusts_10m);
     const wword=ws==null?'':(()=>{const x=windWord(ws,gu);return WSHORT[x]||x})();
