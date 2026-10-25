@@ -576,13 +576,11 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 .curk.mode button{padding:5px 11px;border-radius:999px;font-size:12.5px;font-weight:800;letter-spacing:.5px;white-space:nowrap;text-transform:uppercase;color:#fff;
   text-shadow:-1px -1px 0 rgba(0,0,0,.55),1px -1px 0 rgba(0,0,0,.55),-1px 1px 0 rgba(0,0,0,.55),1px 1px 0 rgba(0,0,0,.55);transition:background .2s}
 .curk.mode button.on{background:rgba(255,255,255,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
-/* v2.28: Tonight label larger with Updated on its own line; counter swaps in over the switch instead of crowding it */
+/* v2.28/2.29: Tonight label larger with Updated on its own line; smaller counter sits above the switch */
 .upd .evt,.upd .evu{display:block}
 .upd .evt{font-size:1.4em;font-weight:800;color:#fff;letter-spacing:.2px;line-height:1.2}
 .upd .evt+.evu{margin-top:3px}
-.curk.mode{transition:opacity .25s ease}
-.curk.mode.pg{opacity:0;pointer-events:none}
-.pager{transform:scale(.92)}
+.pager{font-size:12px;padding:2px 10px;letter-spacing:.3px;transform:translateY(4px)}
 .pager.on{transform:none}
 </style>
 </head>
@@ -673,14 +671,14 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.28 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.29 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.28';
+const VER='2.29';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1136,7 +1134,7 @@ function render(){
   $('#cond').innerHTML=esc(ct)+(falling?` <span class="acc">${acc}</span>`:'');
 
   renderStrip(j,C); renderHourly(j); renderDaily(j); renderReadout();
-  fitText();
+  fitText(); reservePager();
   slideIn();
 }
 /* Tonight: everything from 6 to 10 PM rolled into one (tomorrow's evening once it's past 10 PM) */
@@ -1509,15 +1507,21 @@ function fitText(){
   });
 }
 addEventListener('resize',()=>requestAnimationFrame(fitText));
+/* keep a clear gap between the location chip and the Current/Tonight switch so the counter fits above the switch */
+function reservePager(){
+  const el=$('#pager'), lb=$('#locBtn'), cu=$('#mode'); if(!el||!lb||!cu||!cu.offsetParent) return;
+  if(!el.textContent) el.textContent='1 of 1';
+  cu.style.marginTop=''; const need=el.offsetHeight+8, gap=cu.getBoundingClientRect().top-lb.getBoundingClientRect().bottom;
+  if(gap<need) cu.style.marginTop=Math.ceil(need-gap)+'px';
+}
+addEventListener('resize',()=>requestAnimationFrame(reservePager));
 function showPager(){
-  const el=$('#pager'); if(!el||!S.pg) return; el.textContent=S.pg; S.pg='';
+  const el=$('#pager'); if(!el||!S.pg) return; el.textContent=S.pg; S.pg=''; reservePager();
   const now=el.offsetParent, lb=$('#locBtn'), cu=$('#mode');
   if(now&&lb){const nr=now.getBoundingClientRect(), r=lb.getBoundingClientRect(), w=el.offsetWidth;
     const cr=cu?cu.getBoundingClientRect():r; el.style.left=Math.max(0,Math.min(nr.width-w,Math.round(cr.left-nr.left+cr.width/2-w/2)))+'px';
-    el.style.top=Math.round(cu?cr.top-nr.top+cr.height/2-el.offsetHeight/2:r.bottom-nr.top+8)+'px'}
-  // the counter briefly takes the switch's place (centred on it) instead of crowding it
-  el.classList.add('on'); if(cu) cu.classList.add('pg');
-  clearTimeout(showPager._t); showPager._t=setTimeout(()=>{el.classList.remove('on'); if(cu) cu.classList.remove('pg')},2200);
+    el.style.top=Math.round(cu?Math.max(r.bottom-nr.top+3,cr.top-nr.top-el.offsetHeight-5):r.bottom-nr.top+8)+'px'}
+  el.classList.add('on'); clearTimeout(showPager._t); showPager._t=setTimeout(()=>el.classList.remove('on'),2200);
 }
 function slideIn(){
   const D=S.slideIn; if(!D) return; S.slideIn=0; setTimeout(showPager,260);
