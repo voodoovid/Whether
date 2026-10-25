@@ -24,14 +24,15 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input{-webkit-user-select:text;user-select:text}
 html,body{height:100%;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
-body{background:linear-gradient(172deg,var(--sky1),var(--sky2)) fixed;background-color:var(--sky1)}
+html{background:var(--sky2);min-height:100vh;min-height:100lvh}
+body{background:linear-gradient(172deg,var(--sky1),var(--sky2)) fixed;background-color:var(--sky1);min-height:100vh;min-height:100lvh}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .ic{width:1em;height:1em;display:block;flex:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
 .f-sun{fill:rgb(var(--sun))} .f-cloud{fill:#dfe7f3} .f-cloud2{fill:#9fb0c8} .f-rain{fill:rgb(var(--rain))} .f-hum{fill:rgb(var(--hum))} .f-moon{fill:#e8eefb}
 .s-sun{stroke:rgb(var(--sun))} .s-rain{stroke:rgb(var(--rain))} .s-cloud{stroke:#dfe7f3}
 .glass{background:var(--glass);border:1px solid var(--edge);border-radius:22px;-webkit-backdrop-filter:blur(18px) saturate(1.35);backdrop-filter:blur(18px) saturate(1.35)}
-#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
-#flash{position:fixed;inset:0;pointer-events:none;z-index:45;background:#e4ecff;opacity:0}
+#fx{position:fixed;left:0;top:0;width:100%;height:100vh;height:100lvh;pointer-events:none;z-index:0}
+#flash{position:fixed;left:0;top:0;width:100%;height:100vh;height:100lvh;pointer-events:none;z-index:45;background:#e4ecff;opacity:0}
 #app{position:relative;z-index:1}
 .nowbody,.nowmain{display:contents}
 .nowside,#strip{display:none}
@@ -181,36 +182,36 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .cond .acc{display:inline-block;vertical-align:.18em;font-size:.62em;font-weight:800;color:#dff0ff;background:rgba(74,168,255,.32);padding:.15em .6em;border-radius:999px;white-space:nowrap;text-shadow:none}
 @media (max-width:900px){
   :root{--lab:74px;--colmin:46px}
-  html,body{height:100%;overflow:hidden}
-  #app{height:100dvh;overflow:hidden;display:flex;flex-direction:column;gap:10px;padding:calc(env(safe-area-inset-top) + 8px) max(12px,env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 10px) max(12px,env(safe-area-inset-left))}
+  html,body{height:100vh;height:100lvh;overflow:hidden}
+  #app{height:100vh;height:100lvh;overflow:hidden;display:flex;flex-direction:column;gap:10px;padding:calc(env(safe-area-inset-top) + 8px) max(12px,env(safe-area-inset-right)) max(8px,calc(env(safe-area-inset-bottom) - 16px)) max(12px,env(safe-area-inset-left))}
   #left{display:contents}
   #right{display:contents}
-  .bar{order:0} .now{order:1;flex:none} #strip{order:2} #btn10{order:3}
+  .bar{order:0} .now{order:1;flex:none} #strip{order:2}
   .tiles,#hourly{display:none}
-  .brand{font-size:22px} .brand img{width:30px;height:30px}
+  .brand{font-size:22px;min-width:0} .brand img{width:30px;height:30px} .tools{gap:6px}
 
   /* current conditions sit straight on the sky */
   .now.glass{background:none;border:0;border-radius:0;-webkit-backdrop-filter:none;backdrop-filter:none}
   .now{padding:0 4px;text-shadow:0 1px 12px rgba(0,0,0,.28)}
   .loc{margin:0;align-self:flex-start;text-shadow:none}
-  .nowbody{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:14px;margin-top:8px}
+  .nowbody{display:grid;grid-template-columns:auto auto;justify-content:space-around;align-items:center;gap:18px;margin-top:14px}
   .nowmain{display:flex;flex-direction:column;min-width:0}
   .nowtop{gap:6px;margin-left:-4px}
-  .nowtop .ic{font-size:min(58px,14vw)}
-  .bigt{font-size:min(92px,22vw);letter-spacing:-4px;line-height:.9}
-  .cond{font-size:20px;margin-top:6px;line-height:1.2}
-  .hilo{font-size:18px;color:rgba(255,255,255,.95);font-weight:700;margin-top:4px}
-  .upd{font-size:11.5px;margin-top:3px}
-  .nowside{display:flex;flex-direction:column;gap:9px;padding-left:15px;border-left:1px solid rgba(255,255,255,.24)}
+  .nowtop .ic{font-size:min(68px,16vw)}
+  .bigt{font-size:min(108px,25vw);letter-spacing:-5px;line-height:.9}
+  .cond{font-size:22px;margin-top:10px;line-height:1.2}
+  .hilo{font-size:19px;color:rgba(255,255,255,.95);font-weight:700;margin-top:5px}
+  .upd{font-size:12px;margin-top:5px}
+  .nowside{display:flex;flex-direction:column;gap:13px;padding-left:18px;border-left:1px solid rgba(255,255,255,.24)}
   .st .k{font-size:10.5px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--mute);white-space:nowrap}
-  .st .v{font-size:24px;font-weight:700;letter-spacing:-.3px;line-height:1.1;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .st .v{font-size:26px;font-weight:700;letter-spacing:-.3px;line-height:1.1;font-variant-numeric:tabular-nums;white-space:nowrap}
   .st .v small{font-size:13px;font-weight:700;color:var(--mute);margin-left:4px;letter-spacing:0}
-  .st.big .v{font-size:52px;font-weight:300;letter-spacing:-2px;line-height:1}
+  .st.big .v{font-size:58px;font-weight:300;letter-spacing:-2px;line-height:1}
 
   /* hourly verticals: 4 on screen, swipe for 24 */
   #strip{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;padding:12px 8px 10px}
   #strip .ph{padding:0 8px;justify-content:space-between;align-items:center;margin-bottom:8px}
-  .hint{font-size:12.5px;font-weight:700;color:var(--mute);transition:opacity .3s}
+  .hint{font-size:17px;font-weight:800;color:rgba(255,255,255,.85);transition:opacity .3s}
   .hint.gone{opacity:0}
   #sscroll{flex:1;min-height:0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   #sscroll::-webkit-scrollbar{display:none}
@@ -246,8 +247,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .wd .ww{font-size:11.5px;font-weight:700;color:#cfe0f5;line-height:1.2;min-height:28px;display:flex;align-items:center}
 
   /* 10-day button + full-screen 10-day view */
-  #btn10{display:flex;align-items:center;justify-content:space-between;flex:none;width:100%;padding:13px 18px;border-radius:18px;font-size:16px;font-weight:800}
-  #btn10 span{color:var(--mute);font-size:13px;font-weight:700}
+  #btn10{display:block;padding:6px 11px;border-radius:999px;font-size:13px;font-weight:800;background:var(--glass);border:1px solid var(--edge);white-space:nowrap}
   #daily{position:fixed;inset:0;z-index:40;border:0;border-radius:0;background:rgba(4,10,26,.55);
     padding:calc(env(safe-area-inset-top) + 12px) max(12px,env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 8px) max(12px,env(safe-area-inset-left));
     transform:translateY(100%);visibility:hidden;transition:transform .38s cubic-bezier(.2,.8,.2,1),visibility 0s .38s}
@@ -302,6 +302,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div class="bar">
       <div class="brand"><img src="icon-192.png" alt="" width="32" height="32"><span>Whether</span><span class="vtag" id="vtag"></span></div>
       <div class="tools">
+        <button id="btn10" aria-label="10-day forecast">10-Day</button>
         <div class="seg" role="group" aria-label="Units"><button id="uC">°C</button><button id="uF">°F</button></div>
         <button class="rbtn" id="refresh" aria-label="Refresh"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg></button>
       </div>
@@ -332,7 +333,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       <div class="ph"><h2>Next 24 hours</h2><span class="hint" id="hint">Swipe ›</span></div>
       <div id="sscroll"><div id="scols"></div></div>
     </section>
-    <button class="glass" id="btn10">10-day forecast<span>›</span></button>
   </section>
 
   <section id="right">
@@ -361,14 +361,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div id="results"></div>
     <div class="shh" id="savedH">Saved</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.3 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.4 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.3';
+const VER='2.4';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -645,7 +645,7 @@ const FX=(()=>{
   function frame(ts){raf=requestAnimationFrame(frame);const dt=Math.min(.05,last?(ts-last)/1000:0);last=ts;T+=dt;draw(dt)}
   function start(){if(still||raf||document.hidden||!cfg)return;last=0;raf=requestAnimationFrame(frame)}
   function stop(){if(raf)cancelAnimationFrame(raf);raf=0}
-  function size(){const dpr=Math.min(window.devicePixelRatio||1,2);W=innerWidth;Hh=innerHeight;cv.width=Math.round(W*dpr);cv.height=Math.round(Hh*dpr);x.setTransform(dpr,0,0,dpr,0,0);if(cfg){build();if(still)draw(0)}}
+  function size(){const dpr=Math.min(window.devicePixelRatio||1,2);W=cv.clientWidth||innerWidth;Hh=Math.max(cv.clientHeight,innerHeight);cv.width=Math.round(W*dpr);cv.height=Math.round(Hh*dpr);x.setTransform(dpr,0,0,dpr,0,0);if(cfg){build();if(still)draw(0)}}
   addEventListener('resize',()=>{clearTimeout(size._t);size._t=setTimeout(size,150)});
   document.addEventListener('visibilitychange',()=>document.hidden?stop():start());
   size();
@@ -820,7 +820,7 @@ function renderStrip(j,C){
   let out='';
   for(let i=0;i<N;i++){
     const k=a+i, t=H.time[k], night=!H.is_day[k], c0=i===0;
-    const tm=c0?'<div class="tm hl">Now</div>':(t.slice(11,13)==='00'?`<div class="tm hl">${dayName(t)}</div>`:`<div class="tm">${hourLabel(t)}</div>`);
+    const tm=c0?'<div class="tm hl">Now</div>':`<div class="tm">${hourLabel(t)}</div>`;
     const temp=c0?C.temperature_2m:H.temperature_2m[k], feel=c0?C.apparent_temperature:H.apparent_temperature[k];
     const code=c0?C.weather_code:H.weather_code[k], isDay=c0?C.is_day:H.is_day[k];
     const p=H.precipitation_probability[k], mm=H.precipitation[k]??0, pv=pr(i);
@@ -860,7 +860,7 @@ function renderHourly(j){
     s+=`<div class="c${night?' night':''}${mid?' mid':''}${i===S.sel?' sel':''}" data-i="${i}">${fn(k,i,t,night)}</div>`}return s};
   const row=(cls,label,dot,inner,extra='')=>`<div class="r ${cls}"><div class="lab">${dot?`<i style="background:${dot}"></i>`:''}${label}</div>${inner}${extra}</div>`;
   const rows=[];
-  rows.push(row('time','','',cells((k,i,t)=>i===0?'<span style="color:#fff;font-weight:800">Now</span>':(t.slice(11,13)==='00'?`<span style="color:#fff;font-weight:800">${dayName(t)}</span>`:hourLabel(t)))));
+  rows.push(row('time','','',cells((k,i,t)=>i===0?'<span style="color:#fff;font-weight:800">Now</span>':hourLabel(t))));
   rows.push(row('icon','','',cells((k)=>ico(wx(H.weather_code[k],H.is_day[k]).i))));
 
   // temperature curve
