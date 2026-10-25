@@ -274,6 +274,26 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .dc small{display:block;font-size:9.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;opacity:.75}
   .dc u{display:block;font-size:9.5px}
   .dc.rn{gap:0}
+
+  /* v2.7 readability: thin dark outline on text, bigger labels, taller boxes */
+  :root{--ol:-1px -1px 0 rgba(0,0,0,.55),1px -1px 0 rgba(0,0,0,.55),-1px 1px 0 rgba(0,0,0,.55),1px 1px 0 rgba(0,0,0,.55),0 2px 6px rgba(0,0,0,.35)}
+  .now,.brand,.loc,#strip .ph,.st,.scol .tm,.scol .tp,.scol .fl,.rc .p,.rc .mm,.rc .aw,.scol .uv,.wd{text-shadow:var(--ol)}
+  .brand .t1{text-shadow:-1px -1px 0 rgba(0,0,0,.6),1px -1px 0 rgba(0,0,0,.6),-1px 1px 0 rgba(0,0,0,.6),1px 1px 0 rgba(0,0,0,.6),0 2px 10px rgba(0,0,0,.55)}
+  .t2{font-size:.72em;font-weight:800;margin-top:4px;text-shadow:-1px -1px 0 rgba(0,0,0,.6),1px -1px 0 rgba(0,0,0,.6),-1px 1px 0 rgba(0,0,0,.6),1px 1px 0 rgba(0,0,0,.6)}
+  .nowside{gap:6px}
+  .st{padding:8px 12px 9px;display:flex;flex-direction:column;justify-content:center}
+  .st.big .v,.st.uvt .v{font-size:42px}
+  .st .v{font-size:30px}
+  .scol .ic{font-size:44px}
+  .scol .tp{font-size:36px}
+  .rc .ch{height:46px}
+  .wd .ws{font-size:21px}
+  .st .k{font-size:12.5px;letter-spacing:.6px;color:#fff;white-space:normal;line-height:1.15}
+  .st .w{font-size:16px;color:#fff;margin-top:3px}
+  .st .gr{color:#fff}
+  .st .gr i{display:inline-block;width:.42em;height:.42em;border-radius:50%;margin-right:.22em;vertical-align:.12em;box-shadow:0 0 0 1.5px rgba(0,0,0,.45)}
+  #strip .ph h2{font-size:22px}
+  .wd .ww{font-size:16.5px;color:#fff;min-height:38px;line-height:1.12}
 }
 /* very short screens: let the page scroll rather than clip */
 @media (max-width:900px) and (max-height:700px){
@@ -369,14 +389,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div id="results"></div>
     <div class="shh" id="savedH">Saved</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.6 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.7 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.6';
+const VER='2.7';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -783,7 +803,7 @@ function render(){
   $('#nowSide').innerHTML=
     st('Feels like',fT(feel),'big')+
     st('UV index',`<span style="color:${uvI.c}">${uvR}</span><small>${uvI.l}</small>`,'uvt')+
-    st('Ground Conditions',`<span style="color:${gr.c}">${gr.t}</span>`)+
+    st('Ground',`<span class="gr"><i style="background:${gr.c}"></i>${gr.t}</span>`)+
     st('Wind',`${fW(C.wind_speed_10m)}<small>${wUnit()}</small>`,'',esc(windWord(C.wind_speed_10m,C.wind_gusts_10m)));
   // rain/snow so far today, shown beside the condition when it's coming down
   let sofar=0; H.time.forEach((t,i)=>{if(t.startsWith(D.time[0])&&i<=idx)sofar+=H.precipitation[i]??0});
