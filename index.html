@@ -703,7 +703,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.39 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.40 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
@@ -1704,7 +1704,21 @@ $('#d10close').onclick=()=>set10(false);
 $('#locBtn').onclick=openSheet; $('#dlocBtn').onclick=openSheet;
 {const ln=$('#locName'),sync=()=>{$('#dlocName').textContent=ln.textContent}; sync(); new MutationObserver(sync).observe(ln,{childList:true,characterData:true,subtree:true})} $('#shClose').onclick=closeSheet;
 $('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet()});
-document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>{if(S.mode===b.dataset.m)return; S.mode=b.dataset.m; render()});
+/* v2.40: Tonight jumps the hourly view forward to 6 PM (that day's, or tomorrow's after 10 PM); Current / All day jumps back to the start.
+   Same on a 10-day day page ("Night" -> 6 PM of that day). If 6 PM has already passed, it stays at Now. */
+function hourlyJump(smooth){
+  const j=S.data; if(!j) return; const H=j.hourly, a=S.idx;
+  let n=0;
+  if(S.mode==='eve'){
+    const C=j.current, day=S.day>0?j.daily.time[S.day]:(+C.time.slice(11,13)>=22?j.daily.time[1]:C.time.slice(0,10));
+    for(let i=0;i<24;i++){ const t=H.time[a+i]; if(t&&t.startsWith(day)&&+t.slice(11,13)===18){ n=i; break } }
+  }
+  const go=(sc,items)=>{ if(!sc||!items.length) return; const f=items[0].getBoundingClientRect().left, c=(items[n]||items[0]).getBoundingClientRect().left;
+    sc.scrollTo({left:n?Math.max(0,Math.round(c-f)):0,behavior:smooth?'smooth':'auto'}) };
+  go($('#sscroll'),[...document.querySelectorAll('#scols .scol')]);
+  go($('#hscroll'),[...document.querySelectorAll('#hgrid .r.time .c')]);
+}
+document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>{if(S.mode===b.dataset.m)return; S.mode=b.dataset.m; render(); requestAnimationFrame(()=>requestAnimationFrame(()=>hourlyJump(true)))});
 $('#uC').onclick=()=>{S.units='metric';LS.set('units','metric');render()};
 $('#uF').onclick=()=>{S.units='imperial';LS.set('units','imperial');render()};
 $('#refresh').onclick=()=>load(true);
