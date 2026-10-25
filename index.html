@@ -367,6 +367,48 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 @media (max-width:900px) and (max-height:700px){
   html,body{overflow:auto} #app{height:auto;overflow:visible} #scols{height:auto} .scol{min-height:380px}
 }
+
+/* v2.18: 10-day shows the same things as today (no range bar); black shoe, coloured shoe words */
+.dcols,.drow{grid-template-columns:76px minmax(120px,1.3fr) 104px repeat(5,minmax(0,1fr));gap:6px}
+.dw{display:none}
+.dhead{color:#fff}
+.dd span{color:#fff;opacity:.85}
+.dhl{display:flex;gap:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.dhl span{display:flex;flex-direction:column;line-height:1.05}
+.dhl small{font-size:9.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#fff;opacity:.85}
+.dhl b{font-size:19px;font-weight:800} .dhl .lo b{font-weight:600}
+.dx{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.12;min-width:0;font-variant-numeric:tabular-nums;color:#fff}
+.dx>small{display:none}
+.dx b{font-size:16px;font-weight:800;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.dx b em{font-style:normal;font-size:11px;font-weight:700;margin-left:1px}
+.dx b>svg:not(.shoe){width:11px;height:11px;fill:#5fb4ff;flex:none}
+.dx i{font-style:normal;font-size:11.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.dx svg.shoe{width:20px;height:20px}
+svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:1.5;stroke-linejoin:round;paint-order:stroke;overflow:visible;filter:none}
+.st .gr b,.scol .sh b{color:var(--c,#fff);text-shadow:-1px -1px 0 rgba(0,0,0,.7),1px -1px 0 rgba(0,0,0,.7),-1px 1px 0 rgba(0,0,0,.7),1px 1px 0 rgba(0,0,0,.7)}
+.drow .dx b span,.drow .dx i,.drow .dhl,.drow .dd,.drow .ds{text-shadow:-1px -1px 0 rgba(0,0,0,.6),1px -1px 0 rgba(0,0,0,.6),-1px 1px 0 rgba(0,0,0,.6),1px 1px 0 rgba(0,0,0,.6)}
+@media (min-width:901px) and (max-width:1290px){
+  .dcols,.drow{grid-template-columns:62px minmax(92px,1.1fr) 88px repeat(5,minmax(0,1fr));gap:4px}
+  .dhl{gap:8px} .dhl b{font-size:16px} .dx b{font-size:14px} .dx i{font-size:10.5px}
+}
+@media (max-width:900px){
+  .drow{grid-template-columns:62px 44px minmax(0,1fr) auto;grid-template-areas:"dd ds dw dhl" "dm dm dm dm";row-gap:10px;column-gap:8px;padding:12px 8px}
+  .dd{grid-area:dd} .dd b{font-size:18px} .dd span{font-size:13px}
+  .ds{grid-area:ds} .ds .ic{font-size:44px}
+  .ds span{display:none}
+  .dw{display:block;grid-area:dw;font-size:17px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:-1px -1px 0 rgba(0,0,0,.6),1px -1px 0 rgba(0,0,0,.6),-1px 1px 0 rgba(0,0,0,.6),1px 1px 0 rgba(0,0,0,.6)}
+  .dhl{grid-area:dhl;gap:12px}
+  .dhl small{font-size:11px}
+  .dhl b{font-size:26px}
+  .dm{grid-area:dm;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+  .dx{height:auto;min-height:74px;padding:6px 2px;border-radius:12px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);justify-content:flex-start;gap:3px}
+  .dx>small{display:block;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#fff;white-space:nowrap}
+  .dx b{font-size:19px;gap:3px}
+  .dx b em{font-size:10.5px}
+  .dx i{font-size:12px;white-space:normal;line-height:1.1;overflow:visible}
+  .dx svg.shoe{width:22px;height:22px}
+  .dx.shoe b{flex-direction:column;gap:1px;font-size:15px}
+}
 </style>
 </head>
 <body>
@@ -440,11 +482,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <section class="panel glass" id="daily">
       <div class="ph"><h2>10-day forecast</h2><button class="dclose" id="d10close">Done</button></div>
       <div class="dcols dhead" id="dcols">
-        <span>Day</span><span>Sky</span><span>Low – High</span>
-        <span class="ctr"><i style="background:rgb(var(--sun))"></i>Sun</span>
-        <span class="ctr"><i style="background:rgb(var(--cloud))"></i>Cloud</span>
-        <span class="ctr"><i style="background:rgb(var(--rain))"></i>Rain</span>
-        <span class="ctr">Feels</span><span class="ctr">UV</span><span class="ctr">Humid.</span>
+        <span>Day</span><span>Sky</span><span>High · Low</span>
+        <span class="ctr">Feels like</span><span class="ctr">UV</span><span class="ctr">Rain</span><span class="ctr">Shoe</span><span class="ctr">Wind</span>
       </div>
       <div id="drows"></div>
     </section>
@@ -458,14 +497,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.17 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.18 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.17';
+const VER='2.18';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -752,7 +791,7 @@ const FX=(()=>{
 
 /* ---------- data ---------- */
 const HOURLY='temperature_2m,apparent_temperature,relative_humidity_2m,precipitation_probability,precipitation,cloud_cover,uv_index,weather_code,is_day,wind_speed_10m,wind_gusts_10m,wind_direction_10m,snowfall,snow_depth';
-const DAILY='weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,uv_index_max,precipitation_sum,precipitation_probability_max,sunshine_duration,daylight_duration';
+const DAILY='weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,uv_index_max,precipitation_sum,precipitation_probability_max,sunshine_duration,daylight_duration,wind_speed_10m_max,wind_gusts_10m_max';
 const CURRENT='temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,is_day,cloud_cover,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m';
 const key=l=>l.lat.toFixed(2)+','+l.lon.toFixed(2);
 /* Environment Canada GEM (incl. 2.5 km HRDPS) first for hyper-local detail; best_match fills anything GEM lacks (rain %, UV) */
@@ -913,7 +952,7 @@ function rainWord(mm){
 }
 /* wind in words (km/h; gusts nudge it up) */
 const WSHORT={'Dead calm':'Calm','Gentle breeze':'Gentle','Flags flapping':'Flags flap','Hat may fly off':'Hat flies','Umbrella wrecker':'No umbrellas','Hold on tight':'Hold on','Trees bending':'Trees bend'};
-const SHOE='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.86 2.20C19.21 2.20 19.70 2.46 20.12 2.90C20.54 3.34 21.05 4.11 21.38 4.86C21.71 5.61 21.99 6.68 22.08 7.38C22.17 8.08 22.10 8.41 21.94 9.06C21.78 9.71 21.36 10.46 21.10 11.30C20.84 12.14 20.56 12.98 20.40 14.10C20.24 15.22 20.18 16.81 20.12 18.02C20.06 19.23 20.12 20.75 20.06 21.38C20.00 22.01 19.88 21.76 19.76 21.83C19.63 21.89 19.43 22.17 19.31 21.77C19.18 21.37 19.10 20.51 19.00 19.42C18.90 18.33 18.85 16.57 18.72 15.22C18.59 13.87 18.50 11.67 18.24 11.30C17.99 10.93 17.59 12.33 17.18 12.98C16.77 13.63 16.22 14.47 15.78 15.22C15.34 15.97 14.89 16.76 14.52 17.46C14.15 18.16 13.94 18.81 13.54 19.42C13.14 20.03 12.70 20.63 12.14 21.10C11.58 21.57 10.88 21.98 10.18 22.22C9.48 22.46 8.78 22.58 7.94 22.56C7.10 22.53 5.98 22.28 5.14 22.08C4.30 21.88 3.44 21.61 2.90 21.38C2.36 21.15 2.11 20.92 1.92 20.68C1.73 20.44 1.66 20.20 1.78 19.92C1.90 19.64 2.06 19.39 2.62 19.00C3.18 18.61 4.39 18.00 5.14 17.60C5.89 17.20 6.49 16.78 7.10 16.62C7.71 16.46 8.17 16.76 8.78 16.62C9.39 16.48 10.18 16.25 10.74 15.78C11.30 15.31 11.67 14.57 12.14 13.82C12.61 13.07 13.03 12.23 13.54 11.30C14.05 10.37 14.66 9.29 15.22 8.22C15.78 7.15 16.43 5.75 16.90 4.86C17.37 3.97 17.69 3.34 18.02 2.90C18.35 2.46 18.51 2.20 18.86 2.20Z"/></svg>';
+const SHOE='<svg class="shoe" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.86 2.20C19.21 2.20 19.70 2.46 20.12 2.90C20.54 3.34 21.05 4.11 21.38 4.86C21.71 5.61 21.99 6.68 22.08 7.38C22.17 8.08 22.10 8.41 21.94 9.06C21.78 9.71 21.36 10.46 21.10 11.30C20.84 12.14 20.56 12.98 20.40 14.10C20.24 15.22 20.18 16.81 20.12 18.02C20.06 19.23 20.12 20.75 20.06 21.38C20.00 22.01 19.88 21.76 19.76 21.83C19.63 21.89 19.43 22.17 19.31 21.77C19.18 21.37 19.10 20.51 19.00 19.42C18.90 18.33 18.85 16.57 18.72 15.22C18.59 13.87 18.50 11.67 18.24 11.30C17.99 10.93 17.59 12.33 17.18 12.98C16.77 13.63 16.22 14.47 15.78 15.22C15.34 15.97 14.89 16.76 14.52 17.46C14.15 18.16 13.94 18.81 13.54 19.42C13.14 20.03 12.70 20.63 12.14 21.10C11.58 21.57 10.88 21.98 10.18 22.22C9.48 22.46 8.78 22.58 7.94 22.56C7.10 22.53 5.98 22.28 5.14 22.08C4.30 21.88 3.44 21.61 2.90 21.38C2.36 21.15 2.11 20.92 1.92 20.68C1.73 20.44 1.66 20.20 1.78 19.92C1.90 19.64 2.06 19.39 2.62 19.00C3.18 18.61 4.39 18.00 5.14 17.60C5.89 17.20 6.49 16.78 7.10 16.62C7.71 16.46 8.17 16.76 8.78 16.62C9.39 16.48 10.18 16.25 10.74 15.78C11.30 15.31 11.67 14.57 12.14 13.82C12.61 13.07 13.03 12.23 13.54 11.30C14.05 10.37 14.66 9.29 15.22 8.22C15.78 7.15 16.43 5.75 16.90 4.86C17.37 3.97 17.69 3.34 18.02 2.90C18.35 2.46 18.51 2.20 18.86 2.20Z"/></svg>';
 function windWord(ws,gust){
   const e=Math.max(ws||0,(gust||0)*.65);
   if(e<2)  return 'Dead calm';
@@ -935,15 +974,15 @@ function ground(j,C,idx){
   const r3=back(H.precipitation,3)+(C.precipitation||0), r12=back(H.precipitation,12), sn12=back(H.snowfall,12);
   const depth=H.snow_depth?.[idx]??0, wetNow=WET(code)||(C.precipitation||0)>0, snowNow=SNOWY(code);
   if(depth>=0.02||(snowNow&&T<=1)||(sn12>=1&&T<=1)){
-    if(T>1&&(wetNow||r3>0.3)) return {t:'Slushy',c:'#cfdbe8'};
+    if(T>1&&(wetNow||r3>0.3)) return {t:'Slushy',c:'#c9a8ff'};
     return {t:'Snowy',c:'#ffffff'};
   }
-  if(T<=0&&(wetNow||r12>=0.2)) return {t:'Icy',c:'#9ee8ff'};
-  if(sn12>=0.3) return {t:'Slushy',c:'#cfdbe8'};
-  if(wetNow||r3>=0.5) return r3>=4?{t:'Puddles',c:'#7cc0ff'}:{t:'Wet',c:'#9fd2ff'};
-  if(r3>0.05||r12>=0.5) return {t:'Damp',c:'#c3dcf2'};
-  if(T<=1&&!C.is_day&&(C.cloud_cover??100)<40&&(C.relative_humidity_2m??0)>=85) return {t:'Frosty',c:'#d9f3ff'};
-  return {t:'Dry',c:'#f2dfae'};
+  if(T<=0&&(wetNow||r12>=0.2)) return {t:'Icy',c:'#5ff0ff'};
+  if(sn12>=0.3) return {t:'Slushy',c:'#c9a8ff'};
+  if(wetNow||r3>=0.5) return r3>=4?{t:'Puddles',c:'#5a95ff'}:{t:'Wet',c:'#46b0ff'};
+  if(r3>0.05||r12>=0.5) return {t:'Damp',c:'#9ad9ff'};
+  if(T<=1&&!C.is_day&&(C.cloud_cover??100)<40&&(C.relative_humidity_2m??0)>=85) return {t:'Frosty',c:'#c4f1ff'};
+  return {t:'Dry',c:'#ffd04a'};
 }
 const DROP='<svg viewBox="0 0 12 12"><path d="M6 1C6 1 2 5.6 2 8a4 4 0 0 0 8 0C10 5.6 6 1 6 1z"/></svg>';
 
@@ -1044,33 +1083,39 @@ function renderReadout(){
 }
 
 function renderDaily(j){
-  const H=j.hourly,D=j.daily,n=D.time.length;
-  const lo=Math.min(...D.temperature_2m_min),hi=Math.max(...D.temperature_2m_max),span=Math.max(hi-lo,1);
+  const H=j.hourly,D=j.daily,n=D.time.length,C=j.current;
   let out='';
   for(let d=0;d<n;d++){
     const date=D.time[d];
     const ix=[];H.time.forEach((t,i)=>{if(t.startsWith(date))ix.push(i)});
-    const dayIx=ix.filter(i=>H.is_day[i]);
-    const cloud=mean((dayIx.length?dayIx:ix).map(i=>H.cloud_cover[i]));
-    const hum=mean(ix.map(i=>H.relative_humidity_2m[i]));
-    const sunH=(D.sunshine_duration[d]??0)/3600, dayH=Math.max((D.daylight_duration[d]??1)/3600,.1);
-    const sunPct=clamp(sunH/dayH*100,0,100);
-    const pp=D.precipitation_probability_max[d];
+    const max=a=>{let m=null;ix.forEach(i=>{const v=a?.[i];if(v!=null&&(m==null||v>m))m=v});return m};
     const w=wx(D.weather_code[d],1);
-    const l=clamp((D.temperature_2m_min[d]-lo)/span*100,0,92), wd=Math.min(Math.max((D.temperature_2m_max[d]-D.temperature_2m_min[d])/span*100,8),100-l);
-    const sunTxt=sunH<0.05?'0h':sunH.toFixed(1).replace(/\.0$/,'')+'h';
-    const mmTxt=D.precipitation_sum[d]>0?fP(D.precipitation_sum[d]):'';
+    // feels like: the day's warmest and coldest
+    const fHi=D.apparent_temperature_max[d], fLo=D.apparent_temperature_min[d];
+    // UV peak
+    const uv=Math.max(0,D.uv_index_max[d]??max(H.uv_index)??0), ui=uvInfo(uv);
+    // rain: chance, total, and how hard at its heaviest hour
+    const pp=D.precipitation_probability_max[d], sum=D.precipitation_sum[d]??0, rw=rainWord(max(H.precipitation)??0);
+    // shoe: today = right now; other days = early afternoon
+    let gd;
+    if(d===0) gd=ground(j,C,S.idx);
+    else{ const k=ix.find(i=>H.time[i].slice(11,13)==='14')??ix[Math.floor(ix.length/2)];
+      gd=k==null?{t:'–',c:'#fff'}:ground(j,{temperature_2m:H.temperature_2m[k],weather_code:H.weather_code[k],precipitation:H.precipitation[k],is_day:1,cloud_cover:H.cloud_cover[k],relative_humidity_2m:H.relative_humidity_2m[k]},k); }
+    // wind: strongest of the day
+    const ws=D.wind_speed_10m_max?.[d]??max(H.wind_speed_10m), gu=D.wind_gusts_10m_max?.[d]??max(H.wind_gusts_10m);
+    const wword=ws==null?'':(()=>{const x=windWord(ws,gu);return WSHORT[x]||x})();
+    const x=(lab,val,sub='',subc='',cls='')=>`<div class="dx ${cls}"><small>${lab}</small><b>${val}</b>${sub?`<i${subc?` style="color:${subc}"`:''}>${sub}</i>`:''}</div>`;
     out+=`<div class="drow${d===0?' today':''}">
       <div class="dd"><b>${d===0?'Today':dayName(date)}</b><span>${dayDate(date)}</span></div>
-      <div class="ds">${ico(w.i)}<span>${w.t}</span></div>
-      <div class="dtp"><span class="lo">${fT(D.temperature_2m_min[d])}</span><div class="rng"><i style="left:${l}%;width:${wd}%"></i></div><span class="hi">${fT(D.temperature_2m_max[d])}</span></div>
+      <div class="ds">${ico(w.i)}<span>${esc(w.t)}</span></div>
+      <div class="dw">${esc(w.t)}</div>
+      <div class="dhl"><span class="hi"><small>High</small><b>${fT(D.temperature_2m_max[d])}</b></span><span class="lo"><small>Low</small><b>${fT(D.temperature_2m_min[d])}</b></span></div>
       <div class="dm">
-        ${heat('sun',sunPct,`<small>Sun</small>${sunTxt}`,'dc')}
-        ${heat('cloud',cloud,`<small>Cloud</small>${cloud==null?'–':Math.round(cloud)+'%'}`,'dc')}
-        ${heat('rain',pp,`<small>Rain</small>${pp==null?'–':pp+'%'}${mmTxt?`<u>${mmTxt}</u>`:''}`,'dc rn')}
-        <div class="dc plain fl"><small>Feels</small>${fT(D.apparent_temperature_max[d])}</div>
-        <div class="dc plain"><small>UV</small>${uvChip(D.uv_index_max[d])}</div>
-        <div class="dc plain hu"><small>Humid.</small>${hum==null?'–':Math.round(hum)+'%'}</div>
+        ${x('Feels',fT(fHi),`low ${fT(fLo)}`)}
+        ${x('UV',`<span style="color:${ui.c}">${Math.round(uv)}</span>`,ui.l,ui.c)}
+        ${x('Rain',`${DROP}${pp==null?'–':pp+'%'}`,sum>0?`${fP(sum)} · ${rw.t}`:'None',sum>0?rw.c:'')}
+        ${x('Shoe',`${SHOE}<span style="color:${gd.c}">${gd.t}</span>`,'','','shoe')}
+        ${x('Wind',`${fW(ws)}<em>${wUnit()}</em>`,esc(wword))}
       </div>
     </div>`;
   }
