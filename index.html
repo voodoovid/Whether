@@ -703,7 +703,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.40 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.41 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
@@ -1218,7 +1218,7 @@ function dayView(j,d){
   const C={...j.current,time:date+'T12:00',temperature_2m:D.temperature_2m_max[d],apparent_temperature:D.apparent_temperature_max[d],
     relative_humidity_2m:av('relative_humidity_2m')??j.current.relative_humidity_2m,weather_code:D.weather_code[d],is_day:1,cloud_cover:av('cloud_cover')??0,
     precipitation:0,wind_speed_10m:ws,wind_gusts_10m:gu,wind_direction_10m:H.wind_direction_10m?.[start+15]??270};
-  return {start,date,C,gd,sum:D.precipitation_sum[d]??0};
+  return {start:start+6,date,C,gd,sum:D.precipitation_sum[d]??0};   // v2.41: the hourly view opens at 6 AM, not midnight
 }
 const tile=(k,v,s,extra='')=>`<div class="tile glass"><div class="k">${k}</div><div class="v">${v}</div>${extra}<div class="s">${s}</div></div>`;
 
@@ -1276,7 +1276,7 @@ function ground(j,C,idx){
 const DROP='<svg viewBox="0 0 12 12"><path d="M6 1C6 1 2 5.6 2 8a4 4 0 0 0 8 0C10 5.6 6 1 6 1z"/></svg>';
 
 function renderStrip(j,C){
-  const H=j.hourly, a=S.idx, N=24;
+  const H=j.hourly, a=S.idx, N=Math.min(24,H.time.length-S.idx);   // fewer than 24 only on the last day, which opens at 6 AM
   const pr=i=>{const v=H.precipitation_probability[a+i];return v==null?0:clamp(v,0,100)};
   const Y=v=>(32-v/100*28).toFixed(2);  // chart is 34 tall; 0% sits on the floor
   let out='';
@@ -1321,7 +1321,7 @@ function renderStrip(j,C){
 
 
 function renderHourly(j){
-  const H=j.hourly, a=S.idx, N=24;
+  const H=j.hourly, a=S.idx, N=Math.min(24,H.time.length-S.idx);
   const cells=(fn)=>{let s='';for(let i=0;i<N;i++){const k=a+i,t=H.time[k];const night=!H.is_day[k];const mid=i>0&&t.slice(11,13)==='00';
     s+=`<div class="c${night?' night':''}${mid?' mid':''}${i===S.sel?' sel':''}" data-i="${i}">${fn(k,i,t,night)}</div>`}return s};
   const row=(cls,label,dot,inner,extra='')=>`<div class="r ${cls}"><div class="lab">${dot?`<i style="background:${dot}"></i>`:''}${label}</div>${inner}${extra}</div>`;
@@ -1624,7 +1624,8 @@ function openDay(d){
   if(d===0){ set10(false); return }          // today's row = the Today page itself
   S.day=d; S.sel=0; S.exiting=false; S.mode='now';
   render();
-  const cols=$('#scols').children; if(cols[6]){ $('#sscroll').scrollLeft=cols[6].offsetLeft-cols[0].offsetLeft }   // start the hour strip at 6 AM
+  // v2.41: the hourly data itself now starts at 6 AM, so both views just open at their first column
+  const ss=$('#sscroll'); if(ss) ss.scrollLeft=0;
   const hs=$('#hscroll'); if(hs) hs.scrollLeft=0;
   if(phoneMQ.matches){ d10Side(-1); set10(false) }   // the list slides away to the left, the day page arrives from the right
 }
@@ -1711,7 +1712,7 @@ function hourlyJump(smooth){
   let n=0;
   if(S.mode==='eve'){
     const C=j.current, day=S.day>0?j.daily.time[S.day]:(+C.time.slice(11,13)>=22?j.daily.time[1]:C.time.slice(0,10));
-    for(let i=0;i<24;i++){ const t=H.time[a+i]; if(t&&t.startsWith(day)&&+t.slice(11,13)===18){ n=i; break } }
+    for(let i=0;i<Math.min(24,H.time.length-a);i++){ const t=H.time[a+i]; if(t&&t.startsWith(day)&&+t.slice(11,13)===18){ n=i; break } }
   }
   const go=(sc,items)=>{ if(!sc||!items.length) return; const f=items[0].getBoundingClientRect().left, c=(items[n]||items[0]).getBoundingClientRect().left;
     sc.scrollTo({left:n?Math.max(0,Math.round(c-f)):0,behavior:smooth?'smooth':'auto'}) };
