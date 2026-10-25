@@ -610,7 +610,7 @@ body.dayv .now::after{content:"";position:absolute;inset:-7px;border:4px solid #
 
 body.dayv #strip .ph h2,body.dayv #hourly .ph h2{color:#ffd04a}
 body.dayv #pager{display:none}
-body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shadow:none}
+body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shadow:none;font-size:11.5px;padding:6px 8px}
 @media (min-width:901px){ body.dayv #daily .drow.viewing{box-shadow:0 0 0 2px #ffd04a} }
 </style>
 </head>
@@ -702,14 +702,14 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.37 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.38 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.37';
+const VER='2.38';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1605,7 +1605,7 @@ function setBarH(){const r=document.documentElement.style, b=document.querySelec
   r.setProperty('--barH',top+'px'); if(l.height) r.setProperty('--locPad',Math.max(0,Math.round(l.top-top))+'px')}
 function syncBtn(){
   const b=document.body, dv=b.classList.contains('dayv')&&!S.exiting, on=b.classList.contains('d10');
-  $('#btn10').textContent=dv?'‹ 10-Day':on?'Today':'10-Day';
+  $('#btn10').textContent=dv?'Back to 10-Day':on?'Today':'10-Day';
   $('#btn10').setAttribute('aria-label',dv?'Back to the 10-day list':on?'Back to today':'10-day forecast');
 }
 function set10(on){
