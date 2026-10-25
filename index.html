@@ -31,6 +31,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .s-sun{stroke:rgb(var(--sun))} .s-rain{stroke:rgb(var(--rain))} .s-cloud{stroke:#dfe7f3}
 .glass{background:var(--glass);border:1px solid var(--edge);border-radius:22px;-webkit-backdrop-filter:blur(18px) saturate(1.35);backdrop-filter:blur(18px) saturate(1.35)}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+#flash{position:fixed;inset:0;pointer-events:none;z-index:45;background:#e4ecff;opacity:0}
 #app{position:relative;z-index:1}
 .nowbody,.nowmain{display:contents}
 .nowside,#strip{display:none}
@@ -175,69 +176,90 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .ds span{font-size:12.5px} .dtp .lo,.dtp .hi{width:24px} .dtp{gap:6px}
   .tile .v{font-size:clamp(26px,4vh,34px)} .bigt{letter-spacing:-4px}
 }
+.vtag{font-size:11px;font-weight:800;letter-spacing:.3px;color:var(--mute);background:rgba(255,255,255,.12);padding:2px 7px;border-radius:999px;align-self:center;margin-left:-2px}
+#btn10,.dclose{display:none}
+.cond .acc{display:inline-block;vertical-align:.18em;font-size:.62em;font-weight:800;color:#dff0ff;background:rgba(74,168,255,.32);padding:.15em .6em;border-radius:999px;white-space:nowrap;text-shadow:none}
 @media (max-width:900px){
   :root{--lab:74px;--colmin:46px}
-  html,body{height:auto}
-  #app{height:auto;display:flex;flex-direction:column;gap:12px;padding:calc(env(safe-area-inset-top) + 10px) max(12px,env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 20px) max(12px,env(safe-area-inset-left))}
+  html,body{height:100%;overflow:hidden}
+  #app{height:100dvh;overflow:hidden;display:flex;flex-direction:column;gap:10px;padding:calc(env(safe-area-inset-top) + 8px) max(12px,env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 10px) max(12px,env(safe-area-inset-left))}
   #left{display:contents}
   #right{display:contents}
-  .bar{order:0} .now{order:1;flex:none} #strip{order:2} #daily{order:4}
+  .bar{order:0} .now{order:1;flex:none} #strip{order:2} #btn10{order:3}
   .tiles,#hourly{display:none}
+  .brand{font-size:22px} .brand img{width:30px;height:30px}
 
   /* current conditions sit straight on the sky */
   .now.glass{background:none;border:0;border-radius:0;-webkit-backdrop-filter:none;backdrop-filter:none}
-  .now{padding:2px 4px 4px;text-shadow:0 1px 12px rgba(0,0,0,.28)}
+  .now{padding:0 4px;text-shadow:0 1px 12px rgba(0,0,0,.28)}
   .loc{margin:0;align-self:flex-start;text-shadow:none}
-  .nowbody{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px;margin-top:12px}
+  .nowbody{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:14px;margin-top:8px}
   .nowmain{display:flex;flex-direction:column;min-width:0}
   .nowtop{gap:6px;margin-left:-4px}
-  .nowtop .ic{font-size:min(62px,15vw)}
-  .bigt{font-size:min(96px,23vw);letter-spacing:-4px;line-height:.9}
-  .cond{font-size:21px;margin-top:8px}
-  .hilo{font-size:15px}
-  .upd{font-size:11.5px;margin-top:4px}
-  .nowside{display:flex;flex-direction:column;gap:12px;padding-left:16px;border-left:1px solid rgba(255,255,255,.24)}
+  .nowtop .ic{font-size:min(58px,14vw)}
+  .bigt{font-size:min(92px,22vw);letter-spacing:-4px;line-height:.9}
+  .cond{font-size:20px;margin-top:6px;line-height:1.2}
+  .hilo{font-size:18px;color:rgba(255,255,255,.95);font-weight:700;margin-top:4px}
+  .upd{font-size:11.5px;margin-top:3px}
+  .nowside{display:flex;flex-direction:column;gap:9px;padding-left:15px;border-left:1px solid rgba(255,255,255,.24)}
   .st .k{font-size:10.5px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--mute);white-space:nowrap}
-  .st .v{font-size:27px;font-weight:700;letter-spacing:-.4px;line-height:1.1;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .st .v{font-size:24px;font-weight:700;letter-spacing:-.3px;line-height:1.1;font-variant-numeric:tabular-nums;white-space:nowrap}
   .st .v small{font-size:13px;font-weight:700;color:var(--mute);margin-left:4px;letter-spacing:0}
+  .st.big .v{font-size:52px;font-weight:300;letter-spacing:-2px;line-height:1}
 
   /* hourly verticals: 4 on screen, swipe for 24 */
-  #strip{display:flex;flex-direction:column;padding:14px 12px 12px}
-  #strip .ph{padding:0 4px;justify-content:space-between;align-items:center}
+  #strip{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;padding:12px 8px 10px}
+  #strip .ph{padding:0 8px;justify-content:space-between;align-items:center;margin-bottom:8px}
   .hint{font-size:12.5px;font-weight:700;color:var(--mute);transition:opacity .3s}
   .hint.gone{opacity:0}
-  .sw{display:flex;align-items:stretch}
-  .srows{display:grid;grid-template-rows:22px 40px 30px 112px 28px 24px;row-gap:6px;padding:12px 0}
-  .slab{flex:none;width:58px;padding-left:4px}
-  .slab span{display:flex;align-items:center;font-size:12px;font-weight:700;color:var(--mute);white-space:nowrap}
-  #sscroll{flex:1;min-width:0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;
-    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 10px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 10px),transparent)}
+  #sscroll{flex:1;min-height:0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   #sscroll::-webkit-scrollbar{display:none}
-  #scols{display:grid;grid-auto-flow:column;grid-auto-columns:25%}
-  .scol{scroll-snap-align:start;margin:0 3px;border-radius:22px;background:rgba(255,255,255,.06);text-align:center;font-variant-numeric:tabular-nums}
+  #scols{display:grid;grid-auto-flow:column;grid-auto-columns:25%;height:100%}
+  .scol{scroll-snap-align:start;margin:0 3px;border-radius:22px;background:rgba(255,255,255,.06);text-align:center;font-variant-numeric:tabular-nums;
+    display:flex;flex-direction:column;justify-content:space-between;align-items:stretch;padding:10px 0 12px;overflow:hidden;min-height:0}
   .scol.nt{background:rgba(0,6,22,.16)}
   .scol.cur{background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.26)}
-  .scol>*{display:flex;align-items:center;justify-content:center;min-width:0}
-  .scol .tm{font-size:13px;font-weight:700;color:var(--mute);white-space:nowrap}
+  .scol>*{display:flex;align-items:center;justify-content:center;min-width:0;flex:none}
+  .scol .tm{font-size:14px;font-weight:700;color:var(--mute);white-space:nowrap}
   .scol .tm.hl{color:#fff;font-weight:800}
-  .scol .ic{font-size:34px}
-  .scol .tp{font-size:21px;font-weight:700;letter-spacing:-.3px}
-  .rg{flex-direction:column;justify-content:flex-end!important;gap:4px}
-  .rg .p{font-size:13px;font-weight:800;color:#d5ecff}
-  .rg .p.z{color:rgba(255,255,255,.42);font-weight:700}
-  .rg .bt{width:18px;height:72px;flex:none;border-radius:6px;background:rgba(255,255,255,.12);position:relative;overflow:hidden}
-  .rg .bt i{position:absolute;left:0;right:0;bottom:0;border-radius:6px;background:linear-gradient(180deg,#8fd0ff,#2e86ff)}
-  .rg .mm{font-size:10.5px;font-weight:700;color:var(--mute);height:13px;white-space:nowrap}
-  .scol .uv{font-size:18px;font-weight:800}
-  .scol .uv.z{color:rgba(255,255,255,.42);font-weight:700}
-  .scol .hm{font-size:14px;font-weight:800;color:rgb(var(--hum));filter:brightness(1.25)}
+  .scol .ic{font-size:40px}
+  .scol .tp{font-size:28px;font-weight:700;letter-spacing:-.5px;line-height:1}
+  .scol .fl{font-size:12px;font-weight:700;color:var(--mute);white-space:nowrap;margin-top:-6px}
+  .scol .fl b{color:#fff;font-weight:800;margin-left:3px}
+  .rc{flex-direction:column;gap:3px}
+  .rc .p{font-size:16px;font-weight:800;color:#d5ecff;display:flex;align-items:center;gap:3px}
+  .rc .p svg{width:11px;height:11px;fill:#5fb4ff}
+  .rc .p.z{color:rgba(255,255,255,.45)}
+  .rc .ch{position:relative;width:100%;height:40px}
+  .rc .ch svg{position:absolute;inset:0;width:100%;height:100%}
+  .rc .ch b{position:absolute;left:50%;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px rgba(80,170,255,.45)}
+  .rc .mm{font-size:17px;font-weight:800;white-space:nowrap;margin-top:3px}
+  .rc .mm small{font-size:12px;font-weight:700;color:var(--mute);margin-left:2px}
+  .rc .mm.z{color:rgba(255,255,255,.45)}
+  .rc .aw{font-size:13px;font-weight:800;white-space:nowrap;text-shadow:0 1px 6px rgba(0,0,0,.35)}
+  .scol .uv{font-size:13px;font-weight:700;color:var(--mute);gap:5px}
+  .scol .uv b{font-size:20px;font-weight:800}
+  .wd{flex-direction:column;gap:2px;padding:0 4px}
+  .wd .ws{font-size:17px;font-weight:800;display:flex;align-items:center;gap:4px;white-space:nowrap}
+  .wd .ws small{font-size:11px;font-weight:700;color:var(--mute)}
+  .wd .ws svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .wd .ww{font-size:11.5px;font-weight:700;color:#cfe0f5;line-height:1.2;min-height:28px;display:flex;align-items:center}
+
+  /* 10-day button + full-screen 10-day view */
+  #btn10{display:flex;align-items:center;justify-content:space-between;flex:none;width:100%;padding:13px 18px;border-radius:18px;font-size:16px;font-weight:800}
+  #btn10 span{color:var(--mute);font-size:13px;font-weight:700}
+  #daily{position:fixed;inset:0;z-index:40;border:0;border-radius:0;background:rgba(4,10,26,.55);
+    padding:calc(env(safe-area-inset-top) + 12px) max(12px,env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 8px) max(12px,env(safe-area-inset-left));
+    transform:translateY(100%);visibility:hidden;transition:transform .38s cubic-bezier(.2,.8,.2,1),visibility 0s .38s}
+  body.d10 #daily{transform:none;visibility:visible;transition:transform .38s cubic-bezier(.2,.8,.2,1)}
+  #daily .ph{justify-content:space-between;align-items:center;padding:0 4px}
+  #daily .ph h2{font-size:22px}
+  .dclose{display:block;font-size:16px;font-weight:800;color:#fff;background:rgba(255,255,255,.16);padding:7px 16px;border-radius:999px}
+  #drows{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
   #hgrid{height:auto;justify-content:flex-start}
-  .lab{position:sticky;left:0;background:rgba(10,18,36,.82);border-radius:0 10px 10px 0}
-  .r.curve{flex:none;height:96px;max-height:none}
-  .r.heat{flex:none;height:36px;max-height:none} .r.time{height:28px} .r.icon{height:38px} .r.feel{height:22px} .r.uv{height:28px} .r.hum{height:24px}
   .dcols{display:none}
   #drows{display:flex;flex-direction:column;gap:2px}
-  .drow{grid-template-columns:58px 36px minmax(0,1fr);grid-template-areas:"dd ds dtp" "dm dm dm";row-gap:8px;padding:12px 6px;align-items:center}
+  .drow{grid-template-columns:58px 36px minmax(0,1fr);grid-template-areas:"dd ds dtp" "dm dm dm";row-gap:8px;padding:12px 6px;align-items:center;flex:none}
   .dd{grid-area:dd} .ds{grid-area:ds} .ds span{display:none} .dtp{grid-area:dtp}
   .dm{grid-area:dm;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
   .dc{height:46px;flex-direction:column;gap:2px;font-size:14px;border-radius:10px}
@@ -245,8 +267,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .dc u{display:block;font-size:9.5px}
   .dc.rn{gap:0}
 }
-@media (max-width:900px) and (min-width:560px){
-  .tiles{grid-template-columns:repeat(3,1fr)}
+/* very short screens: let the page scroll rather than clip */
+@media (max-width:900px) and (max-height:700px){
+  html,body{overflow:auto} #app{height:auto;overflow:visible} #scols{height:auto} .scol{min-height:380px}
 }
 </style>
 </head>
@@ -273,10 +296,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 </svg>
 
 <canvas id="fx" aria-hidden="true"></canvas>
+<div id="flash" aria-hidden="true"></div>
 <div id="app">
   <section id="left">
     <div class="bar">
-      <div class="brand"><img src="icon-192.png" alt="" width="32" height="32"><span>Whether</span></div>
+      <div class="brand"><img src="icon-192.png" alt="" width="32" height="32"><span>Whether</span><span class="vtag" id="vtag"></span></div>
       <div class="tools">
         <div class="seg" role="group" aria-label="Units"><button id="uC">°C</button><button id="uF">°F</button></div>
         <button class="rbtn" id="refresh" aria-label="Refresh"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg></button>
@@ -306,11 +330,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div class="tiles" id="tiles"></div>
     <section class="panel glass" id="strip">
       <div class="ph"><h2>Next 24 hours</h2><span class="hint" id="hint">Swipe ›</span></div>
-      <div class="sw">
-        <div class="slab srows"><span></span><span></span><span>Temp</span><span>Rain</span><span>UV</span><span>Humidity</span></div>
-        <div id="sscroll"><div id="scols"></div></div>
-      </div>
+      <div id="sscroll"><div id="scols"></div></div>
     </section>
+    <button class="glass" id="btn10">10-day forecast<span>›</span></button>
   </section>
 
   <section id="right">
@@ -319,7 +341,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       <div id="hscroll"><div id="hgrid"></div></div>
     </section>
     <section class="panel glass" id="daily">
-      <div class="ph"><h2>10-day forecast</h2></div>
+      <div class="ph"><h2>10-day forecast</h2><button class="dclose" id="d10close">Done</button></div>
       <div class="dcols dhead" id="dcols">
         <span>Day</span><span>Sky</span><span>Low – High</span>
         <span class="ctr"><i style="background:rgb(var(--sun))"></i>Sun</span>
@@ -339,14 +361,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div id="results"></div>
     <div class="shh" id="savedH">Saved</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.2 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.3 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.1';
+const VER='2.3';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -444,7 +466,9 @@ const FX=(()=>{
   const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const R=(a,b)=>a+Math.random()*(b-a);
   let W=0,Hh=0,cfg=null,sig='',drops=[],flakes=[],streaks=[],clouds=[],stars=[],mists=[];
-  let T=0,last=0,raf=0,flashAt=-99,nextFlash=3,bolt=null,shoot=null,nextShoot=6;
+  let T=0,last=0,raf=0,flashAt=-99,nextFlash=2.5,bolt=null,shoot=null,nextShoot=6,leaves=[],cow=null,nextCow=0;
+  const FL=document.getElementById('flash');
+  const COWQ=/[?&]cow=1/.test(location.search);
 
   // wind blowing toward the right is positive (meteorological direction = where it comes FROM)
   const windX=()=>{const d=(cfg.dir??270)*Math.PI/180;return -Math.sin(d)*(cfg.wind||0)};
@@ -479,12 +503,18 @@ const FX=(()=>{
   }
   function newStreak(init){
     const s=windSign(), len=R(110,260), v=R(380,560)+(cfg.wind||0)*9;
-    return {x:init?R(0,W):(s>0?-len-R(0,W*.8):W+len+R(0,W*.8)),y:R(Hh*.04,Hh*.8),len,v,s,a:R(.10,.24),amp:R(4,13),ph:R(0,6.3)};
+    return {x:init?R(0,W):(s>0?-len-R(0,W*.8):W+len+R(0,W*.8)),y:R(Hh*.04,Hh*.8),len,v,s,a:R(.12,.28),amp:R(4,13),ph:R(0,6.3),sw:Math.random()<.4,r:R(16,26)};
+  }
+  function newLeaf(init){
+    const s=windSign(), swirl=Math.random()<.45;
+    return {x:init?R(0,W):(s>0?R(-160,-20):W+R(20,160)),y:R(-20,Hh*.95),vx:s*(R(150,250)+(cfg.wind||0)*4),vy:R(-20,45),rot:R(0,6.3),spin:R(-5,5),
+      ph:R(0,6.3),ff:R(2,5),sz:R(7,12.5),A:swirl?R(48,62):R(8,20),w:swirl?R(3.6,4.6):R(1.5,2.5),
+      col:['#d9822b','#c4541c','#e8b33a','#a8391f','#8a9a35','#e09a3c'][Math.floor(R(0,6))]};
   }
   function makeBolt(){
-    const pts=[],br=[]; let px=R(W*.2,W*.8),py=-10; const end=Hh*R(.32,.55);
-    while(py<end){pts.push([px,py]);px+=R(-26,26);py+=R(18,34);
-      if(Math.random()<.12&&br.length<2){const b=[[px,py]];let bx=px,by=py;for(let n=0;n<5;n++){bx+=R(-30,30)+(Math.random()<.5?-12:12);by+=R(14,26);b.push([bx,by])}br.push(b)}}
+    const pts=[],br=[]; let px=R(W*.2,W*.8),py=-10; const end=Hh*R(.5,.8);
+    while(py<end){pts.push([px,py]);px+=R(-30,30);py+=R(16,32);
+      if(Math.random()<.16&&br.length<3){const b=[[px,py]];let bx=px,by=py;for(let n=0;n<5;n++){bx+=R(-30,30)+(Math.random()<.5?-12:12);by+=R(14,26);b.push([bx,by])}br.push(b)}}
     pts.push([px,py]); return [pts,...br];
   }
   function build(){
@@ -493,7 +523,10 @@ const FX=(()=>{
     if(cfg.kind==='rain'){const n=Math.round((70+300*cfg.inten)*area);for(let i=0;i<n;i++)drops.push(newDrop(true))}
     if(cfg.kind==='snow'){const n=Math.round((60+200*cfg.inten)*area);for(let i=0;i<n;i++)flakes.push(newFlake(true))}
     const windy=(cfg.wind||0)>=20||(cfg.gust||0)>=40;
-    if(windy){const n=clamp(Math.round(((cfg.wind||20)-10)/2.5),5,18);for(let i=0;i<n;i++)streaks.push(newStreak(true))}
+    leaves=[];cow=null;
+    if(windy){const n=clamp(Math.round(((cfg.wind||20)-10)/2.5),5,18);for(let i=0;i<n;i++)streaks.push(newStreak(true));
+      const nl=clamp(Math.round(((cfg.wind||20)-8)/2.2),6,22)*(cfg.kind==='snow'?.5:1);for(let i=0;i<nl;i++)leaves.push(newLeaf(true));
+      nextCow=T+(COWQ?1:R(12,25))}
     if(cfg.cloud>=20&&!cfg.fog){const n=clamp(Math.round(1+cfg.cloud/22),1,6);
       for(let i=0;i<n;i++){const sc=R(.75,1.5);clouds.push({img:puff(cfg.day,wet),x:R(-200,W),y:R(-60,Hh*.36),sc,v:(10+Math.abs(windX())*1.3)*windSign()*(.5+sc*.5)})}}
     if(!cfg.day&&cfg.cloud<80&&cfg.kind==='none'){const n=Math.round(110*(1-cfg.cloud/100)*area)+12;
@@ -543,24 +576,71 @@ const FX=(()=>{
         if(f.y>Hh+6||f.x<-40||f.x>W+40)Object.assign(f,newFlake(false));
         x.globalAlpha=f.a;x.beginPath();x.arc(f.x,f.y,f.r,0,7);x.fill()}
       x.globalAlpha=1}
-    // wind streaks
+    // wind streaks (some loop-de-loop)
     for(const s of streaks){s.x+=s.s*s.v*dt;
-      if((s.s>0&&s.x>W+20)||(s.s<0&&s.x<-20))Object.assign(s,newStreak(false));
+      if((s.s>0&&s.x>W+20+s.r*2)||(s.s<0&&s.x<-20-s.r*2))Object.assign(s,newStreak(false));
       const x0=s.x,x1=s.x-s.s*s.len;const g=x.createLinearGradient(x0,0,x1,0);
       g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.35,`rgba(255,255,255,${s.a})`);g.addColorStop(1,'rgba(255,255,255,0)');
-      x.strokeStyle=g;x.lineWidth=1.4;x.lineCap='round';x.beginPath();
-      for(let i=0;i<=14;i++){const u=i/14,px=x0-s.s*s.len*u,py=s.y+Math.sin(u*Math.PI*1.6+s.ph+T*2.2)*s.amp*u;i?x.lineTo(px,py):x.moveTo(px,py)}
+      x.strokeStyle=g;x.lineWidth=1.5;x.lineCap='round';x.lineJoin='round';x.beginPath();
+      const n=s.sw?36:14;
+      for(let i=0;i<=n;i++){const u=i/n;let px=x0-s.s*s.len*u,py=s.y+Math.sin(u*Math.PI*1.6+s.ph+T*2.2)*s.amp*u;
+        if(s.sw){const q=clamp((u-.3)/.4,0,1),a=q*Math.PI*2;px+=s.s*s.r*Math.sin(a);py-=s.r*(1-Math.cos(a))}
+        i?x.lineTo(px,py):x.moveTo(px,py)}
       x.stroke()}
-    // lightning
-    if(cfg.storm){
-      if(T>nextFlash){flashAt=T;bolt=makeBolt();nextFlash=T+R(5,12)}
-      const e=T-flashAt;let f=0;
-      if(e<.07)f=1;else if(e<.14)f=.2;else if(e<.22)f=.85;else f=.85*Math.exp(-(e-.22)*7);
-      if(f>.01){x.fillStyle=`rgba(225,232,255,${.30*f})`;x.fillRect(0,0,W,Hh);
-        if(bolt&&e<.5){x.save();x.shadowColor='rgba(190,210,255,.95)';x.shadowBlur=18;x.lineJoin='round';
-          bolt.forEach((p,bi)=>{x.strokeStyle=`rgba(255,255,255,${f*(bi?.6:1)})`;x.lineWidth=bi?1.3:2.4;x.beginPath();p.forEach((q,i)=>i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]));x.stroke()});
-          x.restore()}}
+    // leaves tumbling past
+    for(const L of leaves){
+      L.x+=(L.vx+Math.cos(T*L.w+L.ph)*L.A*L.w)*dt; L.y+=(L.vy+Math.sin(T*L.w+L.ph)*L.A*L.w*.8)*dt; L.rot+=L.spin*dt;
+      if((L.vx>0&&L.x>W+40)||(L.vx<0&&L.x<-40)||L.y>Hh+40||L.y<-80)Object.assign(L,newLeaf(false));
+      const fl=Math.cos(T*L.ff+L.ph), z=L.sz;
+      x.save();x.translate(L.x,L.y);x.rotate(L.rot);x.scale(Math.abs(fl)<.18?.18*Math.sign(fl||1):fl,1);
+      x.globalAlpha=.92;x.fillStyle=L.col;x.beginPath();x.moveTo(-z,0);x.quadraticCurveTo(0,-z*.62,z,0);x.quadraticCurveTo(0,z*.62,-z,0);x.fill();
+      x.strokeStyle='rgba(60,25,8,.55)';x.lineWidth=1;x.beginPath();x.moveTo(-z*1.35,0);x.lineTo(z*.85,0);x.stroke();
+      x.restore()}
+    x.globalAlpha=1;
+    // the very occasional airborne cow
+    if(leaves.length||streaks.length){
+      if(!cow&&T>nextCow){const s=windSign();cow={s,x:s>0?-90:W+90,y0:R(Hh*.08,Hh*.26),v:R(150,200)+(cfg.wind||0)*1.2,rot:R(0,6.3),t:0,sc:clamp(W/430,.72,1.05)*.9}}
+      if(cow){cow.t+=dt;cow.x+=cow.s*cow.v*dt;cow.rot+=cow.s*1.9*dt;
+        const y=cow.y0+Math.sin(cow.t*2.1)*22+Math.sin(cow.t*5.3)*5;
+        x.save();x.translate(cow.x,y);x.rotate(cow.rot);x.scale(cow.s*cow.sc,cow.sc);drawCow(x,cow.t);x.restore();
+        if((cow.s>0&&cow.x>W+110)||(cow.s<0&&cow.x<-110)){cow=null;nextCow=T+(COWQ?5:R(50,120))}}
     }
+    // lightning: flash the whole screen, bolt on the sky
+    if(cfg.storm){
+      if(T>nextFlash){flashAt=T;bolt=makeBolt();nextFlash=T+R(4,10)}
+      const e=T-flashAt;let f=0;
+      if(e<.07)f=1;else if(e<.14)f=.15;else if(e<.24)f=.9;else f=.9*Math.exp(-(e-.24)*6);
+      FL.style.opacity=f>.02?(f*.2).toFixed(3):'0';
+      if(f>.01){x.fillStyle=`rgba(225,232,255,${.32*f})`;x.fillRect(0,0,W,Hh);
+        if(bolt&&e<.6){x.save();x.lineJoin='round';x.lineCap='round';
+          for(const pass of [[14,'rgba(170,195,255,',.35],[6,'rgba(205,220,255,',.6],[2.8,'rgba(255,255,255,',1]])
+            bolt.forEach((p,bi)=>{x.strokeStyle=pass[1]+(f*pass[2]*(bi?.55:1))+')';x.lineWidth=pass[0]*(bi?.5:1);x.beginPath();p.forEach((q,i)=>i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]));x.stroke()});
+          x.restore()}}
+    }else if(FL.style.opacity!=='0')FL.style.opacity='0';
+  }
+  /* cartoon cow, ~110px long, drawn around its middle; t drives the flailing */
+  function drawCow(g,t){
+    const ink='#1c1c22', pink='#f2a5b4';
+    g.lineJoin='round';g.lineCap='round';g.lineWidth=2.4;g.strokeStyle=ink;
+    [[-26,13],[-11,16],[13,16],[27,13]].forEach(([lx,ly],i)=>{g.save();g.translate(lx,ly);g.rotate(Math.sin(t*15+i*1.9)*.7);
+      g.fillStyle='#f7f7f4';g.beginPath();g.roundRect(-4.5,-2,9,24,4);g.fill();g.stroke();g.fillStyle=ink;g.beginPath();g.roundRect(-5,17,10,7,2);g.fill();g.restore()});
+    g.beginPath();g.moveTo(-36,-5);g.quadraticCurveTo(-52,-14+Math.sin(t*11)*7,-57,2);g.stroke();
+    g.fillStyle=ink;g.beginPath();g.ellipse(-57,5,4,6,.3,0,7);g.fill();
+    g.fillStyle='#f7f7f4';g.beginPath();g.ellipse(0,0,39,23,0,0,7);g.fill();
+    g.save();g.clip();g.fillStyle=ink;
+    [[-15,-11,13,9,.4],[13,7,11,8,-.3],[27,-13,8,6,0],[-29,11,8,6,.2],[-2,15,6,4,0]].forEach(b=>{g.beginPath();g.ellipse(b[0],b[1],b[2],b[3],b[4],0,7);g.fill()});
+    g.restore();g.beginPath();g.ellipse(0,0,39,23,0,0,7);g.stroke();
+    g.fillStyle=pink;g.beginPath();g.ellipse(4,21,9,6,0,0,7);g.fill();g.stroke();
+    g.save();g.translate(43,-15);g.rotate(-.22);
+    g.fillStyle='#efe3c4';[[-9,-17,-14,-26],[9,-17,14,-26]].forEach(h=>{g.beginPath();g.moveTo(h[0]-3,h[1]);g.quadraticCurveTo(h[2],h[1]-3,h[2],h[3]);g.quadraticCurveTo(h[0]+4,h[1]-4,h[0]+3,h[1]);g.closePath();g.fill();g.stroke()});
+    [[-15,-9,-.6],[15,-9,.6]].forEach(e=>{g.fillStyle='#f7f7f4';g.beginPath();g.ellipse(e[0],e[1],8,4.5,e[2],0,7);g.fill();g.stroke();g.fillStyle=pink;g.beginPath();g.ellipse(e[0],e[1],4.5,2,e[2],0,7);g.fill()});
+    g.fillStyle='#f7f7f4';g.beginPath();g.ellipse(0,0,14,16,0,0,7);g.fill();g.stroke();
+    g.fillStyle=pink;g.beginPath();g.ellipse(0,11,13,8.5,0,0,7);g.fill();g.stroke();
+    g.fillStyle=ink;g.beginPath();g.ellipse(-4.5,10,1.8,2.6,0,0,7);g.ellipse(4.5,10,1.8,2.6,0,0,7);g.fill();
+    g.beginPath();g.ellipse(0,16.5,3.4,2.6,0,0,7);g.fill();
+    g.fillStyle='#fff';g.beginPath();g.arc(-6,-5,5.5,0,7);g.arc(6,-5,5.5,0,7);g.fill();g.beginPath();g.arc(-6,-5,5.5,0,7);g.stroke();g.beginPath();g.arc(6,-5,5.5,0,7);g.stroke();
+    g.fillStyle=ink;g.beginPath();g.arc(-5,-7.5,2,0,7);g.arc(7,-7.5,2,0,7);g.fill();
+    g.restore();
   }
   function frame(ts){raf=requestAnimationFrame(frame);const dt=Math.min(.05,last?(ts-last)/1000:0);last=ts;T+=dt;draw(dt)}
   function start(){if(still||raf||document.hidden||!cfg)return;last=0;raf=requestAnimationFrame(frame)}
@@ -574,7 +654,7 @@ const FX=(()=>{
 })();
 
 /* ---------- data ---------- */
-const HOURLY='temperature_2m,apparent_temperature,relative_humidity_2m,precipitation_probability,precipitation,cloud_cover,uv_index,weather_code,is_day';
+const HOURLY='temperature_2m,apparent_temperature,relative_humidity_2m,precipitation_probability,precipitation,cloud_cover,uv_index,weather_code,is_day,wind_speed_10m,wind_gusts_10m,wind_direction_10m,snowfall,snow_depth';
 const DAILY='weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,uv_index_max,precipitation_sum,precipitation_probability_max,sunshine_duration,daylight_duration';
 const CURRENT='temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,is_day,cloud_cover,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m';
 const key=l=>l.lat.toFixed(2)+','+l.lon.toFixed(2);
@@ -598,7 +678,7 @@ function mergeModels(j){
 async function load(manual){
   const {lat,lon}=S.loc;
   $('#refresh').classList.add('spin');
-  const base=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&timezone=auto&forecast_days=10&current=${CURRENT}&hourly=${HOURLY}&daily=${DAILY}`;
+  const base=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&timezone=auto&forecast_days=10&past_days=1&current=${CURRENT}&hourly=${HOURLY}&daily=${DAILY}`;
   try{
     const get=async u=>{const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),15000);
       const r=await fetch(u,{signal:ctl.signal}); clearTimeout(to); if(!r.ok) throw new Error('http '+r.status); return r.json()};
@@ -606,6 +686,7 @@ async function load(manual){
     try{ j=mergeModels(await get(base+'&models='+MODELS.join(','))) }
     catch(_){ j=await get(base) }
     if(!j.hourly||!j.daily||!j.current) throw new Error('bad data');
+    trimPast(j);
     j._at=Date.now();
     S.data=j; S.offline=false; S.sel=0;
     LS.set('cache',{k:key(S.loc),j});
@@ -640,8 +721,7 @@ function render(){
   const w=wx(C.weather_code,C.is_day);
   $('#nowIcon').innerHTML=ico(w.i);
   $('#bigT').textContent=fT(C.temperature_2m);
-  $('#cond').textContent=w.t;
-  $('#hilo').textContent=`High ${fT(D.temperature_2m_max[0])}  ·  Low ${fT(D.temperature_2m_min[0])}`;
+    $('#hilo').textContent=`High ${fT(D.temperature_2m_max[0])}  ·  Low ${fT(D.temperature_2m_min[0])}`;
 
   const feel=C.apparent_temperature, act=C.temperature_2m;
   const dF=Math.round(nT(feel))-Math.round(nT(act));
@@ -667,36 +747,107 @@ function render(){
     tile('Sunrise',t12(D.sunrise[0]),dlTxt)+
     tile('Sunset',t12(D.sunset[0]),D.sunset[1]?`Tomorrow ${clock(D.sunset[1])}`:'');
 
-  const uvI=uvInfo(uvNow), uvR=Math.max(0,Math.round(uvNow));
-  const st=(k,v)=>`<div class="st"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+  const uvI=uvInfo(uvNow), uvR=Math.max(0,Math.round(uvNow)), gr=ground(j,C,idx);
+  const st=(k,v,cls='')=>`<div class="st ${cls}"><div class="k">${k}</div><div class="v">${v}</div></div>`;
   $('#nowSide').innerHTML=
-    st('Feels like',fT(feel))+
+    st('Feels like',fT(feel),'big')+
     st('UV index',`<span style="color:${uvI.c}">${uvR}</span><small>${uvI.l}</small>`)+
-    st('Humidity',`${Math.round(C.relative_humidity_2m)}<small>%</small>`);
+    st('Ground',`<span style="color:${gr.c}">${gr.t}</span>`);
+  // rain/snow so far today, shown beside the condition when it's coming down
+  let sofar=0; H.time.forEach((t,i)=>{if(t.startsWith(D.time[0])&&i<=idx)sofar+=H.precipitation[i]??0});
+  const falling=WET(C.weather_code)||SNOWY(C.weather_code)||(C.precipitation||0)>0;
+  $('#cond').innerHTML=esc(w.t)+(falling?` <span class="acc">${sofar>0?fP(sofar)+' today':'just started'}</span>`:'');
 
   renderStrip(j,C); renderHourly(j); renderDaily(j); renderReadout();
 }
 const tile=(k,v,s,extra='')=>`<div class="tile glass"><div class="k">${k}</div><div class="v">${v}</div>${extra}<div class="s">${s}</div></div>`;
 
+/* past_days=1 is requested so ground conditions can look back overnight; daily arrays then start yesterday — drop it */
+function trimPast(j){
+  const today=(j.current&&j.current.time||'').slice(0,10), D=j.daily; if(!D||!D.time) return;
+  const di=D.time.indexOf(today); if(di>0) for(const k in D) if(Array.isArray(D[k])) D[k]=D[k].slice(di);
+}
+const WET=c=>(c>=51&&c<=67)||(c>=80&&c<=82)||c>=95;
+const SNOWY=c=>(c>=71&&c<=77)||c===85||c===86;
+/* how much is coming down, in plain words (mm per hour) */
+function rainWord(mm){
+  if(!(mm>0)) return {t:'Zip',c:'rgba(255,255,255,.45)'};
+  if(mm<0.3) return {t:'A smidge',c:'#c4e3ff'};
+  if(mm<1)   return {t:'A bit',c:'#9fd2ff'};
+  if(mm<2.5) return {t:'Steady',c:'#7cc4ff'};
+  if(mm<5)   return {t:'Lots',c:'#b3a8ff'};
+  if(mm<10)  return {t:'Shit ton',c:'#da9bff'};
+  return {t:'Yikes!',c:'#ff6b8a'};
+}
+/* wind in words (km/h; gusts nudge it up) */
+function windWord(ws,gust){
+  const e=Math.max(ws||0,(gust||0)*.65);
+  if(e<2)  return 'Dead calm';
+  if(e<12) return 'Gentle breeze';
+  if(e<20) return 'Breezy';
+  if(e<29) return 'Flags flapping';
+  if(e<39) return 'Hat may fly off';
+  if(e<50) return 'Umbrella wrecker';
+  if(e<62) return 'Hold on tight';
+  if(e<75) return 'Trees bending';
+  return 'Stay inside!';
+}
+const fW=k=>k==null?'–':Math.round(met()?k:k*0.621371);
+const wUnit=()=>met()?'km/h':'mph';
+/* what the ground is like right now, from recent rain/snow, snow cover and temperature */
+function ground(j,C,idx){
+  const H=j.hourly, T=C.temperature_2m??5, code=C.weather_code;
+  const back=(arr,n)=>{let t=0;if(!arr)return 0;for(let i=Math.max(0,idx-n);i<=idx;i++)t+=arr[i]??0;return t};
+  const r3=back(H.precipitation,3)+(C.precipitation||0), r12=back(H.precipitation,12), sn12=back(H.snowfall,12);
+  const depth=H.snow_depth?.[idx]??0, wetNow=WET(code)||(C.precipitation||0)>0, snowNow=SNOWY(code);
+  if(depth>=0.02||(snowNow&&T<=1)||(sn12>=1&&T<=1)){
+    if(T>1&&(wetNow||r3>0.3)) return {t:'Slushy',c:'#cfdbe8'};
+    return {t:'Snowy',c:'#ffffff'};
+  }
+  if(T<=0&&(wetNow||r12>=0.2)) return {t:'Icy',c:'#9ee8ff'};
+  if(sn12>=0.3) return {t:'Slushy',c:'#cfdbe8'};
+  if(wetNow||r3>=0.5) return r3>=4?{t:'Puddles',c:'#7cc0ff'}:{t:'Wet',c:'#9fd2ff'};
+  if(r3>0.05||r12>=0.5) return {t:'Damp',c:'#c3dcf2'};
+  if(T<=1&&!C.is_day&&(C.cloud_cover??100)<40&&(C.relative_humidity_2m??0)>=85) return {t:'Frosty',c:'#d9f3ff'};
+  return {t:'Dry',c:'#f2dfae'};
+}
+const DROP='<svg viewBox="0 0 12 12"><path d="M6 1C6 1 2 5.6 2 8a4 4 0 0 0 8 0C10 5.6 6 1 6 1z"/></svg>';
+
 function renderStrip(j,C){
   const H=j.hourly, a=S.idx, N=24;
+  const pr=i=>{const v=H.precipitation_probability[a+i];return v==null?0:clamp(v,0,100)};
+  const Y=v=>(32-v/100*28).toFixed(2);  // chart is 34 tall; 0% sits on the floor
   let out='';
   for(let i=0;i<N;i++){
-    const k=a+i, t=H.time[k], night=!H.is_day[k];
-    const tm=i===0?'<div class="tm hl">Now</div>':(t.slice(11,13)==='00'?`<div class="tm hl">${dayName(t)}</div>`:`<div class="tm">${hourLabel(t)}</div>`);
-    const temp=i===0?C.temperature_2m:H.temperature_2m[k];
-    const code=i===0?C.weather_code:H.weather_code[k], isDay=i===0?C.is_day:H.is_day[k];
-    const p=H.precipitation_probability[k], mm=H.precipitation[k];
-    const pv=p==null?0:clamp(p,0,100);
-    const bar=pv>0?`<i style="height:${Math.max(pv,4)}%;opacity:${(.6+.4*pv/100).toFixed(2)}"></i>`:'';
-    const uv=H.uv_index[k], uvR=Math.max(0,Math.round(uv??0));
-    const uvH=(uv==null||uvR===0)?'<div class="uv z">0</div>':`<div class="uv" style="color:${uvInfo(uv).c}">${uvR}</div>`;
-    out+=`<div class="scol srows${i===0?' cur':''}${night?' nt':''}">${tm}
+    const k=a+i, t=H.time[k], night=!H.is_day[k], c0=i===0;
+    const tm=c0?'<div class="tm hl">Now</div>':(t.slice(11,13)==='00'?`<div class="tm hl">${dayName(t)}</div>`:`<div class="tm">${hourLabel(t)}</div>`);
+    const temp=c0?C.temperature_2m:H.temperature_2m[k], feel=c0?C.apparent_temperature:H.apparent_temperature[k];
+    const code=c0?C.weather_code:H.weather_code[k], isDay=c0?C.is_day:H.is_day[k];
+    const p=H.precipitation_probability[k], mm=H.precipitation[k]??0, pv=pr(i);
+    const l=(pr(Math.max(0,i-1))+pv)/2, r=(pv+pr(Math.min(N-1,i+1)))/2;
+    const line=`M0 ${Y(l)} L50 ${Y(pv)} L100 ${Y(r)}`;
+    const chart=`<div class="ch"><svg viewBox="0 0 100 34" preserveAspectRatio="none">
+        <defs><linearGradient id="rgr${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4aa8ff" stop-opacity=".75"/><stop offset="1" stop-color="#4aa8ff" stop-opacity=".12"/></linearGradient></defs>
+        <line x1="0" x2="100" y1="18" y2="18" stroke="rgba(255,255,255,.16)" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>
+        <line x1="0" x2="100" y1="32" y2="32" stroke="rgba(255,255,255,.22)" vector-effect="non-scaling-stroke"/>
+        <path d="${line} L100 34 L0 34 Z" fill="url(#rgr${i})"/>
+        <path d="${line}" fill="none" stroke="#8fd0ff" stroke-width="2.2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+      </svg><b style="top:${(+Y(pv)/34*100).toFixed(1)}%"></b></div>`;
+    const rw=rainWord(mm);
+    const uv=Math.max(0,H.uv_index[k]??0), ui=uvInfo(uv);
+    const ws=c0?(C.wind_speed_10m??H.wind_speed_10m?.[k]):H.wind_speed_10m?.[k];
+    const gu=c0?(C.wind_gusts_10m??H.wind_gusts_10m?.[k]):H.wind_gusts_10m?.[k];
+    const wdir=c0?(C.wind_direction_10m??H.wind_direction_10m?.[k]):H.wind_direction_10m?.[k];
+    const arrow=wdir==null?'':`<svg viewBox="0 0 14 14" style="transform:rotate(${(wdir+180)%360}deg)"><path d="M7 12V2M3 6l4-4 4 4"/></svg>`;
+    out+=`<div class="scol${c0?' cur':''}${night?' nt':''}">${tm}
       <div>${ico(wx(code,isDay).i)}</div>
       <div class="tp">${fT(temp)}</div>
-      <div class="rg"><span class="p${pv>0?'':' z'}">${p==null?'–':p+'%'}</span><span class="bt">${bar}</span><span class="mm">${mm>0?fP(mm):''}</span></div>
-      ${uvH}
-      <div class="hm">${Math.round(H.relative_humidity_2m[k])}%</div>
+      <div class="fl">Feels<b>${fT(feel)}</b></div>
+      <div class="rc"><span class="p${pv>0?'':' z'}">${DROP}${p==null?'–':p+'%'}</span>${chart}
+        <span class="mm${mm>0?'':' z'}">${met()?(mm>0?(mm<10?mm.toFixed(1):Math.round(mm)):'0'):(mm/25.4).toFixed(2)}<small>${met()?'mm':'in'}</small></span>
+        <span class="aw" style="color:${rw.c}">${rw.t}</span></div>
+      <div class="uv">UV<b style="color:${ui.c}">${Math.round(uv)}</b></div>
+      <div class="wd"><span class="ws">${arrow}${fW(ws)}<small>${wUnit()}</small></span><span class="ww">${ws==null?'':windWord(ws,gu)}</span></div>
     </div>`;
   }
   $('#scols').innerHTML=out;
@@ -847,6 +998,9 @@ $('#gps').addEventListener('click',()=>{
     setLoc({name,lat,lon});
   },()=>{$('#gps span').textContent='Use my current location';toast('Couldn’t get your location — check permissions')},{timeout:12000,maximumAge:300000});
 });
+$('#vtag').textContent='v'+VER;
+$('#btn10').onclick=()=>document.body.classList.add('d10');
+$('#d10close').onclick=()=>document.body.classList.remove('d10');
 $('#locBtn').onclick=openSheet; $('#shClose').onclick=closeSheet;
 $('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet()});
 $('#uC').onclick=()=>{S.units='metric';LS.set('units','metric');render()};
