@@ -17,7 +17,7 @@
 :root{
   --sky1:#050c22; --sky2:#173063;
   --glass:rgba(7,15,32,.34); --glass2:rgba(255,255,255,.07); --edge:rgba(255,255,255,.14); --hair:rgba(255,255,255,.10);
-  --text:#fff; --mute:rgba(255,255,255,.66);
+  --text:#fff; --mute:rgba(255,255,255,.96);
   --sun:255,183,49; --cloud:176,192,216; --rain:58,168,255; --hum:62,214,196;
   --lab:76px; --colmin:33px;
 }
@@ -65,7 +65,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .now{flex:1 1 0;min-height:150px;padding:clamp(12px,2vh,22px) 20px;display:flex;flex-direction:column;justify-content:space-between}
 .nowtop{display:flex;align-items:center;gap:14px}
 .nowtop .ic{font-size:clamp(70px,11.5vh,120px)}
-.bigt{font-size:clamp(80px,14.5vh,150px);font-weight:200;letter-spacing:-5px;line-height:.95;text-shadow:0 2px 14px rgba(0,0,0,.18)}
+.bigt{font-size:clamp(80px,14.5vh,150px);font-weight:500;letter-spacing:-5px;line-height:.95;text-shadow:0 2px 14px rgba(0,0,0,.18)}
 .cond{font-size:clamp(20px,3vh,28px);font-weight:700;margin-top:6px}
 .hilo{font-size:16px;color:var(--mute);font-variant-numeric:tabular-nums;margin-top:3px;font-weight:600}
 .upd{font-size:12px;color:var(--mute);margin-top:6px}
@@ -115,10 +115,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .r.feel{height:clamp(18px,2.6vh,24px)} .r.feel .c{color:var(--mute);font-size:12px}
 .r.heat{flex:1 1 0;min-height:27px;max-height:46px}
 .hc{width:calc(100% - 4px);height:calc(100% - 4px);margin:2px;border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:13px;font-variant-numeric:tabular-nums;line-height:1}
-.hc.none{background:transparent!important;color:rgba(255,255,255,.35)!important;font-weight:600}
+.hc.none{background:transparent!important;color:rgba(255,255,255,.85)!important;font-weight:600}
 .r.uv{height:clamp(24px,3.4vh,30px)}
 .uvc{min-width:23px;height:21px;padding:0 5px;border-radius:7px;display:inline-grid;place-items:center;font-size:12.5px;font-weight:800;color:#0b1220}
-.uvc.z{background:none;color:rgba(255,255,255,.4);font-weight:600}
+.uvc.z{background:none;color:rgba(255,255,255,.85);font-weight:600}
 .r.hum{height:clamp(20px,2.8vh,26px)} .r.hum .c{color:rgb(var(--hum));font-weight:800;font-size:12.5px;filter:brightness(1.25)}
 
 /* daily */
@@ -149,11 +149,18 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .dc.fl{font-weight:700}
 
 /* sheet */
+#saved{position:relative}
+.grip{width:18px;height:18px;flex:none;fill:#fff;margin-left:4px}
+#saved .row{position:relative;transition:transform .16s ease,box-shadow .16s ease,background .16s ease;-webkit-touch-callout:none;touch-action:pan-y}
+#saved .row.lift{transition:box-shadow .16s ease,background .16s ease;z-index:5;background:rgba(60,110,190,.55);box-shadow:0 10px 28px rgba(0,0,0,.5);touch-action:none}
+#saved .row>span:first-child{flex:1;min-width:0}
+
 #sheet{position:fixed;inset:0;background:rgba(2,6,14,.5);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:50;display:flex;align-items:flex-start;justify-content:center;padding:calc(env(safe-area-inset-top) + 56px) 16px 16px}
 #sheet[hidden]{display:none}
 .shc{width:min(460px,100%);max-height:calc(100dvh - 90px);overflow:auto;background:rgba(14,24,44,.92);border:1px solid var(--edge);border-radius:22px;padding:14px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
 .sht{display:flex;gap:10px;margin-bottom:10px}
 .sht input{flex:1;min-width:0;background:rgba(255,255,255,.08);border:1px solid var(--edge);border-radius:12px;padding:11px 13px;font-size:16px;color:#fff;outline:none}
+.sht input::placeholder{color:rgba(255,255,255,.85)}
 .sht input:focus{border-color:rgb(var(--rain))}
 .sht button{color:rgb(var(--rain));font-weight:800;padding:0 6px}
 .row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:12px 10px;border-radius:12px;font-size:15px}
@@ -199,15 +206,15 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .nowbody{display:grid;grid-template-columns:auto auto;justify-content:space-between;align-items:start;gap:12px;margin-top:10px}
   .nowmain{display:flex;flex-direction:column;min-width:0;align-self:center}
   .nowtop{gap:6px;margin-left:-4px}
-  .nowtop .ic{font-size:min(68px,16vw)}
-  .bigt{font-size:min(108px,25vw);letter-spacing:-5px;line-height:.9}
+  .nowtop .ic{font-size:min(60px,15vw)}
+  .bigt{font-size:min(98px,23.5vw);font-weight:600;letter-spacing:-4px;line-height:.9}
   .cond{font-size:22px;margin-top:10px;line-height:1.2}
   .hilo{font-size:21px;color:#fff;font-weight:800;margin-top:6px;white-space:nowrap}
   .upd{font-size:16px;color:#fff;font-weight:600;margin-top:6px}
   .nowside{display:flex;flex-direction:column;gap:7px;width:min(168px,40vw)}
   .st{padding:7px 12px 8px;border-radius:16px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);
     box-shadow:0 6px 16px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.2);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);text-shadow:none}
-  .st .k{font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,.78);white-space:nowrap}
+  .st .k{font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#fff;white-space:nowrap}
   .st .v{font-size:26px;font-weight:700;letter-spacing:-.3px;line-height:1.1;font-variant-numeric:tabular-nums;white-space:nowrap}
   .st .v small{font-size:13px;font-weight:700;color:#fff;margin-left:4px;letter-spacing:0}
   .st .w{font-size:13.5px;font-weight:700;color:#d6e6fa;line-height:1.15;margin-top:1px}
@@ -219,7 +226,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   #strip{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;padding:10px 6px 8px}
   #strip .ph{padding:0 8px;justify-content:space-between;align-items:center;margin-bottom:6px}
   #strip .ph h2{font-size:20px}
-  .hint{font-size:18px;font-weight:800;color:rgba(255,255,255,.85);transition:opacity .3s}
+  .hint{font-size:18px;font-weight:800;color:#fff;transition:opacity .3s}
   .hint.gone{opacity:0}
   #sscroll{flex:1;min-height:0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   #sscroll::-webkit-scrollbar{display:none}
@@ -238,13 +245,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .rc{flex-direction:column;gap:4px;padding:0 3px}
   .rc .p{font-size:21px;font-weight:800;color:#d5ecff;display:flex;align-items:center;gap:4px}
   .rc .p svg{width:13px;height:13px;fill:#5fb4ff}
-  .rc .p.z{color:rgba(255,255,255,.45)}
+  .rc .p.z{color:#fff}
   .rc .ch{position:relative;width:100%;height:68px;border-radius:9px;overflow:hidden;background:rgba(0,12,34,.38);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
   .rc .ch svg{position:absolute;inset:0;width:100%;height:100%}
   .rc .ch b{position:absolute;left:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px rgba(60,165,255,.8),0 0 10px rgba(110,190,255,.9)}
   .rc .mm{font-size:23px;font-weight:800;white-space:nowrap;margin-top:2px}
   .rc .mm small{font-size:14px;font-weight:700;color:var(--mute);margin-left:2px}
-  .rc .mm.z{color:rgba(255,255,255,.45)}
+  .rc .mm.z{color:#fff}
   .rc .aw{font-size:16px;font-weight:800;white-space:nowrap;text-shadow:0 1px 6px rgba(0,0,0,.35)}
   .scol .uv{font-size:15px;font-weight:700;color:var(--mute);gap:6px}
   .scol .uv b{font-size:30px;font-weight:800}
@@ -296,6 +303,24 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .wd .ww{font-size:16.5px;color:#fff;min-height:38px;line-height:1.12}
   .bigt,.nowtop .bigt{text-shadow:-1.5px -1.5px 0 rgba(0,0,0,.6),1.5px -1.5px 0 rgba(0,0,0,.6),-1.5px 1.5px 0 rgba(0,0,0,.6),1.5px 1.5px 0 rgba(0,0,0,.6),0 3px 10px rgba(0,0,0,.35)}
   .cond,.hilo,.upd,.cond .acc{text-shadow:var(--ol)}
+
+  /* v2.9: side boxes tuck up beside the location chip; hourly columns get the room */
+  .nowside{margin-top:-42px}
+  .scol .ic{font-size:52px}
+  .scol .tp{font-size:40px}
+  .scol .tm{font-size:19px}
+  .scol .fl{font-size:17px}
+  .rc .p{font-size:23px}
+  .rc .ch{height:54px}
+  .rc .mm{font-size:25px}
+  .rc .mm small{font-size:15px}
+  .rc .aw{font-size:18px}
+  .scol .uv{font-size:17px}
+  .scol .uv b{font-size:32px}
+  .wd .ws{font-size:21px;gap:3px}
+  .wd .ws small{font-size:12.5px}
+  .wd .ww{font-size:18px;min-height:42px}
+  /* saved-location list: hold and drag */
 }
 /* very short screens: let the page scroll rather than clip */
 @media (max-width:900px) and (max-height:700px){
@@ -389,16 +414,16 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div class="sht"><input id="q" placeholder="City or postal code" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="search"><button id="shClose">Done</button></div>
     <button class="row rgps" id="gps"><span>Use my current location</span></button>
     <div id="results"></div>
-    <div class="shh" id="savedH">Saved</div>
+    <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.8 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.9 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.8';
+const VER='2.9';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -834,7 +859,7 @@ const WET=c=>(c>=51&&c<=67)||(c>=80&&c<=82)||c>=95;
 const SNOWY=c=>(c>=71&&c<=77)||c===85||c===86;
 /* how much is coming down, in plain words (mm per hour) */
 function rainWord(mm){
-  if(!(mm>0)) return {t:'Zip',c:'rgba(255,255,255,.45)'};
+  if(!(mm>0)) return {t:'Zip',c:'#fff'};
   if(mm<0.3) return {t:'A smidge',c:'#c4e3ff'};
   if(mm<1)   return {t:'A bit',c:'#9fd2ff'};
   if(mm<2.5) return {t:'Steady',c:'#7cc4ff'};
@@ -1040,7 +1065,7 @@ function openSheet(){ $('#sheet').hidden=false; $('#q').value=''; $('#results').
 function closeSheet(){ $('#sheet').hidden=true; $('#q').blur() }
 function drawSaved(){
   $('#savedH').style.display=S.saved.length?'':'none';
-  $('#saved').innerHTML=S.saved.map((s,i)=>`<div class="row" data-s="${i}"><span>${esc(s.name)}</span><button class="x" data-x="${i}" aria-label="Remove">×</button></div>`).join('');
+  $('#saved').innerHTML=S.saved.map((s,i)=>`<div class="row" data-s="${i}"><span>${esc(s.name)}</span><svg class="grip" viewBox="0 0 18 18" aria-hidden="true"><circle cx="6" cy="4" r="1.6"/><circle cx="12" cy="4" r="1.6"/><circle cx="6" cy="9" r="1.6"/><circle cx="12" cy="9" r="1.6"/><circle cx="6" cy="14" r="1.6"/><circle cx="12" cy="14" r="1.6"/></svg><button class="x" data-x="${i}" aria-label="Remove">×</button></div>`).join('');
 }
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let qT;
@@ -1062,6 +1087,63 @@ $('#gps').addEventListener('click',()=>{
     setLoc({name,lat,lon});
   },()=>{$('#gps span').textContent='Use my current location';toast('Couldn’t get your location — check permissions')},{timeout:12000,maximumAge:300000});
 });
+
+/* ---- saved places: hold a row and drag it up or down to reorder ---- */
+(function(){
+  const box=$('#saved'); let D=null, justDragged=false;
+  const clear=()=>{ if(D){clearTimeout(D.t)} D=null };
+  box.addEventListener('pointerdown',e=>{
+    const row=e.target.closest('[data-s]'); if(!row||e.target.closest('[data-x]')||(e.pointerType==='mouse'&&e.button!==0)) return;
+    D={row,id:e.pointerId,y0:e.clientY,y:e.clientY,on:false,from:+row.dataset.s,to:+row.dataset.s};
+    D.t=setTimeout(()=>{ if(!D) return; D.on=true; D.rows=[...box.children]; D.h=D.rows[0].getBoundingClientRect().height||44;
+      row.classList.add('lift'); try{row.setPointerCapture(D.id)}catch(_){}; if(navigator.vibrate) navigator.vibrate(12); },380);
+  });
+  box.addEventListener('pointermove',e=>{
+    if(!D) return;
+    if(!D.on){ if(Math.abs(e.clientY-D.y0)>8||Math.abs(e.clientX-(D.x0??(D.x0=e.clientX)))>12) clear(); return }
+    D.y=e.clientY; const dy=D.y-D.y0, n=D.rows.length;
+    D.row.style.transform=`translateY(${dy}px)`;
+    const to=Math.max(0,Math.min(n-1,D.from+Math.round(dy/D.h))); D.to=to;
+    D.rows.forEach((r,i)=>{ if(r===D.row) return;
+      let t=0; if(D.from<to&&i>D.from&&i<=to) t=-D.h; else if(to<D.from&&i>=to&&i<D.from) t=D.h;
+      r.style.transform=t?`translateY(${t}px)`:'' });
+    e.preventDefault();
+  });
+  const end=()=>{
+    if(!D) return; const d=D; clear();
+    if(!d.on) return;
+    justDragged=true; setTimeout(()=>justDragged=false,350);
+    if(d.to!==d.from){ const [m]=S.saved.splice(d.from,1); S.saved.splice(d.to,0,m); LS.set('saved',S.saved) }
+    drawSaved();
+  };
+  box.addEventListener('pointerup',end); box.addEventListener('pointercancel',end);
+  box.addEventListener('touchmove',e=>{ if(D&&D.on) e.preventDefault() },{passive:false});
+  box.addEventListener('contextmenu',e=>e.preventDefault());
+  box.addEventListener('click',e=>{ if(justDragged){e.stopImmediatePropagation();e.preventDefault()} },true);
+})();
+
+/* ---- swipe up / down on the main screen to cycle through saved places ---- */
+(function(){
+  const app=$('#app'), phone=matchMedia('(max-width:900px)'); let g=null;
+  app.addEventListener('touchstart',e=>{
+    if(!phone.matches||e.touches.length!==1||document.body.classList.contains('d10')||e.target.closest('#daily,button,input,a')){g=null;return}
+    const t=e.touches[0]; g={x:t.clientX,y:t.clientY,t:Date.now()};
+  },{passive:true});
+  app.addEventListener('touchend',e=>{
+    if(!g) return; const t=e.changedTouches[0], dx=t.clientX-g.x, dy=t.clientY-g.y, dt=Date.now()-g.t; g=null;
+    if(Math.abs(dy)<70||Math.abs(dy)<Math.abs(dx)*1.6||dt>900) return;
+    cycleLoc(dy<0?1:-1);
+  },{passive:true});
+  app.addEventListener('touchcancel',()=>{g=null},{passive:true});
+})();
+function cycleLoc(dir){
+  const L=S.saved; if(!L||L.length<2){toast(L&&L.length?'Only one saved place — add more with the location button':'Save places with the location button');return}
+  let i=L.findIndex(s=>key(s)===key(S.loc)); if(i<0) i=dir>0?-1:0;
+  const n=(i+dir+L.length)%L.length, l=L[n];
+  S.loc={name:l.name,lat:l.lat,lon:l.lon}; LS.set('loc',S.loc);
+  $('#locName').textContent=l.name; toast(`${l.name}  ·  ${n+1} of ${L.length}`);
+  S.data=null; load(true);
+}
 $('#vtag').textContent='v'+VER;
 $('#btn10').onclick=()=>document.body.classList.add('d10');
 $('#d10close').onclick=()=>document.body.classList.remove('d10');
