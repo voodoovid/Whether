@@ -510,6 +510,40 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
   #daily .ph h2{flex:none}
   .dloc{display:inline-flex;margin:0;align-self:center;min-width:0;flex:0 1 auto;font-size:16px;text-shadow:var(--ol)}
 }
+/* v2.24: 10-day keeps the same header (name + location) as Today; even top line; sheet matches the app */
+.dhl .fe b{display:inline-flex;align-items:baseline}
+.dhl .fe b span{display:inline-block}
+.dhl .fe b span+span{margin-left:.55em}
+@media (max-width:900px){
+  #daily{padding-top:var(--locPad,10px)}
+  #daily .ph{margin-bottom:10px;min-height:0;padding:0}
+  #daily .ph h2{display:none}
+  .dloc{font-size:17px;padding:5px 12px 5px 8px;margin:0;text-shadow:var(--ol)}
+  .drow{grid-template-columns:50px 40px 60px minmax(0,1fr);column-gap:7px;padding:12px 8px}
+  .dd,.ds{align-self:center}
+  .ds{justify-content:center}
+  .dw{align-self:center}
+  .dhl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,2fr);gap:0;padding:0;align-items:end}
+  .dhl span{align-items:center;text-align:center}
+  .dhl .hi,.dhl .lo{min-width:0}
+  .dhl .fe{margin-left:0}
+  .dhl small{margin-bottom:2px}
+}
+/* location sheet: same sky, glass and outlined white text as the app */
+.shc{background:linear-gradient(172deg,var(--sky1),var(--sky2));border:1px solid rgba(255,255,255,.28);box-shadow:0 24px 60px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.18);padding:16px}
+.shc,.shc .row,.shc .shh,.shc .ver{text-shadow:-1px -1px 0 rgba(0,0,0,.55),1px -1px 0 rgba(0,0,0,.55),-1px 1px 0 rgba(0,0,0,.55),1px 1px 0 rgba(0,0,0,.55)}
+.sht input{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);border-radius:14px;font-weight:600;box-shadow:inset 0 1px 0 rgba(255,255,255,.15)}
+.sht input:focus{border-color:rgba(255,255,255,.7)}
+.sht button{color:#fff;font-weight:800;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:0 16px}
+.shc .row{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.2);border-radius:14px;margin-bottom:6px;font-weight:700;font-size:16px}
+.shc .row:active{background:rgba(255,255,255,.2)}
+.shc .row small{color:#fff;opacity:.85;font-weight:600}
+.shc .row .x{color:#fff}
+.rgps{color:#fff;background:rgba(255,255,255,.18)!important;border-radius:14px;margin-bottom:8px;gap:8px;justify-content:flex-start}
+.rgps::before{content:"";width:18px;height:18px;flex:none;background:#fff;-webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>') center/contain no-repeat;mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>') center/contain no-repeat}
+.shh{color:#fff;font-size:12.5px;padding:12px 4px 6px}
+.ver{color:#fff;opacity:.85}
+#saved .row.lift{background:rgba(255,255,255,.3)}
 </style>
 </head>
 <body>
@@ -583,7 +617,7 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
     <section class="panel glass" id="daily">
       <div class="ph"><h2>10-day forecast</h2><button class="loc dloc" id="dlocBtn" aria-label="Change location"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span id="dlocName"></span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><button class="dclose" id="d10close">Done</button></div>
       <div class="dcols dhead" id="dcols">
-        <span>Day</span><span>Sky</span><span>High · Low · Feels</span>
+        <span>Day</span><span>Sky</span><span>High · Low · Feels like</span>
         <span class="ctr">Rain</span><span class="ctr">Shoe</span><span class="ctr">Wind</span><span class="ctr">UV</span>
       </div>
       <div id="drows"></div>
@@ -598,14 +632,14 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.23 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.24 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.23';
+const VER='2.24';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1235,7 +1269,7 @@ function renderDaily(j){
       <div class="dd"><b>${d===0?'Today':dayName(date)}</b><span>${dayDate(date)}</span></div>
       <div class="ds">${ico(w.i)}<span>${esc(w.t)}</span></div>
       <div class="dw">${esc(w.t).replace('Thunderstorms','Thunder&shy;storms')}</div>
-      <div class="dhl"><span class="hi"><small>High</small><b>${fT(D.temperature_2m_max[d])}</b></span><span class="lo"><small>Low</small><b>${fT(D.temperature_2m_min[d])}</b></span><span class="fe"><small>Feels</small><b>(${fT(fHi)} ${fT(fLo)})</b></span></div>
+      <div class="dhl"><span class="hi"><small>High</small><b>${fT(D.temperature_2m_max[d])}</b></span><span class="lo"><small>Low</small><b>${fT(D.temperature_2m_min[d])}</b></span><span class="fe"><small>Feels like</small><b><span>${fT(fHi)}</span><span>${fT(fLo)}</span></b></span></div>
       <div class="dm">
         ${x('Rain',`${DROP}${pp==null?'–':pp+'%'}`,sum>0?`${fP(sum)} · ${rw.t}`:'None',sum>0?rw.c:'')}
         ${x('Shoe',`${SHOE}<span style="color:${gd.c}">${gd.t}</span>`,'','','shoe')}
@@ -1252,9 +1286,8 @@ function fitDaily(){
   if(!matchMedia('(max-width:900px)').matches) return;
   document.querySelectorAll('#drows .dhl').forEach(el=>{
     el.style.removeProperty('--dk');
-    const need=[...el.children].reduce((a,c)=>a+c.scrollWidth,0)+4*(el.children.length-1);
-    const have=el.clientWidth-2;
-    if(need>have&&have>0) el.style.setProperty('--dk',(Math.max(.6,have/need)-.01).toFixed(3));
+    let k=1; [...el.children].forEach(sp=>{const b=sp.querySelector('b'); if(b&&b.scrollWidth>sp.clientWidth-4&&sp.clientWidth) k=Math.min(k,(sp.clientWidth-4)/b.scrollWidth)});
+    if(k<1) el.style.setProperty('--dk',Math.max(.6,k-.01).toFixed(3));
   });
 }
 addEventListener('resize',()=>requestAnimationFrame(fitDaily));
@@ -1418,7 +1451,8 @@ function slideIn(){
   setTimeout(()=>{cycling=false},420);
 }
 $('#vtag').textContent='v'+VER;
-function setBarH(){const b=document.querySelector('.bar').getBoundingClientRect();document.documentElement.style.setProperty('--barH',Math.round(b.bottom+6)+'px')}
+function setBarH(){const r=document.documentElement.style, b=document.querySelector('.bar').getBoundingClientRect(), l=$('#locBtn').getBoundingClientRect(), top=Math.round(b.bottom+6);
+  r.setProperty('--barH',top+'px'); if(l.height) r.setProperty('--locPad',Math.max(0,Math.round(l.top-top))+'px')}
 function set10(on){
   if(on) setBarH();
   document.body.classList.toggle('d10',on);
