@@ -599,11 +599,12 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 .drow{transition:transform .22s cubic-bezier(.2,.8,.2,1),background .22s,box-shadow .22s}
 .drow.hold{transform:scale(.97);box-shadow:0 0 0 2px rgba(255,208,74,.75),0 10px 28px rgba(0,0,0,.3)}
 .drow.pop{transform:scale(1.02);box-shadow:0 0 0 3px #ffd04a,0 14px 34px rgba(0,0,0,.35)}
-.daybadge{display:none;align-self:flex-start;flex:none;align-items:center;gap:7px;margin:0;padding:6px 8px 6px 13px;border-radius:999px;
+.daybadge{display:none;align-self:flex-start;flex:none;align-items:center;justify-content:center;gap:7px;margin:4px 0 0;padding:6px 8px 6px 13px;border-radius:999px;
   background:#ffd04a;color:#1a1300;font-size:13px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;white-space:nowrap;text-shadow:none;
   box-shadow:0 6px 16px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.55)}
 .daybadge i{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:rgba(26,19,0,.18);font-style:normal;font-size:12px;line-height:1}
 body.dayv #locBtn{display:none}
+body.dayv .curk.mode{margin-bottom:2px}
 @media (max-width:900px){ #daily .dloc{margin-left:4px;padding:5px 12px 5px 8px;font-size:17px} }
 body.dayv .daybadge{display:inline-flex}
 body.dayv .now::after{content:"";position:absolute;inset:-7px;border:4px solid #ffd04a;border-radius:30px;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.28)}
@@ -702,14 +703,14 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.38 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.39 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.38';
+const VER='2.39';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1131,6 +1132,7 @@ function render(){
   { const db=$('#dayb'); if(DV) db.innerHTML=`${dayName(DV.date)} · ${dayDate(DV.date)}<i aria-hidden="true">✕</i>`; }
   document.body.classList.toggle('dayv',!!DV); syncBtn();
   { const mb=document.querySelectorAll('#mode button'); mb[0].textContent=DV?'All day':'Current'; mb[1].textContent=DV?'Night':'Tonight'; }
+  if(DV){ const db=$('#dayb'), md=$('#mode'); db.style.minWidth=''; requestAnimationFrame(()=>{ if(md.offsetWidth) db.style.minWidth=md.offsetWidth+'px'; fitStrip() }) }
   document.querySelectorAll('#drows .drow').forEach((r,i)=>r.classList.toggle('viewing',!!DV&&i===dd));
   { const hd=DV?`${dayName(DV.date)} hourly`:'Next 24 hours'; document.querySelectorAll('#strip .ph h2,#hourly .ph h2').forEach(h=>h.textContent=hd); }
 
