@@ -1,0 +1,16 @@
+{
+  "name": "Whether",
+  "short_name": "Whether",
+  "description": "Clear 10-day weather: sun, cloud and rain at a glance.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#080f1b",
+  "theme_color": "#0a111d",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
