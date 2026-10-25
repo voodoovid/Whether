@@ -339,7 +339,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div id="results"></div>
     <div class="shh" id="savedH">Saved</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.1 · Forecast data by <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.2 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
@@ -578,16 +578,33 @@ const HOURLY='temperature_2m,apparent_temperature,relative_humidity_2m,precipita
 const DAILY='weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,uv_index_max,precipitation_sum,precipitation_probability_max,sunshine_duration,daylight_duration';
 const CURRENT='temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,is_day,cloud_cover,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m';
 const key=l=>l.lat.toFixed(2)+','+l.lon.toFixed(2);
+/* Environment Canada GEM (incl. 2.5 km HRDPS) first for hyper-local detail; best_match fills anything GEM lacks (rain %, UV) */
+const MODELS=['gem_seamless','best_match'];
+function mergeModels(j){
+  for(const sec of ['current','hourly','daily']){
+    const o=j[sec]; if(!o) continue; const out={};
+    const bases=new Set(Object.keys(o).map(k=>{for(const m of MODELS) if(k.endsWith('_'+m)) return k.slice(0,-m.length-1); return k}));
+    for(const b of bases){
+      const vs=[...MODELS.map(m=>o[b+'_'+m]),o[b]].filter(v=>v!==undefined);
+      if(!vs.length) continue;
+      if(Array.isArray(vs[0])) out[b]=vs[0].map((_,i)=>{for(const v of vs){if(Array.isArray(v)&&v[i]!=null) return v[i]} return null});
+      else out[b]=vs.find(v=>v!=null)??null;
+    }
+    j[sec]=out;
+  }
+  return j;
+}
 
 async function load(manual){
   const {lat,lon}=S.loc;
   $('#refresh').classList.add('spin');
-  const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&timezone=auto&forecast_days=10&current=${CURRENT}&hourly=${HOURLY}&daily=${DAILY}`;
+  const base=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&timezone=auto&forecast_days=10&current=${CURRENT}&hourly=${HOURLY}&daily=${DAILY}`;
   try{
-    const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),15000);
-    const r=await fetch(url,{signal:ctl.signal}); clearTimeout(to);
-    if(!r.ok) throw new Error('http '+r.status);
-    const j=await r.json();
+    const get=async u=>{const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),15000);
+      const r=await fetch(u,{signal:ctl.signal}); clearTimeout(to); if(!r.ok) throw new Error('http '+r.status); return r.json()};
+    let j;
+    try{ j=mergeModels(await get(base+'&models='+MODELS.join(','))) }
+    catch(_){ j=await get(base) }
     if(!j.hourly||!j.daily||!j.current) throw new Error('bad data');
     j._at=Date.now();
     S.data=j; S.offline=false; S.sel=0;
