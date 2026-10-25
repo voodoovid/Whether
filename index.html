@@ -148,6 +148,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .dc.hu{color:rgb(var(--hum));filter:brightness(1.25)}
 .dc.fl{font-weight:700}
 
+/* position pager under the location chip */
+.pager{position:absolute;left:4px;top:38px;z-index:3;padding:4px 13px;border-radius:999px;font-size:15px;font-weight:800;letter-spacing:.2px;color:#fff;
+  background:var(--glass);border:1px solid var(--edge);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);text-shadow:var(--ol,0 1px 3px rgba(0,0,0,.5));
+  opacity:0;transform:translateY(8px);transition:opacity .25s ease,transform .25s ease;pointer-events:none;white-space:nowrap}
+.pager.on{opacity:1;transform:none}
 /* sheet */
 #saved{position:relative}
 .grip{width:18px;height:18px;flex:none;fill:#fff;margin-left:4px}
@@ -201,12 +206,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
   /* current conditions sit straight on the sky */
   .now.glass{background:none;border:0;border-radius:0;-webkit-backdrop-filter:none;backdrop-filter:none}
-  .now{padding:0 4px;text-shadow:0 1px 12px rgba(0,0,0,.28)}
+  .now{padding:0 4px;text-shadow:0 1px 12px rgba(0,0,0,.28);position:relative}
   .loc{margin:0;align-self:flex-start;text-shadow:none}
   .nowbody{display:grid;grid-template-columns:auto auto;justify-content:space-between;align-items:start;gap:12px;margin-top:10px}
   .nowmain{display:flex;flex-direction:column;min-width:0;align-self:center}
   .nowtop{gap:6px;margin-left:-4px}
-  .nowtop .ic{font-size:min(60px,15vw)}
+  .nowtop{position:relative}
+  .nowtop .ic{font-size:min(84px,21vw);margin:-10px -12px -4px -10px}
   .bigt{font-size:min(98px,23.5vw);font-weight:600;letter-spacing:-4px;line-height:.9}
   .cond{font-size:22px;margin-top:10px;line-height:1.2}
   .hilo{font-size:21px;color:#fff;font-weight:800;margin-top:6px;white-space:nowrap}
@@ -368,6 +374,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         <span id="locName">Loading…</span>
         <svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg>
       </button>
+      <div class="pager" id="pager" aria-live="polite"></div>
       <div class="nowbody">
         <div class="nowmain">
           <div class="nowtop">
@@ -416,14 +423,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.10 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.11 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.10';
+const VER='2.11';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1145,9 +1152,9 @@ function cycleLoc(dir){
   let i=L.findIndex(s=>key(s)===key(S.loc)); if(i<0) i=dir>0?-1:0;
   const n=(i+dir+L.length)%L.length, l=L[n];
   S.loc={name:l.name,lat:l.lat,lon:l.lon}; LS.set('loc',S.loc);
-  toast(`${l.name}  ·  ${n+1} of ${L.length}`,1400);
+  S.pg=`${n+1} of ${L.length}`;
   const els=[...document.querySelectorAll('#app .now,#app #strip')], D=dir>0?1:-1;
-  if(!els.length||!els[0].animate||matchMedia('(prefers-reduced-motion: reduce)').matches){ $('#locName').textContent=l.name; S.data=null; load(true); return }
+  if(!els.length||!els[0].animate||matchMedia('(prefers-reduced-motion: reduce)').matches){ $('#locName').textContent=l.name; S.data=null; load(true); showPager(); return }
   cycling=true;
   const outs=els.map(el=>el.animate([{transform:'none',opacity:1},{transform:`translateY(${-D*60}px)`,opacity:0}],{duration:190,easing:'cubic-bezier(.4,0,.8,.6)',fill:'forwards'}));
   Promise.all(outs.map(a=>a.finished.catch(()=>{}))).then(()=>{
@@ -1158,8 +1165,12 @@ function cycleLoc(dir){
     setTimeout(()=>{ els.forEach(el=>el.style.opacity=''); S.slideIn=0; cycling=false },9000);
   });
 }
+function showPager(){
+  const el=$('#pager'); if(!el||!S.pg) return; el.textContent=S.pg; S.pg='';
+  el.classList.add('on'); clearTimeout(showPager._t); showPager._t=setTimeout(()=>el.classList.remove('on'),2200);
+}
 function slideIn(){
-  const D=S.slideIn; if(!D) return; S.slideIn=0;
+  const D=S.slideIn; if(!D) return; S.slideIn=0; setTimeout(showPager,260);
   const els=[...document.querySelectorAll('#app .now,#app #strip')];
   els.forEach(el=>{ el.style.opacity=''; el.animate([{transform:`translateY(${D*70}px)`,opacity:0},{transform:'none',opacity:1}],{duration:400,easing:'cubic-bezier(.2,.85,.25,1)'}) });
   setTimeout(()=>{cycling=false},420);
