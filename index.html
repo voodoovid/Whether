@@ -430,6 +430,51 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
   .dx b{font-size:20px}
   .dx i{font-size:12.5px}
 }
+
+/* v2.21: 10-day temps shift left so Feels matches High/Low; Wind before UV; bigger, centred boxes.
+   Main: animated icon, "Current" label above the temp, bigger High/Low */
+.dhead{font-size:13px}
+.dhl .fe b,.dhl .fe em{font-size:inherit;font-weight:800;opacity:1;margin:0}
+.dhl .fe b{font-size:19px}
+@media (min-width:901px) and (max-width:1290px){ .dhl .fe b{font-size:16px} }
+.curk{font-size:15px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#fff;line-height:1;margin:0 0 6px 4px;text-shadow:var(--ol,0 1px 4px rgba(0,0,0,.4))}
+.hilo b{font-weight:800;color:#fff;font-size:1.3em}
+@media (max-width:900px){
+  .drow{grid-template-columns:54px 40px minmax(0,1fr) auto;column-gap:6px}
+  .dw{font-size:14.5px;line-height:1.12;-webkit-hyphens:auto;hyphens:auto;overflow-wrap:break-word}
+  .dhl{gap:9px}
+  .dhl b,.dhl .fe b{font-size:24px;padding-top:0}
+  .dx{justify-content:center;min-height:82px;gap:4px}
+  .dx>small{font-size:12.5px;letter-spacing:.6px}
+  .nowmain{margin-top:14px}
+  .hilo{font-size:19px;margin-top:8px}
+  .hilo b{font-size:28px;letter-spacing:-.3px}
+}
+
+/* animated main icon */
+#nowIcon svg *{transform-box:view-box}
+.a-spin{transform-origin:24px 24px;animation:aSpin 30s linear infinite}
+.a-spin2{transform-origin:17px 17px;animation:aSpin 30s linear infinite}
+.a-glow{animation:aGlow 4s ease-in-out infinite}
+.a-drift{animation:aDrift 7s ease-in-out infinite}
+.a-drift2{animation:aDrift 9s ease-in-out infinite reverse}
+.a-bob{animation:aBob 6s ease-in-out infinite}
+.a-drop{animation:aDrop 1.1s linear infinite}
+.a-flake{animation:aFlake 3s linear infinite}
+.a-bolt{animation:aBolt 3.2s ease-in-out infinite}
+.a-fog{animation:aFog 6s ease-in-out infinite}
+.d2{animation-delay:-.37s}.d3{animation-delay:-.74s}
+.f2{animation-delay:-1s}.f3{animation-delay:-2s}.f4{animation-delay:-1.5s}
+.g2{animation-delay:-3s}
+@keyframes aSpin{to{transform:rotate(360deg)}}
+@keyframes aGlow{0%,100%{opacity:1}50%{opacity:.82}}
+@keyframes aDrift{0%,100%{transform:translateX(-1.6px)}50%{transform:translateX(1.6px)}}
+@keyframes aBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.4px)}}
+@keyframes aDrop{0%{transform:translate(1px,-4px);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translate(-1.4px,5px);opacity:0}}
+@keyframes aFlake{0%{transform:translate(0,-5px);opacity:0}20%{opacity:1}50%{transform:translate(1.5px,0)}80%{opacity:1}100%{transform:translate(-1px,5px);opacity:0}}
+@keyframes aBolt{0%,62%,72%,100%{opacity:1}66%,76%{opacity:.25}}
+@keyframes aFog{0%,100%{transform:translateX(-2px)}50%{transform:translateX(2px)}}
+@media (prefers-reduced-motion:reduce){#nowIcon svg *{animation:none!important}}
 </style>
 </head>
 <body>
@@ -477,7 +522,7 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
         <div class="nowmain">
           <div class="nowtop">
             <div id="nowIcon"></div>
-            <div class="bigt" id="bigT">–°</div>
+            <div class="bigw"><div class="curk">Current</div><div class="bigt" id="bigT">–°</div></div>
           </div>
           <div>
             <div class="cond" id="cond">&nbsp;</div>
@@ -504,7 +549,7 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
       <div class="ph"><h2>10-day forecast</h2><button class="dclose" id="d10close">Done</button></div>
       <div class="dcols dhead" id="dcols">
         <span>Day</span><span>Sky</span><span>High · Low · Feels</span>
-        <span class="ctr">Rain</span><span class="ctr">Shoe</span><span class="ctr">UV</span><span class="ctr">Wind</span>
+        <span class="ctr">Rain</span><span class="ctr">Shoe</span><span class="ctr">Wind</span><span class="ctr">UV</span>
       </div>
       <div id="drows"></div>
     </section>
@@ -518,14 +563,14 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.20 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.21 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.20';
+const VER='2.21';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -548,6 +593,20 @@ const dateOf=s=>{const [y,m,d]=s.slice(0,10).split('-').map(Number);return new D
 const dayName=s=>dateOf(s).toLocaleDateString('en-US',{weekday:'short'});
 const dayDate=s=>dateOf(s).toLocaleDateString('en-US',{month:'short',day:'numeric'});
 const ico=(n,cls='')=>`<svg class="ic ${cls}" viewBox="0 0 48 48"><use href="#i-${n}"/></svg>`;
+/* animated version of each icon for the main "now" spot */
+const ANIM={
+  sun:'<g class="a-spin"><g class="a-glow"><g transform="translate(24 24) scale(1.3)"><use href="#sc" class="f-sun s-sun"/></g></g></g>',
+  moon:'<g class="a-bob"><circle cx="22" cy="26" r="15" class="f-moon a-glow" mask="url(#mm)"/></g>',
+  part:'<g class="a-spin2"><g transform="translate(17 17) scale(.95)"><use href="#sc" class="f-sun s-sun"/></g></g><g class="a-drift"><use href="#cl" class="f-cloud" transform="translate(6 5) scale(.88)"/></g>',
+  partn:'<g class="a-bob"><circle cx="19" cy="19" r="11" class="f-moon" mask="url(#mm2)" transform="translate(-2 0)"/></g><g class="a-drift"><use href="#cl" class="f-cloud" transform="translate(6 5) scale(.88)"/></g>',
+  cloud:'<g class="a-drift"><use href="#cl" class="f-cloud" transform="translate(-2 -1) scale(1.12)"/></g>',
+  cloud2:'<g class="a-drift2"><use href="#cl" class="f-cloud2" transform="translate(13 -5) scale(.8)"/></g><g class="a-drift"><use href="#cl" class="f-cloud" transform="translate(-3 3) scale(1.02)"/></g>',
+  rain:'<g stroke-width="2.9" stroke-linecap="round" fill="none" class="s-rain"><path class="a-drop" d="M16 33l-2.5 7"/><path class="a-drop d2" d="M25 33l-2.5 7"/><path class="a-drop d3" d="M34 33l-2.5 7"/></g><g class="a-drift"><use href="#cl" class="f-cloud2" transform="translate(0 -8)"/></g>',
+  snow:'<g fill="#fff"><circle class="a-flake" cx="15" cy="35" r="2.3"/><circle class="a-flake f2" cx="24" cy="40" r="2.3"/><circle class="a-flake f3" cx="33" cy="35" r="2.3"/><circle class="a-flake f4" cx="24" cy="32" r="1.6"/></g><g class="a-drift"><use href="#cl" class="f-cloud" transform="translate(0 -8)"/></g>',
+  thunder:'<path d="M27 26l-8 12h5l-3 9 11-14h-6l4-7z" class="f-sun a-bolt"/><g class="a-drift"><use href="#cl" class="f-cloud2" transform="translate(0 -8)"/></g>',
+  fog:'<g class="a-drift"><use href="#cl" class="f-cloud" transform="translate(0 -9)"/></g><g stroke-width="2.6" stroke-linecap="round" fill="none" class="s-cloud"><path class="a-fog" d="M11 32h26"/><path class="a-fog g2" d="M14 37.5h24"/><path class="a-fog" d="M11 43h20"/></g>'
+};
+const icoA=n=>ANIM[n]?`<svg class="ic" viewBox="0 0 48 48" style="overflow:visible">${ANIM[n]}</svg>`:ico(n);
 
 function wx(code,day=1){
   const n=!day;
@@ -913,9 +972,9 @@ function render(){
   $('#upd').textContent=(S.offline?'Offline · saved ':'Updated ')+new Date(j._at).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
 
   const w=wx(C.weather_code,C.is_day);
-  $('#nowIcon').innerHTML=ico(w.i);
+  $('#nowIcon').innerHTML=icoA(w.i);
   $('#bigT').textContent=fT(C.temperature_2m);
-    $('#hilo').textContent=`High ${fT(D.temperature_2m_max[0])}  ·  Low ${fT(D.temperature_2m_min[0])}`;
+  $('#hilo').innerHTML=`High <b>${fT(D.temperature_2m_max[0])}</b>&nbsp; · &nbsp;Low <b>${fT(D.temperature_2m_min[0])}</b>`;
 
   const feel=C.apparent_temperature, act=C.temperature_2m;
   const dF=Math.round(nT(feel))-Math.round(nT(act));
@@ -1136,13 +1195,13 @@ function renderDaily(j){
     out+=`<div class="drow${d===0?' today':''}">
       <div class="dd"><b>${d===0?'Today':dayName(date)}</b><span>${dayDate(date)}</span></div>
       <div class="ds">${ico(w.i)}<span>${esc(w.t)}</span></div>
-      <div class="dw">${esc(w.t)}</div>
+      <div class="dw">${esc(w.t).replace('Thunderstorms','Thunder&shy;storms')}</div>
       <div class="dhl"><span class="hi"><small>High</small><b>${fT(D.temperature_2m_max[d])}</b></span><span class="lo"><small>Low</small><b>${fT(D.temperature_2m_min[d])}</b></span><span class="fe"><small>Feels</small><b>${fT(fHi)}<em>/${fT(fLo)}</em></b></span></div>
       <div class="dm">
         ${x('Rain',`${DROP}${pp==null?'–':pp+'%'}`,sum>0?`${fP(sum)} · ${rw.t}`:'None',sum>0?rw.c:'')}
         ${x('Shoe',`${SHOE}<span style="color:${gd.c}">${gd.t}</span>`,'','','shoe')}
-        ${x('UV',`<span style="color:${ui.c}">${Math.round(uv)}</span>`,ui.l,ui.c)}
         ${x('Wind',`${fW(ws)}<em>${wUnit()}</em>`,esc(wword))}
+        ${x('UV',`<span style="color:${ui.c}">${Math.round(uv)}</span>`,ui.l,ui.c)}
       </div>
     </div>`;
   }
@@ -1290,7 +1349,7 @@ function fitText(){
   document.querySelectorAll('.bigt,.scol .tp,.st .gr,.st .k,.st .v,.st .w,.cond,.hilo,.upd,.scol .tm,.scol .fl,.rc .p,.rc .mm,.rc .aw,.sh,.scol .uv,.wd .ws,.wd .ww,#strip .ph h2,.hint,.loc span,.brand .t1').forEach(el=>{
     el.style.fontSize='';
     const left=el.closest('.nowmain'); let avail=left?leftAvail:inner(el.parentElement);
-    if(el.classList.contains('bigt')){ const ic=el.parentElement.querySelector('.ic'); avail=leftAvail-(ic?ic.getBoundingClientRect().width-22:0)-8 }
+    if(el.classList.contains('bigt')){ const ic=el.closest('.nowtop')?.querySelector('.ic'); avail=leftAvail-(ic?ic.getBoundingClientRect().width-22:0)-8 }
     if(!avail) return;
     rg.selectNodeContents(el); let w=rg.getBoundingClientRect().width, fs=parseFloat(getComputedStyle(el).fontSize);
     if(w>avail+0.5){ el.style.fontSize=Math.max(9,Math.floor(fs*avail/w*10)/10-0.2)+'px' }
