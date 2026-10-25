@@ -599,11 +599,11 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 .drow{transition:transform .22s cubic-bezier(.2,.8,.2,1),background .22s,box-shadow .22s}
 .drow.hold{transform:scale(.97);box-shadow:0 0 0 2px rgba(255,208,74,.75),0 10px 28px rgba(0,0,0,.3)}
 .drow.pop{transform:scale(1.02);box-shadow:0 0 0 3px #ffd04a,0 14px 34px rgba(0,0,0,.35)}
-.daybadge{display:none;align-self:flex-start;flex:none;align-items:center;gap:7px;margin:0 0 8px 0;padding:6px 8px 6px 13px;border-radius:999px;
+.daybadge{display:none;align-self:flex-start;flex:none;align-items:center;gap:7px;margin:0;padding:6px 8px 6px 13px;border-radius:999px;
   background:#ffd04a;color:#1a1300;font-size:13px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;white-space:nowrap;text-shadow:none;
   box-shadow:0 6px 16px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.55)}
 .daybadge i{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:rgba(26,19,0,.18);font-style:normal;font-size:12px;line-height:1}
-body.dayv #mode{display:none}
+body.dayv #locBtn{display:none}
 body.dayv .daybadge{display:inline-flex}
 body.dayv .now::after{content:"";position:absolute;inset:-7px;border:4px solid #ffd04a;border-radius:30px;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.28)}
 body.d10 .dloc{display:none}
@@ -653,10 +653,10 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
         <span id="locName">Loading…</span>
         <svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg>
       </button>
+      <button class="daybadge" id="dayb" aria-label="Back to the 10-day list"></button>
       <div class="pager" id="pager" aria-live="polite"></div>
       <div class="nowbody">
         <div class="nowmain">
-          <button class="curk daybadge" id="dayb" aria-label="Close day page"></button>
           <div class="curk mode" id="mode" role="group" aria-label="Show"><button data-m="now" class="on">Current</button><button data-m="eve">Tonight</button></div>
           <div class="nowtop">
             <div id="nowIcon"></div>
@@ -701,14 +701,14 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.35 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.36 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.35';
+const VER='2.36';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1117,7 +1117,7 @@ function render(){
   const nowStr=j.current.time.slice(0,13)+':00';
   let idx=H.time.findIndex(t=>t>=nowStr); if(idx<0) idx=0; idx=Math.min(idx,H.time.length-24); S.nowIdx=idx;
   if(DV) idx=DV.start; S.idx=idx;
-  const E=(!DV&&S.mode==='eve')?evening(j,C):null, V=E?E.C:C;   // V = what the top section shows
+  const E=S.mode==='eve'?evening(j,C,DV?DV.date:null):null, V=E?E.C:C;   // V = what the top section shows
   document.querySelectorAll('#mode button').forEach(b=>b.classList.toggle('on',b.dataset.m===(E?'eve':'now')));
   applySky(V); FX.set(fxCfg(V));
 
@@ -1126,9 +1126,10 @@ function render(){
   { const ev=`<span class="evt">${(E?E.tom:+C.time.slice(11,13)>=22)?'Tomorrow':'Tonight'} 6–10 PM</span>`, up=`<span class="evu">${S.offline?'Offline · saved ':'Updated '}${new Date(j._at).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</span>`;
     // same two lines in both modes (Current keeps an invisible copy below) so the Current/Tonight switch never shifts
     $('#upd').innerHTML=E?ev+up:up+ev.replace('class="evt"','class="evt ghost" aria-hidden="true"');
-    if(DV) $('#upd').innerHTML=`<span class="evt">${dd===1?'Tomorrow':'In '+dd+' days'}</span><span class="evu">Forecast · updated ${new Date(j._at).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</span>`; }
+    if(DV) $('#upd').innerHTML=`<span class="evt">${E?'Night 6–10 PM':dd===1?'Tomorrow':'In '+dd+' days'}</span><span class="evu">Forecast · updated ${new Date(j._at).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</span>`; }
   { const db=$('#dayb'); if(DV) db.innerHTML=`${dayName(DV.date)} · ${dayDate(DV.date)}<i aria-hidden="true">✕</i>`; }
   document.body.classList.toggle('dayv',!!DV); syncBtn();
+  { const mb=document.querySelectorAll('#mode button'); mb[0].textContent=DV?'All day':'Current'; mb[1].textContent=DV?'Night':'Tonight'; }
   document.querySelectorAll('#drows .drow').forEach((r,i)=>r.classList.toggle('viewing',!!DV&&i===dd));
   { const hd=DV?`${dayName(DV.date)} hourly`:'Next 24 hours'; document.querySelectorAll('#strip .ph h2,#hourly .ph h2').forEach(h=>h.textContent=hd); }
 
@@ -1161,7 +1162,7 @@ function render(){
     tile('Sunrise',t12(D.sunrise[dd]),dlTxt)+
     tile('Sunset',t12(D.sunset[dd]),D.sunset[dd+1]?`${DV?dayName(D.time[dd+1]):'Tomorrow'} ${clock(D.sunset[dd+1])}`:'');
 
-  const uvS=E?E.uv:uvNow, uvI=uvInfo(uvS), uvR=Math.max(0,Math.round(uvS)), gr=DV?DV.gd:ground(j,V,E?E.end:idx);
+  const uvS=E?E.uv:uvNow, uvI=uvInfo(uvS), uvR=Math.max(0,Math.round(uvS)), gr=(DV&&!E)?DV.gd:ground(j,V,E?E.end:idx);
   const st=(k,v,cls='',w='')=>`<div class="st ${cls}"><div class="k">${k}</div><div class="v">${v}</div>${w?`<div class="w">${w}</div>`:''}</div>`;
   $('#nowSide').innerHTML=
     st('Feels like',fT(feel),'big')+
@@ -1170,9 +1171,9 @@ function render(){
     st('Wind',`${fW(V.wind_speed_10m)}<small>${wUnit()}</small>`,'wind',esc(windWord(V.wind_speed_10m,V.wind_gusts_10m)));
   // rain/snow so far today, shown beside the condition when it's coming down
   let sofar=0; H.time.forEach((t,i)=>{if(t.startsWith(D.time[0])&&i<=idx)sofar+=H.precipitation[i]??0});
-  const falling=DV?DV.sum>0:(WET(V.weather_code)||SNOWY(V.weather_code)||(V.precipitation||0)>0);
+  const falling=DV?(E?E.mm>0:DV.sum>0):(WET(V.weather_code)||SNOWY(V.weather_code)||(V.precipitation||0)>0);
   const ct=(w.i==='rain'||w.i==='thunder')?w.t+' - No Silk':w.t;
-  const acc=DV?`${fP(DV.sum)} expected`:E?(E.mm>0?fP(E.mm):`${Math.round(E.pop)}% chance`):(sofar>0?fP(sofar)+' today':'just started');
+  const acc=DV?`${fP(E?E.mm:DV.sum)} expected`:E?(E.mm>0?fP(E.mm):`${Math.round(E.pop)}% chance`):(sofar>0?fP(sofar)+' today':'just started');
   $('#cond').innerHTML=esc(ct)+(falling?` <span class="acc">${acc}</span>`:'');
 
   renderStrip(j,C); renderHourly(j); renderDaily(j); renderReadout();
@@ -1180,8 +1181,8 @@ function render(){
   slideIn();
 }
 /* Tonight: everything from 6 to 10 PM rolled into one (tomorrow's evening once it's past 10 PM) */
-function evening(j,C){
-  const H=j.hourly, hr=+C.time.slice(11,13), tom=hr>=22, day=tom?j.daily.time[1]:C.time.slice(0,10);
+function evening(j,C,dayStr){
+  const H=j.hourly, hr=+C.time.slice(11,13), tom=dayStr?false:hr>=22, day=dayStr||(tom?j.daily.time[1]:C.time.slice(0,10));
   if(!day) return null;
   const ix=[]; H.time.forEach((t,i)=>{if(t.startsWith(day)){const h=+t.slice(11,13); if(h>=18&&h<=22) ix.push(i)}});
   if(!ix.length) return null;
@@ -1618,7 +1619,7 @@ $('#btn10').onclick=()=>{
 function openDay(d){
   if(!S.data) return;
   if(d===0){ set10(false); return }          // today's row = the Today page itself
-  S.day=d; S.sel=0; S.exiting=false;
+  S.day=d; S.sel=0; S.exiting=false; S.mode='now';
   render();
   const cols=$('#scols').children; if(cols[6]){ $('#sscroll').scrollLeft=cols[6].offsetLeft-cols[0].offsetLeft }   // start the hour strip at 6 AM
   const hs=$('#hscroll'); if(hs) hs.scrollLeft=0;
@@ -1626,12 +1627,12 @@ function openDay(d){
 }
 function leaveDay(){                        // phone: 10-day list returns from the left; Today is restored once it covers the page
   S.exiting=true; set10(true);
-  setTimeout(()=>{ S.day=null; S.sel=0; S.exiting=false; if(S.data) render(); syncBtn() },420);
+  setTimeout(()=>{ S.day=null; S.sel=0; S.mode='now'; S.exiting=false; if(S.data) render(); syncBtn() },420);
 }
 function exitDay(){
   if(!document.body.classList.contains('dayv')) return;
   if(phoneMQ.matches){ d10Side(-1); leaveDay() }
-  else { S.day=null; S.sel=0; if(S.data) render() }
+  else { S.day=null; S.sel=0; S.mode='now'; if(S.data) render() }
 }
 $('#dayb').onclick=exitDay;
 (function(){
@@ -1657,7 +1658,7 @@ $('#d10close').onclick=()=>set10(false);
   const isOn=()=>document.body.classList.contains('d10'), W=()=>innerWidth;
   let g=null;
   const start=from=>e=>{
-    if(!phone.matches||e.touches.length!==1||cycling||e.target.closest('input')) {g=null;return}
+    if(!phone.matches||e.touches.length!==1||cycling||e.target.closest('input')||document.body.classList.contains('dayv')) {g=null;return}
     const on=isOn(); if((from==='now')===on){g=null;return}
     const t=e.touches[0]; g={x:t.clientX,y:t.clientY,t:Date.now(),on,lock:null,dx:0};
   };
