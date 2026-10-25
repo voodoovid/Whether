@@ -579,7 +579,8 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 /* v2.28/2.29: Tonight label larger with Updated on its own line; smaller counter sits above the switch */
 .upd .evt,.upd .evu{display:block}
 .upd .evt{font-size:1.4em;font-weight:800;color:#fff;letter-spacing:.2px;line-height:1.2}
-.upd .evt+.evu{margin-top:3px}
+.upd .evt+.evu,.upd .evu+.evt{margin-top:3px}
+.upd .evt.ghost{visibility:hidden}
 .pager{font-size:12px;padding:2px 10px;letter-spacing:.3px;transform:translateY(4px)}
 .pager.on{transform:none}
 </style>
@@ -671,14 +672,14 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.29 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.30 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.29';
+const VER='2.30';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1088,7 +1089,9 @@ function render(){
 
   $('#locName').textContent=S.loc.name;
   $('#uC').classList.toggle('on',met()); $('#uF').classList.toggle('on',!met());
-  $('#upd').innerHTML=(E?`<span class="evt">${E.tom?'Tomorrow':'Tonight'} 6–10 PM</span>`:'')+`<span class="evu">${S.offline?'Offline · saved ':'Updated '}${new Date(j._at).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</span>`;
+  { const ev=`<span class="evt">${(E?E.tom:+C.time.slice(11,13)>=22)?'Tomorrow':'Tonight'} 6–10 PM</span>`, up=`<span class="evu">${S.offline?'Offline · saved ':'Updated '}${new Date(j._at).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</span>`;
+    // same two lines in both modes (Current keeps an invisible copy below) so the Current/Tonight switch never shifts
+    $('#upd').innerHTML=E?ev+up:up+ev.replace('class="evt"','class="evt ghost" aria-hidden="true"'); }
 
   const w=wx(V.weather_code,V.is_day);
   $('#nowIcon').innerHTML=icoA(w.i);
