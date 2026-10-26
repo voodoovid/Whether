@@ -650,10 +650,13 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 .v-loc .chev{width:10px;height:10px;fill:none;stroke:rgba(255,255,255,.75);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .v-badge{display:inline-flex;align-items:center;gap:7px;padding:6px 7px 6px 12px;border-radius:999px;background:#ffd04a;border-color:#ffd04a;color:#1a1300;font-size:12px;font-weight:900;letter-spacing:.6px;text-transform:uppercase}
 .v-badge i{display:inline-grid;place-items:center;width:19px;height:19px;border-radius:50%;background:rgba(26,19,0,.2);font-style:normal;font-size:13px;line-height:1}
-.v-btns{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:9px}
+.gi.gw{flex-wrap:wrap}
+.v-btns{display:flex;align-items:center;justify-content:center;gap:7px;flex:0 0 100%;margin-top:2px}
 .v-badge.s{font-size:10px;gap:5px;padding:4px 5px 4px 9px;letter-spacing:.4px}
 .v-badge.s i{width:15px;height:15px;font-size:10px}
-.v-pill.s{font-size:11px;padding:5px 10px}
+.v-pill.s{font-size:11.5px;padding:6px 9px;background:#ffd04a;border-color:#ffd04a;color:#1a1300;box-shadow:none}
+.v-or{font-size:13px;font-weight:700;color:rgba(255,255,255,.86)}
+.gw1{font-size:19.5px;font-weight:800;letter-spacing:-.3px;color:#fff}
 .gor{color:#f4b942;font-weight:800}
 .v-circ{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;font-size:17px;font-weight:800}
 .v-circ svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
@@ -778,26 +781,26 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.51 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.52 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
   <div class="gc">
     <div class="gh">
       <img src="icon-192.png" alt="" width="40" height="40">
-      <div class="gt"><h2 id="gTitle">Quick Guide</h2><p id="gVer">Whether <span class="gor">(or not)</span></p></div>
+      <div class="gt"><h2 id="gTitle">Quick Guide</h2><p id="gVer"><span class="gw1">Whether</span> <span class="gor">(or not)</span></p></div>
       <button id="gClose">Done</button>
     </div>
     <div class="gb">
       <div class="gi"><div class="gv"><div class="v-seg"><span class="on">Current</span><span>Tonight</span></div></div><div class="gx"><b>Current / Tonight</b><span>Now, or the 6–10 PM summary. From 9 PM on, Tonight shows tomorrow's 6–10 PM.</span></div></div>
-      <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><rect x="8" y="2" width="30" height="40" rx="9"/><rect x="49" y="2" width="30" height="40" rx="9"/><rect x="90" y="2" width="30" height="40" rx="9"/><path class="ar" d="M22 50H106M28 45L22 50L28 55M100 45L106 50L100 55"/></svg></div><div class="gx"><b>Hourly panel</b><span>Swipe sideways for more hours.</span></div></div>
+      <div class="gi"><div class="gv"><div id="gShoe" class="v-shoe"></div><div class="v-dots"><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#9ad9ff"></i><i style="--c:#46b0ff"></i><i style="--c:#5a95ff"></i><i style="--c:#ff9f2e"></i><i style="--c:#ff3b3b"></i><i style="--c:#ff6a2e"></i></div></div><div class="gx"><b>Shoe conditions</b><span>Dry, Frosty, Damp, Wet, Puddles, Slushy, Icy, Snowy.</span></div></div>
+      <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><rect x="8" y="2" width="30" height="40" rx="9"/><rect x="49" y="2" width="30" height="40" rx="9"/><rect x="90" y="2" width="30" height="40" rx="9"/><svg x="11" y="8" width="24" height="24" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-sun"/></svg><svg x="52" y="8" width="24" height="24" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-part"/></svg><svg x="93" y="8" width="24" height="24" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-rain"/></svg><path class="ar" d="M22 50H106M28 45L22 50L28 55M100 45L106 50L100 55"/></svg></div><div class="gx"><b>Hourly panel</b><span>Swipe sideways for more hours.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">10-Day</span><svg class="v-ar" viewBox="0 0 28 16" aria-hidden="true"><path d="M3 8H25M9 2L3 8l6 6M19 2l6 6-6 6"/></svg></div></div><div class="gx"><b>10-Day forecast</b><span>Swipe left or right over the Current temp to open the 10-Day forecast.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-loc"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>City</span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></div></div><div class="gx"><b>Location</b><span>Tap to search or pick a saved location.</span></div></div>
       <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Cycle Through Saved Locations</b><span>Swipe up or down on the main screen.</span></div></div>
-      <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">10-Day</span><svg class="v-ar" viewBox="0 0 28 16" aria-hidden="true"><path d="M3 8H25M9 2L3 8l6 6M19 2l6 6-6 6"/></svg></div></div><div class="gx"><b>10-Day forecast</b><span>Swipe left or right to go in or out of the 10-Day forecast.</span></div></div>
-      <div class="gi"><div class="gv"><div class="v-hold" aria-hidden="true"><div class="hg"><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr pick"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div></div><div class="fg"></div><div class="hs"><div class="bd">SAT<i>×</i></div><div class="cols"><u style="--h:30%"></u><u style="--h:62%"></u><u style="--h:45%"></u><u style="--h:78%"></u></div></div></div></div><div class="gx"><b>Get Hourly for any day</b><span>In the 10-Day list, press and hold a day to open its hourly details. To go back, press the yellow date or Back to 10-Day:</span><div class="v-btns"><div class="v-badge s">Sat · Oct 31<i aria-hidden="true">✕</i></div><div class="v-pill s">Back to 10-Day</div></div></div></div>
+      <div class="gi gw"><div class="gv"><div class="v-hold" aria-hidden="true"><div class="hg"><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr pick"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div></div><div class="fg"></div><div class="hs"><div class="bd">SAT<i>×</i></div><div class="cols"><u style="--h:30%"></u><u style="--h:62%"></u><u style="--h:45%"></u><u style="--h:78%"></u></div></div></div></div><div class="gx"><b>Get Hourly for any day</b><span>In the 10-Day list, press and hold a day to open its hourly details. To go back:</span></div><div class="v-btns"><div class="v-badge s">Sat · Oct 31<i aria-hidden="true">✕</i></div><div class="v-or">or</div><div class="v-pill s">Back to 10-Day</div></div></div>
       <div class="gi"><div class="gv"><div class="v-seg u"><span class="on">°C</span><span>°F</span></div></div><div class="gx"><b>Units</b><span>Switch °C and °F.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-circ"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg></span><span class="v-circ q">?</span></div></div><div class="gx"><b>Refresh and Guide</b><span>Reload the forecast, or reopen this guide.</span></div></div>
-      <div class="gi"><div class="gv"><div id="gShoe" class="v-shoe"></div><div class="v-dots"><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#9ad9ff"></i><i style="--c:#46b0ff"></i><i style="--c:#5a95ff"></i><i style="--c:#ff9f2e"></i><i style="--c:#ff3b3b"></i><i style="--c:#ff6a2e"></i></div></div><div class="gx"><b>Shoe conditions</b><span>Dry, Frosty, Damp, Wet, Puddles, Slushy, Icy, Snowy.</span></div></div>
     </div>
   </div>
 </div>
@@ -805,7 +808,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.51';
+const VER='2.52';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1801,7 +1804,7 @@ $('#d10close').onclick=()=>set10(false);
 })();
 $('#locBtn').onclick=openSheet; $('#dlocBtn').onclick=openSheet;
 /* quick guide */
-function openGuide(){ $('#gShoe').innerHTML=SHOE; $('#gVer').innerHTML='Whether <span class="gor">(or not)</span> · v'+VER; $('#guide').hidden=false; $('#guide .gb').scrollTop=0 }
+function openGuide(){ $('#gShoe').innerHTML=SHOE; $('#gVer').innerHTML='<span class="gw1">Whether</span> <span class="gor">(or not)</span> · v'+VER; $('#guide').hidden=false; $('#guide .gb').scrollTop=0 }
 function closeGuide(){ $('#guide').hidden=true }
 $('#helpBtn').onclick=openGuide; $('#gClose').onclick=closeGuide;
 $('#guide').addEventListener('click',e=>{ if(e.target.id==='guide') closeGuide() });
