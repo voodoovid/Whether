@@ -378,7 +378,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .dhl span{display:flex;flex-direction:column;line-height:1.05}
 .dhl small{font-size:9.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#fff;opacity:.85}
 .dhl b{font-size:19px;font-weight:800} .dhl .lo b{font-weight:600}
-.dhl .rm{display:none}   /* v2.76: shown on iPad landscape only */
 .dx{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.12;min-width:0;font-variant-numeric:tabular-nums;color:#fff}
 .dx>small{display:none}
 .dx b{font-size:16px;font-weight:800;display:flex;align-items:center;gap:4px;white-space:nowrap}
@@ -796,12 +795,6 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
   .dx i{display:block;width:100%;font-size:14px;line-height:1.1;white-space:nowrap;overflow:visible;text-overflow:clip;text-align:center;margin:0}
   .dx i u{display:block;text-decoration:none}
   .dhl small{font-size:8.5px;letter-spacing:.2px;white-space:nowrap}
-  /* v2.76: iPad landscape only: rain amount sits beside Low (feels) with its own heading, freeing the Rain box for % and the word */
-  .drow,.drow.today{grid-template-columns:60px 44px minmax(0,2.4fr) repeat(4,minmax(0,1fr))}
-  .dhl{grid-template-columns:minmax(0,1.1fr) minmax(0,1.1fr) minmax(0,.8fr)}
-  .dhl .rm{display:flex}
-  .dhl .rm b{font-weight:800}
-  .dx.rain i u:first-child{display:none}
   .dx svg.shoe{width:22px;height:22px}
   .dx.shoe b{flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:17px;line-height:1.05}
   .dx>b{margin-top:0}
@@ -924,7 +917,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.76 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.75 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -952,7 +945,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.76';
+const VER='2.75';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -1691,7 +1684,7 @@ function renderDaily(j){
       <div class="dd"><b>${d===0?'Today':dayName(date)}</b><span>${dayDate(date)}</span></div>
       <div class="ds">${ico(w.i)}<span>${esc(w.t)}</span></div>
       <div class="dw">${esc(w.t).replace('Thunderstorms','Thunder&shy;storms')}</div>
-      <div class="dhl"><span class="hi"><small>High (feels)</small><b>${fT(D.temperature_2m_max[d])}<em>(${fT(fHi)})</em></b></span><span class="lo"><small>Low (feels)</small><b>${fT(D.temperature_2m_min[d])}<em>(${fT(fLo)})</em></b></span><span class="rm"><small>Rain ${met()?'mm':'in'}</small><b>${met()?(sum>0?(sum<10?sum.toFixed(1):Math.round(sum)):'0'):(sum/25.4).toFixed(2)}</b></span></div>
+      <div class="dhl"><span class="hi"><small>High (feels)</small><b>${fT(D.temperature_2m_max[d])}<em>(${fT(fHi)})</em></b></span><span class="lo"><small>Low (feels)</small><b>${fT(D.temperature_2m_min[d])}<em>(${fT(fLo)})</em></b></span></div>
       <div class="dm">
         ${x('Rain',`${DROP}${pp==null?'–':pp+'%'}`,sum>0?`<u>${fP(sum)}</u><u>${rw.t}</u>`:'None',sum>0?rw.c:'','rain')}
         ${x('Shoe',`${SHOE}<span style="color:${gd.c}">${gd.t}</span>`,'','','shoe')}
