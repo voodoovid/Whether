@@ -660,6 +660,28 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 .v-shoe svg{width:30px;height:30px;display:block}
 .v-dots{display:flex;gap:5px}
 .v-dots i{width:11px;height:11px;border-radius:50%;background:var(--c);box-shadow:0 0 0 1.5px rgba(255,255,255,.22)}
+/* v2.49: animated guide graphic: press and hold a day in the 10-day grid, a mini day screen opens */
+.v-hold{position:relative;width:130px;height:84px;margin:0 auto}
+.v-hold .hg,.v-hold .hs{position:absolute;inset:0}
+.v-hold .hg{display:flex;flex-direction:column;gap:4px;animation:hgA 5.6s ease-in-out infinite}
+.v-hold .hr{display:flex;align-items:center;gap:5px;height:17px;padding:0 6px;border-radius:7px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);box-sizing:border-box}
+.v-hold .hr b{flex:none;width:20px;height:5px;border-radius:3px;background:rgba(255,255,255,.7)}
+.v-hold .hr i{flex:1;height:7px;border-radius:3px;background:var(--c)}
+.v-hold .hr.pick{animation:pickA 5.6s ease-in-out infinite}
+.v-hold .fg{position:absolute;left:78px;top:29.5px;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:rgba(255,255,255,.55);box-shadow:0 0 0 2px rgba(255,255,255,.9),0 3px 8px rgba(0,0,0,.35);opacity:0;animation:fgA 5.6s ease-in-out infinite}
+.v-hold .fg::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2.5px solid #ffd04a;opacity:0;animation:rgA 5.6s ease-out infinite}
+.v-hold .hs{display:flex;flex-direction:column;align-items:center;gap:6px;padding:7px 8px;box-sizing:border-box;border-radius:12px;background:rgba(10,24,48,.78);border:1.5px solid #ffd04a;opacity:0;animation:hsA 5.6s ease-in-out infinite}
+.v-hold .bd{display:inline-flex;align-items:center;gap:4px;padding:2px 3px 2px 8px;border-radius:999px;background:#ffd04a;color:#1a1300;font-size:9px;font-weight:900;letter-spacing:.5px;line-height:1.2}
+.v-hold .bd i{display:grid;place-items:center;width:11px;height:11px;border-radius:50%;background:rgba(26,19,0,.2);font-style:normal;font-size:9px;line-height:1}
+.v-hold .cols{flex:1;width:100%;display:flex;gap:5px;min-height:0}
+.v-hold .cols u{flex:1;position:relative;overflow:hidden;border-radius:5px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);text-decoration:none}
+.v-hold .cols u::after{content:"";position:absolute;left:3px;right:3px;bottom:3px;height:var(--h);border-radius:3px;background:#46b0ff}
+@keyframes hgA{0%,56%{opacity:1;transform:scale(1)}64%,90%{opacity:0;transform:scale(.92)}100%{opacity:1;transform:scale(1)}}
+@keyframes hsA{0%,56%{opacity:0;transform:scale(1.08)}64%,88%{opacity:1;transform:scale(1)}96%,100%{opacity:0;transform:scale(1.08)}}
+@keyframes pickA{0%,24%{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28)}34%,56%{background:rgba(255,208,74,.38);border-color:#ffd04a}62%,100%{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28)}}
+@keyframes fgA{0%,14%{opacity:0;transform:scale(1.5)}22%{opacity:1;transform:scale(1)}27%,56%{opacity:1;transform:scale(.88)}62%,100%{opacity:0;transform:scale(1)}}
+@keyframes rgA{0%,27%{opacity:0;transform:scale(.55)}30%{opacity:1;transform:scale(.55)}56%{opacity:1;transform:scale(1.2)}60%,100%{opacity:0;transform:scale(1.2)}}
+@media (prefers-reduced-motion:reduce){.v-hold .hg,.v-hold .hr.pick,.v-hold .fg,.v-hold .fg::after{animation:none}.v-hold .hs{display:none}.v-hold .fg{opacity:1}}
 </style>
 </head>
 <body>
@@ -751,7 +773,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.48 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.49 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -765,9 +787,9 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
       <div class="gi"><div class="gv"><div class="v-seg"><span class="on">Current</span><span>Tonight</span></div></div><div class="gx"><b>Current / Tonight</b><span>Now, or the 6–10 PM summary.</span></div></div>
       <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><rect x="8" y="2" width="30" height="40" rx="9"/><rect x="49" y="2" width="30" height="40" rx="9"/><rect x="90" y="2" width="30" height="40" rx="9"/><path class="ar" d="M22 50H106M28 45L22 50L28 55M100 45L106 50L100 55"/></svg></div><div class="gx"><b>Hourly panel</b><span>Swipe sideways for more hours.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-loc"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>City</span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></div></div><div class="gx"><b>Location</b><span>Tap to search or pick a saved place.</span></div></div>
-      <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Saved places</b><span>Swipe up or down on the main screen.</span></div></div>
-      <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">10-Day</span><svg class="v-ar" viewBox="0 0 28 16" aria-hidden="true"><path d="M26 8H3M9 2L3 8l6 6"/></svg></div></div><div class="gx"><b>10-Day forecast</b><span>Tap, or swipe left. Swipe right to return.</span></div></div>
-      <div class="gi"><div class="gv"><div class="v-badge">Sat · Oct 31 <i>×</i></div></div><div class="gx"><b>Hourly for any day</b><span>In the 10-Day list, press and hold a day to see its hourly details. Tap × to go back.</span></div></div>
+      <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Cycle Through Saved Locations</b><span>Swipe up or down on the main screen.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">10-Day</span><svg class="v-ar" viewBox="0 0 28 16" aria-hidden="true"><path d="M3 8H25M9 2L3 8l6 6M19 2l6 6-6 6"/></svg></div></div><div class="gx"><b>10-Day forecast</b><span>Swipe left or right to go in or out of the 10-Day forecast.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-hold" aria-hidden="true"><div class="hg"><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr pick"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div></div><div class="fg"></div><div class="hs"><div class="bd">SAT<i>×</i></div><div class="cols"><u style="--h:30%"></u><u style="--h:62%"></u><u style="--h:45%"></u><u style="--h:78%"></u></div></div></div></div><div class="gx"><b>Hourly for any day</b><span>In the 10-Day list, press and hold a day to open its hourly details. Tap × to go back.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-seg u"><span class="on">°C</span><span>°F</span></div></div><div class="gx"><b>Units</b><span>Switch °C and °F.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-circ"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg></span><span class="v-circ q">?</span></div></div><div class="gx"><b>Refresh and Guide</b><span>Reload the forecast, or reopen this guide.</span></div></div>
       <div class="gi"><div class="gv"><div id="gShoe" class="v-shoe"></div><div class="v-dots"><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#9ad9ff"></i><i style="--c:#46b0ff"></i><i style="--c:#5a95ff"></i><i style="--c:#ff9f2e"></i><i style="--c:#ff3b3b"></i><i style="--c:#ff6a2e"></i></div></div><div class="gx"><b>Shoe conditions</b><span>Dry, Frosty, Damp, Wet, Puddles, Slushy, Icy, Snowy.</span></div></div>
@@ -778,7 +800,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.48';
+const VER='2.49';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
