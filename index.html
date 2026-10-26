@@ -904,7 +904,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.68 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.69 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -932,7 +932,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.68';
+const VER='2.69';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -1793,7 +1793,7 @@ $('#gps').addEventListener('click',()=>{
   // v2.68: works from anywhere on the left half in iPad landscape; a cancelled touch (iPad scroll takeover) still counts using the last finger position
   const app=$('#app'), phone=LIKE; let g=null;
   app.addEventListener('touchstart',e=>{
-    if(!phone.matches||e.touches.length!==1||document.body.classList.contains('d10')||document.body.classList.contains('dayv')||e.target.closest('#daily,input,a,#sheet,.sheet')){g=null;return}
+    if(!phone.matches||e.touches.length!==1||document.body.classList.contains('d10')||document.body.classList.contains('dayv')||e.target.closest('input,a,#sheet,.sheet')||(e.target.closest('#daily')&&(matchMedia('(max-width:900px)').matches||(()=>{const r=$('#drows');return r&&r.scrollHeight>r.clientHeight+2})()))){g=null;return}   // v2.69: on iPad landscape the 10-day list swipes locations too (unless it needs to scroll)
     const t=e.touches[0]; g={x:t.clientX,y:t.clientY,lx:t.clientX,ly:t.clientY,t:Date.now()};
   },{passive:true});
   app.addEventListener('touchmove',e=>{ if(!g) return; const t=e.touches[0]; g.lx=t.clientX; g.ly=t.clientY },{passive:true});
