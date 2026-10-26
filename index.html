@@ -194,7 +194,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .vtag{font-size:11px;font-weight:800;letter-spacing:.3px;color:var(--mute);background:rgba(255,255,255,.12);padding:2px 7px;border-radius:999px;align-self:center;margin-left:-2px}
 #btn10,.dclose{display:none}
 .cond .acc{display:inline-block;vertical-align:.18em;font-size:.62em;font-weight:800;color:#dff0ff;background:rgba(74,168,255,.32);padding:.15em .6em;border-radius:999px;white-space:nowrap;text-shadow:none}
-@media (max-width:900px){
+@media (max-width:900px), (min-width:901px) and (min-height:600px) and (orientation:landscape){
   :root{--lab:74px;--colmin:46px}
   html,body{height:100vh;height:100lvh;overflow:hidden}
   #app{height:100vh;height:100lvh;overflow:hidden;display:flex;flex-direction:column;gap:10px;padding:calc(env(safe-area-inset-top) + 8px) max(12px,env(safe-area-inset-right)) max(8px,calc(env(safe-area-inset-bottom) - 16px)) max(12px,env(safe-area-inset-left))}
@@ -391,7 +391,7 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
   .dcols,.drow{grid-template-columns:62px minmax(92px,1.1fr) 88px repeat(5,minmax(0,1fr));gap:4px}
   .dhl{gap:8px} .dhl b{font-size:16px} .dx b{font-size:14px} .dx i{font-size:10.5px}
 }
-@media (max-width:900px){
+@media (max-width:900px), (min-width:901px) and (min-height:600px) and (orientation:landscape){
   .drow{grid-template-columns:62px 44px minmax(0,1fr) auto;grid-template-areas:"dd ds dw dhl" "dm dm dm dm";row-gap:10px;column-gap:8px;padding:12px 8px}
   .dd{grid-area:dd} .dd b{font-size:18px} .dd span{font-size:13px}
   .ds{grid-area:ds} .ds .ic{font-size:44px}
@@ -416,7 +416,7 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 @media (min-width:901px) and (max-width:1290px){
   .dcols,.drow{grid-template-columns:62px minmax(88px,1fr) 140px repeat(4,minmax(0,1fr))}
 }
-@media (max-width:900px){
+@media (max-width:900px), (min-width:901px) and (min-height:600px) and (orientation:landscape){
   .bar{position:relative;z-index:41}
   #daily{top:var(--barH,0px);padding-top:10px}
   body.d10 .dclose{display:none}
@@ -439,7 +439,7 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 @media (min-width:901px) and (max-width:1290px){ .dhl .fe b{font-size:16px} }
 .curk{font-size:15px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#fff;line-height:1;margin:0 0 6px 4px;text-shadow:var(--ol,0 1px 4px rgba(0,0,0,.4))}
 .hilo b{font-weight:800;color:#fff;font-size:1.3em}
-@media (max-width:900px){
+@media (max-width:900px), (min-width:901px) and (min-height:600px) and (orientation:landscape){
   .drow{grid-template-columns:54px 40px minmax(0,1fr) auto;column-gap:6px}
   .dw{font-size:14.5px;line-height:1.12;-webkit-hyphens:auto;hyphens:auto;overflow-wrap:break-word}
   .dhl{gap:9px}
@@ -478,7 +478,7 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 /* v2.22: temps further left, Feels centred and bracketed, tighter boxes, side-swipe between Today and 10-day */
 .dhl .fe{align-items:center}
 .dhl .fe b{font-weight:700}
-@media (max-width:900px){
+@media (max-width:900px), (min-width:901px) and (min-height:600px) and (orientation:landscape){
   .drow{grid-template-columns:52px 40px 64px minmax(0,1fr);column-gap:6px}
   .dw{font-size:13.5px;line-height:1.1}
   .drow{grid-template-columns:50px 38px 60px minmax(0,1fr);column-gap:5px;padding-left:6px;padding-right:6px}
@@ -505,7 +505,7 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 }
 @media (prefers-reduced-motion:reduce){ #daily,.now,#strip{transition:none!important} }
 .dloc{display:none}
-@media (max-width:900px){
+@media (max-width:900px), (min-width:901px) and (min-height:600px) and (orientation:landscape){
   #daily .ph{flex-wrap:nowrap;gap:10px}
   #daily .ph h2{flex:none}
   .dloc{display:inline-flex;margin:0;align-self:center;min-width:0;flex:0 1 auto;font-size:16px;text-shadow:var(--ol)}
@@ -514,7 +514,7 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 .dhl .fe b{display:inline-flex;align-items:baseline}
 .dhl .fe b span{display:inline-block}
 .dhl .fe b span+span{margin-left:.55em}
-@media (max-width:900px){
+@media (max-width:900px), (min-width:901px) and (min-height:600px) and (orientation:landscape){
   #daily{padding-top:var(--locPad,10px)}
   #daily .ph{margin-bottom:10px;min-height:0;padding:0}
   #daily .ph h2{display:none}
@@ -547,7 +547,7 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 /* v2.25: High (feels) / Low (feels); 10-day sits on the same sky and glass boxes as Today */
 .dhl b em{font-style:normal;font-weight:700;margin-left:.3em}
 @media (min-width:901px){ .dhl{gap:16px} }
-@media (max-width:900px){
+@media (max-width:900px), (min-width:901px) and (min-height:600px) and (orientation:landscape){
   .dhl{grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:6px}
   .dhl b{font-size:calc(23px*var(--dk,1))}
   body.d10 .now,body.d10 #strip{opacity:0}
@@ -564,7 +564,7 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 .pager{left:0;top:0;padding:5px 15px;font-size:15px;font-weight:800;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);
   box-shadow:0 6px 16px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.2);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
   text-shadow:-1px -1px 0 rgba(0,0,0,.55),1px -1px 0 rgba(0,0,0,.55),-1px 1px 0 rgba(0,0,0,.55),1px 1px 0 rgba(0,0,0,.55);font-variant-numeric:tabular-nums}
-@media (max-width:900px){
+@media (max-width:900px), (min-width:901px) and (min-height:600px) and (orientation:landscape){
   #drows{gap:8px;padding-bottom:max(8px,env(safe-area-inset-bottom))}
   .drow,.drow.today{background:var(--glass);border:1px solid var(--edge);border-radius:20px;
     -webkit-backdrop-filter:blur(18px) saturate(1.35);backdrop-filter:blur(18px) saturate(1.35)}
@@ -585,7 +585,7 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 .pager.on{transform:none}
 /* v2.31: version tag moves into the 24-hour header on phones; columns tighten to fit short screens */
 .vph{display:none}
-@media (max-width:900px){
+@media (max-width:900px), (min-width:901px) and (min-height:600px) and (orientation:landscape){
   .brand .vtag{display:none}
   .vph{display:inline-block;margin:0 auto;color:#fff;font-size:12px}
   body.fit1 .rc .ch{height:38px} body.fit1 .scol .ic{font-size:44px} body.fit1 .scol{padding:5px 0 7px}
@@ -606,20 +606,20 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 .daybadge i{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:rgba(26,19,0,.18);font-style:normal;font-size:12px;line-height:1}
 body.dayv #locBtn{display:none}
 body.dayv .curk.mode{margin-bottom:2px}
-@media (max-width:900px){ #daily .dloc{margin-left:4px;padding:5px 12px 5px 8px;font-size:17px} }
+@media (max-width:900px), (min-width:901px) and (min-height:600px) and (orientation:landscape){ #daily .dloc{margin-left:4px;padding:5px 12px 5px 8px;font-size:17px} }
 body.dayv .daybadge{display:inline-flex}
 body.dayv .now::after{content:"";position:absolute;inset:-7px;border:4px solid #ffd04a;border-radius:30px;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.28)}
 
 body.dayv #strip .ph h2,body.dayv #hourly .ph h2{color:#ffd04a}
 body.dayv #pager{display:none}
 /* v2.43: breathing room between the yellow frame and the text on a day page (phones) */
-@media (max-width:900px){ body.dayv .now{padding:10px 12px 12px} body.dayv .nowbody{margin-top:6px} }
+@media (max-width:900px), (min-width:901px) and (min-height:600px) and (orientation:landscape){ body.dayv .now{padding:10px 12px 12px} body.dayv .nowbody{margin-top:6px} }
 body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shadow:none;font-size:11.5px;padding:6px 8px}
 @media (min-width:901px){ body.dayv #daily .drow.viewing{box-shadow:0 0 0 2px #ffd04a} }
 
 /* v2.43: "?" button and the quick guide */
 .rbtn.hq{font-size:17px;font-weight:800;color:#fff;line-height:1;padding:0;text-shadow:none}
-@media (max-width:900px){ .tools .rbtn{width:30px;height:30px} .tools{gap:5px} .tools .seg button{padding:5px 9px} .rbtn.hq{font-size:16px} }
+@media (max-width:900px), (min-width:901px) and (min-height:600px) and (orientation:landscape){ .tools .rbtn{width:30px;height:30px} .tools{gap:5px} .tools .seg button{padding:5px 9px} .rbtn.hq{font-size:16px} }
 #guide{position:fixed;inset:0;z-index:55;display:flex;align-items:center;justify-content:center;background:rgba(2,6,14,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
   padding:calc(env(safe-area-inset-top) + 10px) 12px calc(env(safe-area-inset-bottom) + 10px)}
 #guide[hidden]{display:none}
@@ -723,6 +723,66 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 @media (min-width:901px){.bice{margin-top:6px;padding:4px 12px 4px 8px;border-radius:13px}.bice svg{width:22px;height:22px}.bice .bt{flex-direction:row;align-items:baseline;gap:8px}.bice .bk{font-size:10.5px}.bice .bv{font-size:20px}.bice .bn{display:none}}
 .v-sw.hr rect{fill:rgba(40,90,170,.45);stroke:rgba(150,200,255,.7)}
 .v-sw.hr .tt{fill:#fff}
+
+/* v2.59: iPad landscape = the iPhone portrait look, with Current on the left and the 10-day list always open on the right. Portrait is untouched. */
+@media (min-width:901px) and (min-height:600px) and (orientation:landscape){
+  :root{--lab:74px;--colmin:46px}
+  #app{height:100vh;height:100lvh;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.04fr);grid-template-rows:auto auto minmax(0,1fr);column-gap:22px;row-gap:12px;
+    padding:calc(env(safe-area-inset-top) + 12px) max(22px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(22px,env(safe-area-inset-left))}
+  .bar{grid-column:1/-1;grid-row:1;order:0}
+  .now{grid-column:1;grid-row:2;order:0}
+  #strip{grid-column:1;grid-row:3;order:0;min-height:0}
+  #daily{grid-column:2;grid-row:2/4;position:relative;inset:auto;z-index:auto;transform:none!important;visibility:visible!important;transition:none;
+    padding:0;display:flex;flex-direction:column;min-height:0;min-width:0;background:none}
+  #daily .ph{display:flex;margin:0 0 10px;padding:0 4px;min-height:0}
+  #daily .ph h2{display:block;font-size:22px;text-shadow:var(--ol)}
+  #daily .dloc,#daily .dclose,#btn10{display:none!important}
+  #drows{scrollbar-width:none} #drows::-webkit-scrollbar{display:none}
+  body.d10 .now,body.d10 #strip{transform:none!important;opacity:1!important}
+  .brand .vtag{display:none} .vph{display:inline-block}
+  /* more room than a phone: larger Current block */
+  .now{padding:0 6px}
+  .bigt{font-size:min(132px,10vw)} .nowtop .ic{font-size:min(112px,8.4vw)}
+  .cond{font-size:26px} .hilo{font-size:23px} .hilo b{font-size:32px} .upd{font-size:17px}
+  .nowside{width:min(224px,17vw)} .st .v{font-size:34px} .st.big .v,.st.uvt .v{font-size:46px} .st.wind .v{font-size:27px}
+  .st .gr{font-size:32px} .st .k{font-size:13.5px}
+  /* black ice badge keeps the phone look */
+  .bice{margin-top:9px;padding:6px 15px 6px 10px;border-radius:16px}
+  .bice svg{width:27px;height:27px}
+  .bice .bt{flex-direction:column;align-items:stretch;gap:0}
+  .bice .bk{font-size:11px} .bice .bv{font-size:23px} .bice .bn{display:block}
+  .gv .bice{margin:0 0 7px;padding:4px 11px 4px 8px;gap:7px;border-radius:13px}
+  .gv .bice svg{width:21px;height:21px} .gv .bice .bk{font-size:8.5px} .gv .bice .bv{font-size:17px} .gv .bice .bn{display:none}
+  #scols{grid-auto-columns:20%}
+  .scol .tm{font-size:18px} .scol .tp{font-size:40px}
+  /* 10-day: one compact line per day so all ten fit on the page */
+  #drows{display:grid;grid-template-rows:repeat(10,minmax(66px,1fr));gap:6px;overflow-y:auto;padding-bottom:0}
+  .drow,.drow.today{grid-template-columns:60px 44px minmax(0,2.15fr) repeat(4,minmax(0,1fr));grid-template-areas:none;column-gap:8px;row-gap:0;padding:6px 12px;min-height:0;border-radius:18px}
+  .dd,.ds,.dhl{grid-area:auto} .dw{display:none}
+  .dd b{font-size:19px} .dd span{font-size:13px}
+  .ds .ic{font-size:40px}
+  .dm{display:contents}
+  .dhl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:6px;align-items:center}
+  .dhl small{display:block;font-size:9.5px;margin-bottom:1px}
+  .dhl b,.dhl .fe b{font-size:calc(21px*var(--dk,1));letter-spacing:-.4px}
+  .dx{min-height:0;height:100%;max-height:66px;padding:3px 2px;gap:0;justify-content:center;border-radius:14px}
+  .dx>small{font-size:9.5px;margin:0;letter-spacing:.4px}
+  .dx b{font-size:17px} .dx i{font-size:10px;line-height:1.05;white-space:normal;overflow:visible;text-overflow:clip;text-align:center}
+  .dhl small{font-size:8.5px;letter-spacing:.2px;white-space:nowrap}
+  .dx svg.shoe{width:18px;height:18px}
+  .dx.shoe b{flex-direction:row;gap:4px;font-size:14px}
+  .dx>b{margin-top:0}
+}
+/* shorter iPad screens (11 inch): a more compact Current block so the 24-hour columns fit */
+@media (min-width:901px) and (min-height:600px) and (orientation:landscape) and (max-height:900px){
+  .bigt{font-size:min(100px,8.4vw)} .nowtop .ic{font-size:min(88px,7vw)}
+  .cond{font-size:22px;margin-top:6px} .hilo{font-size:20px;margin-top:4px} .hilo b{font-size:27px} .upd{font-size:15px;margin-top:4px}
+  .bice{margin-top:6px;padding:4px 12px 4px 8px} .bice .bv{font-size:20px} .bice svg{width:24px;height:24px}
+  .nowside{gap:5px} .st{padding:5px 11px 6px} .st .v{font-size:27px} .st.big .v,.st.uvt .v{font-size:34px} .st.wind .v{font-size:22px}
+  .st .gr{font-size:26px} .st .gr svg{width:26px;height:26px} .st .w{font-size:14px} .st.wind .w{font-size:16px}
+  .curk.mode{margin-bottom:4px} .nowmain{margin-top:8px}
+  #app{row-gap:8px}
+}
 </style>
 </head>
 <body>
@@ -815,7 +875,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.58 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.59 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -843,7 +903,8 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.58';
+const VER='2.59';
+const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1590,7 +1651,7 @@ function renderDaily(j){
 }
 /* if a row's temps (e.g. two-digit negatives) don't fit, shrink that row's High, Low and Feels together */
 function fitDaily(){
-  if(!matchMedia('(max-width:900px)').matches) return;
+  if(!LIKE.matches) return;
   document.querySelectorAll('#drows .dhl').forEach(el=>{
     el.style.removeProperty('--dk');
     let k=1; [...el.children].forEach(sp=>{const b=sp.querySelector('b'); if(b&&b.scrollWidth>sp.clientWidth-4&&sp.clientWidth) k=Math.min(k,(sp.clientWidth-4)/b.scrollWidth)});
@@ -1695,7 +1756,7 @@ $('#gps').addEventListener('click',()=>{
 
 /* ---- swipe up / down on the main screen to cycle through saved locations ---- */
 (function(){
-  const app=$('#app'), phone=matchMedia('(max-width:900px)'); let g=null;
+  const app=$('#app'), phone=LIKE; let g=null;
   app.addEventListener('touchstart',e=>{
     if(!phone.matches||e.touches.length!==1||document.body.classList.contains('d10')||document.body.classList.contains('dayv')||e.target.closest('#daily,button,input,a')){g=null;return}
     const t=e.touches[0]; g={x:t.clientX,y:t.clientY,t:Date.now()};
@@ -1735,14 +1796,14 @@ const phoneMQ=matchMedia('(max-width:900px)');
 function fitStrip(){
   const b=document.body, c=document.querySelector('.scol');
   ['fit1','fit2','fit3','fit4','fit5'].forEach(k=>b.classList.remove(k));
-  if(!matchMedia('(max-width:900px)').matches||b.classList.contains('d10')||!c||!c.clientHeight) return;
+  if(!LIKE.matches||b.classList.contains('d10')||!c||!c.clientHeight) return;
   const cols=[...document.querySelectorAll('.scol')];   // v2.56: judge every column, since the black-ice badge makes some columns taller than Now
   for(let i=1;i<=5;i++){ if(!cols.some(x=>x.scrollHeight-x.clientHeight>1)) break; b.classList.add('fit'+i) }
 }
-addEventListener('resize',()=>requestAnimationFrame(fitStrip));
+addEventListener('resize',()=>requestAnimationFrame(()=>{ if(LIKE.matches&&!phoneMQ.matches) document.body.classList.remove('d10'); fitStrip() }));
 addEventListener('load',()=>requestAnimationFrame(fitStrip));
 function fitText(){
-  if(!phoneMQ.matches) return;
+  if(!LIKE.matches) return;
   const rg=document.createRange();
   const inner=el=>{const cs=getComputedStyle(el);return el.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)};
   const nb=document.querySelector('.nowbody'), ns=document.querySelector('.nowside');
