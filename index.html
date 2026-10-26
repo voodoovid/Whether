@@ -765,10 +765,9 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
   .now>.loc{font-size:26px;gap:10px;padding:9px 20px 9px 14px;border-radius:999px;max-width:calc(100% - min(224px,17vw) - 14px);background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);min-height:48px}
   .now>.loc svg{width:24px;height:24px}
   .now>.loc .chev{width:16px;height:16px;stroke-width:2.8}
-  /* v2.70: iPad landscape only: a much larger, easy-to-tap Current / Tonight switch (buttons fill the pill, 48px tall) */
-  .curk.mode{padding:4px;gap:4px}
-  .curk.mode button{min-height:48px;min-width:132px;padding:0 26px;font-size:17px;letter-spacing:.6px;display:flex;align-items:center;justify-content:center;position:relative;touch-action:manipulation}
-  .curk.mode button::after{content:"";position:absolute;inset:-6px -2px}
+  /* v2.71: Current / Tonight keeps its original look; only the tappable area is larger (fills the pill and extends past it) */
+  .curk.mode button{position:relative;touch-action:manipulation}
+  .curk.mode button::after{content:"";position:absolute;inset:-14px -4px}
   /* black ice badge keeps the phone look */
   .bice{margin-top:9px;padding:6px 15px 6px 10px;border-radius:16px}
   .bice svg{width:27px;height:27px}
@@ -813,7 +812,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
   .bice{margin-top:6px;padding:4px 12px 4px 8px} .bice .bv{font-size:20px} .bice svg{width:24px;height:24px}
   .nowside{gap:5px} .st{padding:5px 11px 6px} .st .v{font-size:27px} .st.big .v,.st.uvt .v{font-size:34px} .st.wind .v{font-size:22px}
   .st .gr{font-size:26px} .st .gr svg{width:26px;height:26px} .st .w{font-size:14px} .st.wind .w{font-size:16px}
-  .curk.mode{margin-bottom:4px} .curk.mode button{min-height:44px;font-size:16px} .nowmain{margin-top:8px}
+  .curk.mode{margin-bottom:4px} .nowmain{margin-top:8px}
   #app{row-gap:8px}
 }
 </style>
@@ -908,7 +907,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.70 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.71 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
