@@ -907,7 +907,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.71 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.72 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -935,7 +935,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.69';
+const VER='2.72';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -1484,7 +1484,7 @@ function rainWord(mm){
   return {t:'Yikes!',c:'#ff6b8a'};
 }
 /* wind in words (km/h; gusts nudge it up) */
-const WSHORT={'Dead calm':'Calm','Gentle breeze':'Gentle','Flags flapping':'Flags flap','Hat may fly off':'Hat flies','Umbrella wrecker':'No umbrellas','Hold on tight':'Hold on','Trees bending':'Trees bend'};
+const WSHORT={'Dead calm':'Calm','Gentle breeze':'Gentle','Flags flapping':'Flags flap','Hat may fly off':'Hat flies','Umbrella wrecker':'No brolly','Stay inside!':'Stay in','Hold on tight':'Hold on','Trees bending':'Trees bend'};
 const SHOE='<svg class="shoe" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.86 2.20C19.21 2.20 19.70 2.46 20.12 2.90C20.54 3.34 21.05 4.11 21.38 4.86C21.71 5.61 21.99 6.68 22.08 7.38C22.17 8.08 22.10 8.41 21.94 9.06C21.78 9.71 21.36 10.46 21.10 11.30C20.84 12.14 20.56 12.98 20.40 14.10C20.24 15.22 20.18 16.81 20.12 18.02C20.06 19.23 20.12 20.75 20.06 21.38C20.00 22.01 19.88 21.76 19.76 21.83C19.63 21.89 19.43 22.17 19.31 21.77C19.18 21.37 19.10 20.51 19.00 19.42C18.90 18.33 18.85 16.57 18.72 15.22C18.59 13.87 18.50 11.67 18.24 11.30C17.99 10.93 17.59 12.33 17.18 12.98C16.77 13.63 16.22 14.47 15.78 15.22C15.34 15.97 14.89 16.76 14.52 17.46C14.15 18.16 13.94 18.81 13.54 19.42C13.14 20.03 12.70 20.63 12.14 21.10C11.58 21.57 10.88 21.98 10.18 22.22C9.48 22.46 8.78 22.58 7.94 22.56C7.10 22.53 5.98 22.28 5.14 22.08C4.30 21.88 3.44 21.61 2.90 21.38C2.36 21.15 2.11 20.92 1.92 20.68C1.73 20.44 1.66 20.20 1.78 19.92C1.90 19.64 2.06 19.39 2.62 19.00C3.18 18.61 4.39 18.00 5.14 17.60C5.89 17.20 6.49 16.78 7.10 16.62C7.71 16.46 8.17 16.76 8.78 16.62C9.39 16.48 10.18 16.25 10.74 15.78C11.30 15.31 11.67 14.57 12.14 13.82C12.61 13.07 13.03 12.23 13.54 11.30C14.05 10.37 14.66 9.29 15.22 8.22C15.78 7.15 16.43 5.75 16.90 4.86C17.37 3.97 17.69 3.34 18.02 2.90C18.35 2.46 18.51 2.20 18.86 2.20Z"/></svg>';
 function windWord(ws,gust){
   const e=Math.max(ws||0,(gust||0)*.65);
