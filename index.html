@@ -792,6 +792,12 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
   .dx svg.shoe{width:22px;height:22px}
   .dx.shoe b{flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:17px;line-height:1.05}
   .dx>b{margin-top:0}
+  /* v2.67: rain box is the busiest: smaller mm, tighter stack so nothing touches the label */
+  .dx.rain{padding:19px 2px 2px;gap:0;justify-content:center}
+  .dx.rain b{font-size:21px;line-height:1}
+  .dx.rain i{font-size:12px;line-height:1.1}
+  .dx.rain i u:first-child{font-size:10.5px;opacity:.95}
+  .dx.rain i u+u{font-size:12.5px}
 }
 /* shorter iPad screens (11 inch): a more compact Current block so the 24-hour columns fit */
 @media (min-width:901px) and (min-height:600px) and (orientation:landscape) and (max-height:900px){
@@ -895,7 +901,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.66 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.67 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -923,7 +929,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.66';
+const VER='2.67';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -1664,7 +1670,7 @@ function renderDaily(j){
       <div class="dw">${esc(w.t).replace('Thunderstorms','Thunder&shy;storms')}</div>
       <div class="dhl"><span class="hi"><small>High (feels)</small><b>${fT(D.temperature_2m_max[d])}<em>(${fT(fHi)})</em></b></span><span class="lo"><small>Low (feels)</small><b>${fT(D.temperature_2m_min[d])}<em>(${fT(fLo)})</em></b></span></div>
       <div class="dm">
-        ${x('Rain',`${DROP}${pp==null?'–':pp+'%'}`,sum>0?`<u>${fP(sum)}</u><u>${rw.t}</u>`:'None',sum>0?rw.c:'')}
+        ${x('Rain',`${DROP}${pp==null?'–':pp+'%'}`,sum>0?`<u>${fP(sum)}</u><u>${rw.t}</u>`:'None',sum>0?rw.c:'','rain')}
         ${x('Shoe',`${SHOE}<span style="color:${gd.c}">${gd.t}</span>`,'','','shoe')}
         ${x('Wind',`${fW(ws)}<em>${wUnit()}</em>`,esc(wword))}
         ${x('UV',`<span style="color:${ui.c}">${Math.round(uv)}</span>`,ui.l,ui.c)}
