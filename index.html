@@ -815,6 +815,14 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
   .curk.mode{margin-bottom:4px} .nowmain{margin-top:8px}
   #app{row-gap:8px}
 }
+/* v2.73: iPhone portrait: rain mm and its word on separate lines (no underline), larger descriptors, taller day boxes */
+@media (max-width:900px){
+  .dx{min-height:100px;padding:8px 2px 9px}
+  .dx i{font-size:14.5px;line-height:1.1}
+  .dx i u{display:block;text-decoration:none}
+  .dx.rain i u:first-child{font-size:12.5px;opacity:.95}
+  .dx.rain i u+u{font-size:14.5px}
+}
 </style>
 </head>
 <body>
@@ -907,7 +915,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.72 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.73 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -935,7 +943,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.72';
+const VER='2.73';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
