@@ -592,6 +592,7 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
   body.fit2 .rc .ch{height:28px} body.fit2 .scol .ic{font-size:38px} body.fit2 .scol .tp{font-size:34px} body.fit2 .wd .ww{min-height:0} body.fit2 .rc{gap:2px}
   body.fit3 .st{padding:5px 11px 6px} body.fit3 .nowside{gap:4px}
   body.fit3 .bigt{font-size:min(88px,21vw)} body.fit3 .cond{margin-top:6px} body.fit3 .scol .fl{margin-top:-6px}
+  body.fit5 .rc .ch{height:20px} body.fit5 .scol .ic{font-size:34px} body.fit5 .scol .tp{font-size:31px} body.fit5 .scol{padding:4px 0 5px}
   body.fit4 #app{gap:6px} body.fit4 .nowmain{margin-top:6px} body.fit4 .scol .uv b{font-size:26px} body.fit4 .scol .tm{font-size:16px}
 }
 /* v2.32: hold a day in the 10-day list to open its full page (same layout as Today, marked with a date badge and a yellow frame) */
@@ -704,6 +705,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 .bice .bk{font-size:11px;font-weight:900;letter-spacing:1.1px;color:#fff;white-space:nowrap}
 .bice .bv{font-size:23px;font-weight:900;color:var(--c);letter-spacing:-.2px;white-space:nowrap}
 .bice .bn{font-size:12.5px;font-weight:800;color:#fff;margin-top:2px;white-space:nowrap}
+.bice[hidden]{display:none}
 .bice.hot,.rc .bi.hot{animation:bicePulse 1.8s ease-in-out infinite}
 @keyframes bicePulse{0%,100%{box-shadow:0 4px 14px rgba(0,0,0,.35),0 0 0 0 rgba(255,77,77,0)}50%{box-shadow:0 4px 14px rgba(0,0,0,.35),0 0 0 5px rgba(255,77,77,.38)}}
 @media (prefers-reduced-motion:reduce){.bice.hot,.rc .bi.hot,.silk{animation:none}}
@@ -813,7 +815,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.55 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.57 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -827,7 +829,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
       <div class="gi"><div class="gv"><div class="v-seg"><span class="on">Current</span><span>Tonight</span></div></div><div class="gx"><b>Current / Tonight</b><span>Now, or the 6–10 PM summary. From 9 PM on, Tonight shows tomorrow's 6–10 PM.</span></div></div>
       <div class="gi"><div class="gv"><div id="gShoe" class="v-shoe"></div><div class="v-dots"><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#9ad9ff"></i><i style="--c:#46b0ff"></i><i style="--c:#5a95ff"></i><i style="--c:#ff9f2e"></i><i style="--c:#ff6a2e"></i><i style="--c:#ff3b3b"></i></div></div><div class="gx"><b>Shoe conditions</b><span>Dry, Frosty, Damp, Wet, Puddles, Slushy, Snowy, Icy.</span></div></div>
       <div class="gi"><div class="gv"><svg class="v-sw hr" id="gHrs" viewBox="0 0 128 86" aria-hidden="true"></svg></div><div class="gx"><b>Hourly panel</b><span>Swipe sideways for more hours.</span></div></div>
-      <div class="gi"><div class="gv"><div class="bice" style="--c:#ff4d4d"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M9 3.6l3 2.4 3-2.4M9 20.4l3-2.4 3 2.4"/></svg><span class="bt"><span class="bk">BLACK ICE</span><span class="bv">High</span></span></div><div class="v-dots"><i style="--c:#8fe3ff"></i><i style="--c:#ffd04a"></i><i style="--c:#ff9f2e"></i><i style="--c:#ff4d4d"></i><i style="--c:#ff2d9a"></i></div></div><div class="gx"><b>Black ice</b><span>Estimated risk: None, Low, Moderate, High, Severe. Shown under the Current temp and in every hour.</span></div></div>
+      <div class="gi"><div class="gv"><div class="bice" style="--c:#ff4d4d"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M9 3.6l3 2.4 3-2.4M9 20.4l3-2.4 3 2.4"/></svg><span class="bt"><span class="bk">BLACK ICE</span><span class="bv">High</span></span></div><div class="v-dots"><i style="--c:#ff9f2e"></i><i style="--c:#ff4d4d"></i><i style="--c:#ff2d9a"></i></div></div><div class="gx"><b>Black ice</b><span>Appears only when black ice is possible: Moderate, High or Severe. Shown under the Current temp and in the hours it is expected.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">10-Day</span><svg class="v-ar" viewBox="0 0 28 16" aria-hidden="true"><path d="M3 8H25M9 2L3 8l6 6M19 2l6 6-6 6"/></svg></div></div><div class="gx"><b>10-Day forecast</b><span>Swipe left or right over the Current temp to open the 10-Day forecast.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-loc"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>City</span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></div></div><div class="gx"><b>Location</b><span>Tap to search or pick a saved location.</span></div></div>
       <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Cycle Through Saved Locations</b><span>Swipe up or down on the main screen.</span></div></div>
@@ -841,7 +843,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.55';
+const VER='2.57';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1315,10 +1317,13 @@ function render(){
   { const dayKs=d=>{const a=[];H.time.forEach((t,i)=>{if(t.startsWith(d))a.push(i)});return a};
     let r, note='';
     if(E){ r=biWorst(j,dayKs(E.day).filter(i=>{const h=+H.time[i].slice(11,13);return h>=18&&h<=22})) }
-    else if(DV){ r=biWorst(j,dayKs(DV.date)); if(r.l>0) note='Worst around '+hourLabel(H.time[r.k]) }
-    else { r=blackIce(j,idx,C); const ks=[]; for(let i=1;i<24&&idx+i<H.time.length;i++) ks.push(idx+i);
-      const w24=biWorst(j,ks); if(w24.l>r.l) note='Up to '+w24.t+' by '+hourLabel(H.time[w24.k]) }
-    const el=$('#bice'); el.style.setProperty('--c',r.c); el.classList.toggle('hot',r.l>=3);
+    else if(DV){ r=biWorst(j,dayKs(DV.date)); if(r.l>=BI_MIN) note='Worst around '+hourLabel(H.time[r.k]) }
+    else { const cur=blackIce(j,idx,C), ks=[]; for(let i=1;i<24&&idx+i<H.time.length;i++) ks.push(idx+i);
+      const w24=biWorst(j,ks);
+      if(cur.l>=BI_MIN){ r=cur; if(w24.l>cur.l) note='Up to '+w24.t+' by '+hourLabel(H.time[w24.k]) }
+      else if(w24.l>=BI_MIN){ r=w24; note='Expected by '+hourLabel(H.time[w24.k]) }
+      else r=cur }
+    const el=$('#bice'); el.hidden=r.l<BI_MIN; el.style.setProperty('--c',r.c); el.classList.toggle('hot',r.l>=3);
     el.innerHTML=ICE_SVG+`<span class="bt"><span class="bk">BLACK ICE</span><span class="bv">${r.t}</span>${note?`<span class="bn">${note}</span>`:''}</span>`; }
   renderStrip(j,C); renderHourly(j); renderDaily(j); renderReadout();
   fitText(); fitStrip(); reservePager();
@@ -1420,6 +1425,7 @@ function ground(j,C,idx){
    No forecast gives road-surface temperature, so surface = air temperature minus night-time radiative cooling (clear sky, light wind). */
 const BI=[{t:'None',c:'#8fe3ff'},{t:'Low',c:'#ffd04a'},{t:'Moderate',c:'#ff9f2e'},{t:'High',c:'#ff4d4d'},{t:'Severe',c:'#ff2d9a'}];
 const biOf=l=>({l,...BI[l]});
+const BI_MIN=2;   // shown only for Moderate, High or Severe; Low is never displayed
 const ICE_SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M9 3.6l3 2.4 3-2.4M9 20.4l3-2.4 3 2.4"/></svg>';
 function blackIce(j,k,C){
   const H=j.hourly, v=(a,d)=>H[a]?.[k]??d;
@@ -1477,7 +1483,7 @@ function renderStrip(j,C){
       <div class="fl">Feels<b>${fT(feel)}</b></div>
       <div class="rc"><span class="p${pv>0?'':' z'}">${DROP}${p==null?'–':p+'%'}</span>${chart}
         <span class="mm${mm>0?'':' z'}">${met()?(mm>0?(mm<10?mm.toFixed(1):Math.round(mm)):'0'):(mm/25.4).toFixed(2)}<small>${met()?'mm':'in'}</small></span>
-        <span class="bi${bi.l?'':' z'}${bi.l>=3?' hot':''}" style="--c:${bi.c}"><small>BLACK ICE</small><b>${bi.t}</b></span></div>
+        ${bi.l>=BI_MIN?`<span class="bi${bi.l>=3?' hot':''}" style="--c:${bi.c}"><small>BLACK ICE</small><b>${bi.t}</b></span>`:`<span class="aw" style="color:${rw.c}">${rw.t}</span>`}</div>
       <div class="sh" style="--c:${gd.c}">${SHOE}<b>${gd.t}</b></div>
       <div class="uv">UV<b style="color:${ui.c}">${Math.round(uv)}</b></div>
       <div class="wd"><span class="ws">${arrow}${fW(ws)}<small>${wUnit()}</small></span><span class="ww">${ws==null?'':(()=>{const w=windWord(ws,gu);return WSHORT[w]||w})()}</span></div>
@@ -1512,7 +1518,8 @@ function renderHourly(j){
   rows.push(row('heat','Sun %',`rgb(${RGB.sun})`,cells((k,i,t,night)=>night?'<div class="hc none">–</div>':heat('sun',100-(H.cloud_cover[k]??0),Math.round(100-(H.cloud_cover[k]??0))))));
   rows.push(row('heat','Cloud %',`rgb(${RGB.cloud})`,cells(k=>heat('cloud',H.cloud_cover[k]??0,Math.round(H.cloud_cover[k]??0)))));
   rows.push(row('heat','Rain %',`rgb(${RGB.rain})`,cells(k=>{const p=H.precipitation_probability[k];return heat('rain',p,p==null?'–':p)})));
-  rows.push(row('bir','Black ice',BI[3].c,cells(k=>{const b=blackIce(j,k,(k===S.nowIdx&&!inDay())?j.current:null);return `<span class="bic${b.l?'':' z'}" style="--c:${b.c}">${['–','Low','Mod','High','Sev'][b.l]}</span>`})));
+  { const bis=[]; for(let i=0;i<N;i++){ const k=a+i; bis.push(blackIce(j,k,(k===S.nowIdx&&!inDay())?j.current:null)) }
+    if(bis.some(b=>b.l>=BI_MIN)) rows.push(row('bir','Black ice',BI[3].c,cells((k,i)=>{const b=bis[i];return b.l>=BI_MIN?`<span class="bic" style="--c:${b.c}">${['','','Mod','High','Sev'][b.l]}</span>`:'<span class="bic z">–</span>'}))) }
   rows.push(row('uv','UV','#f1d437',cells((k,i,t,night)=>uvChip(H.uv_index[k],night))));
   rows.push(row('hum','Humid. %','rgb(var(--hum))',cells(k=>Math.round(H.relative_humidity_2m[k])+'')));
   $('#hgrid').innerHTML=rows.join('');
@@ -1534,7 +1541,7 @@ function renderReadout(){
     it(`rgb(${RGB.sun})`,'Sun',night?'night':Math.round(sunV)+'%')+
     it(`rgb(${RGB.cloud})`,'Cloud',Math.round(H.cloud_cover[k]??0)+'%')+
     it(`rgb(${RGB.rain})`,'Rain',(p==null?'–':p+'%'),mm>0?`(${fP(mm)})`:'')+
-    it(biR.c,'Black ice',biR.t)+
+    (biR.l>=BI_MIN?it(biR.c,'Black ice',biR.t):'')+
     it('#f1d437','UV',Math.max(0,Math.round(H.uv_index[k]??0)))+
     it('rgb(var(--hum))','Humidity',Math.round(H.relative_humidity_2m[k])+'%')+
     it('#fff','Feels',fT(H.apparent_temperature[k]));
@@ -1727,9 +1734,10 @@ const phoneMQ=matchMedia('(max-width:900px)');
 /* phones: if the 24-hour columns don't fit above the bottom edge (iPhone top inset, big text), tighten step by step until they do */
 function fitStrip(){
   const b=document.body, c=document.querySelector('.scol');
-  ['fit1','fit2','fit3','fit4'].forEach(k=>b.classList.remove(k));
+  ['fit1','fit2','fit3','fit4','fit5'].forEach(k=>b.classList.remove(k));
   if(!matchMedia('(max-width:900px)').matches||b.classList.contains('d10')||!c||!c.clientHeight) return;
-  for(let i=1;i<=4;i++){ if(c.scrollHeight-c.clientHeight<=1) break; b.classList.add('fit'+i) }
+  const cols=[...document.querySelectorAll('.scol')];   // v2.56: judge every column, since the black-ice badge makes some columns taller than Now
+  for(let i=1;i<=5;i++){ if(!cols.some(x=>x.scrollHeight-x.clientHeight>1)) break; b.classList.add('fit'+i) }
 }
 addEventListener('resize',()=>requestAnimationFrame(fitStrip));
 addEventListener('load',()=>requestAnimationFrame(fitStrip));
@@ -1875,7 +1883,10 @@ $('#locBtn').onclick=openSheet; $('#dlocBtn').onclick=openSheet;
 /* quick guide */
 function guideHours(){
   const g=$('#gHrs'); if(!g) return;
-  const P=[{l:'Now',n:'sun',t:'14\u00b0'},{l:'6 PM',n:'part',t:'13\u00b0'},{l:'7 PM',n:'rain',t:'11\u00b0'}];   // fixed colourful sample, so the guide always shows real icon colours
+  let P=[{l:'Now',n:'sun',t:'14\u00b0'},{l:'6 PM',n:'part',t:'13\u00b0'},{l:'7 PM',n:'rain',t:'11\u00b0'}];
+  try{ const j=S.data; if(j&&j.current&&j.hourly){ const H=j.hourly,C=j.current,now=C.time.slice(0,13)+':00', i0=H.time.findIndex(t=>t>=now);
+    if(i0>=0&&H.time[i0+2]){ P=[0,1,2].map(k=>{ const i=i0+k, cur=k===0, h=+H.time[i].slice(11,13);
+      return {l:cur?'Now':(h%12||12)+(h<12?' AM':' PM'), n:wx(cur?C.weather_code:H.weather_code[i], cur?C.is_day:H.is_day[i]).i, t:fT(cur?C.temperature_2m:H.temperature_2m[i])} }) } } }catch(e){}
   g.innerHTML=P.map((p,k)=>{ const x=8+k*41; return `<rect x="${x}" y="2" width="30" height="64" rx="9"/><text class="tl" x="${x+15}" y="15">${p.l}</text><svg x="${x+3}" y="19" width="24" height="24" viewBox="0 0 48 48"><use href="#i-${p.n}"/></svg><text class="tt" x="${x+15}" y="58">${p.t}</text>` }).join('')+'<path class="ar" d="M22 78H106M28 73L22 78L28 83M100 73L106 78L100 83"/>';
 }
 function openGuide(){ $('#gShoe').innerHTML=SHOE; $('#gVer').innerHTML='<span class="gw1">Whether</span><span class="gor">(or not)</span><span class="gv2">v'+VER+'</span>'; guideHours(); $('#guide').hidden=false; $('#guide .gb').scrollTop=0 }
