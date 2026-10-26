@@ -758,6 +758,10 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
   .cond{font-size:26px} .hilo{font-size:23px} .hilo b{font-size:32px} .upd{font-size:17px}
   .nowside{width:min(224px,17vw)} .st .v{font-size:34px} .st.big .v,.st.uvt .v{font-size:46px} .st.wind .v{font-size:27px}
   .st .gr{font-size:32px} .st .k{font-size:13.5px}
+  /* v2.62: iPad landscape only: a much larger, easy-to-tap location button */
+  .now>.loc{font-size:34px;gap:12px;padding:12px 26px 12px 18px;border-radius:999px;max-width:calc(100% - min(224px,17vw) - 14px);background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);min-height:60px}
+  .now>.loc svg{width:30px;height:30px}
+  .now>.loc .chev{width:20px;height:20px;stroke-width:2.8}
   /* black ice badge keeps the phone look */
   .bice{margin-top:9px;padding:6px 15px 6px 10px;border-radius:16px}
   .bice svg{width:27px;height:27px}
@@ -887,7 +891,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.61 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.62 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
