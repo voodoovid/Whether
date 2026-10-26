@@ -631,15 +631,35 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 .gt h2{font-size:26px;font-weight:800;letter-spacing:-.2px;line-height:1.15}
 .gt p{font-size:14px;font-weight:600;color:rgba(255,255,255,.72);margin-top:2px}
 #gClose{margin-left:auto;flex:none;font-size:17px;font-weight:800;color:#fff;padding:8px 16px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28)}
-.gb{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:2px 16px 20px}
-.gs{margin-top:20px}
-.gs h3{font-size:14px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#ffd04a;margin:0 0 6px}
-.gi{display:flex;gap:14px;align-items:flex-start;padding:15px 0;border-top:1px solid rgba(255,255,255,.10)}
-.gi:first-of-type{border-top:0}
-.gk{flex:none;width:108px;box-sizing:border-box;text-align:center;font-size:13px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#bfe0ff;background:rgba(77,150,240,.22);border:1px solid rgba(120,180,255,.35);border-radius:999px;padding:4px 8px;margin-top:1px;white-space:nowrap}
-.gi div b{display:block;font-size:19px;font-weight:800;line-height:1.25}
-.gi div span{display:block;font-size:17px;line-height:1.35;color:rgba(255,255,255,.88);margin-top:3px}
-.gf{margin:18px 0 0;font-size:13px;color:rgba(255,255,255,.6);text-align:center}
+.gb{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:4px 16px 16px}
+.gi{display:flex;align-items:center;gap:14px;padding:13px 0;border-top:1px solid rgba(255,255,255,.10)}
+.gi:first-child{border-top:0}
+.gv{flex:none;width:142px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;min-height:44px}
+.gx{min-width:0}
+.gx b{display:block;font-size:19px;font-weight:800;line-height:1.2}
+.gx span{display:block;font-size:16px;line-height:1.32;color:rgba(255,255,255,.86);margin-top:3px}
+.v-row{display:flex;align-items:center;gap:9px}
+.v-pill,.v-badge,.v-loc,.v-seg,.v-circ{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.30);box-shadow:inset 0 1px 0 rgba(255,255,255,.18);color:#fff;white-space:nowrap}
+.v-pill{padding:7px 13px;border-radius:999px;font-size:14px;font-weight:800}
+.v-seg{display:inline-flex;gap:2px;padding:3px;border-radius:999px}
+.v-seg span{padding:5px 8px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;color:#fff}
+.v-seg.u span{font-size:14px;text-transform:none;letter-spacing:0;padding:5px 13px}
+.v-seg span.on{background:rgba(255,255,255,.34);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.v-loc{display:inline-flex;align-items:center;gap:7px;padding:6px 12px 6px 9px;border-radius:999px;font-size:16px;font-weight:700}
+.v-loc svg{width:15px;height:15px;fill:#fff;flex:none}
+.v-loc .chev{width:10px;height:10px;fill:none;stroke:rgba(255,255,255,.75);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.v-badge{display:inline-flex;align-items:center;gap:7px;padding:6px 7px 6px 12px;border-radius:999px;background:#ffd04a;border-color:#ffd04a;color:#1a1300;font-size:12px;font-weight:900;letter-spacing:.6px;text-transform:uppercase}
+.v-badge i{display:inline-grid;place-items:center;width:19px;height:19px;border-radius:50%;background:rgba(26,19,0,.2);font-style:normal;font-size:13px;line-height:1}
+.v-circ{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;font-size:17px;font-weight:800}
+.v-circ svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.v-ar{width:28px;height:16px;fill:none;stroke:#ffd04a;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.v-sw{width:128px;height:56px;fill:none}
+.v-sw rect{fill:rgba(255,255,255,.12);stroke:rgba(255,255,255,.34);stroke-width:1.5}
+.v-sw circle{fill:rgba(255,255,255,.16);stroke:rgba(255,255,255,.34);stroke-width:1.5}
+.v-sw .ar{stroke:#ffd04a;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.v-shoe svg{width:30px;height:30px;display:block}
+.v-dots{display:flex;gap:5px}
+.v-dots i{width:11px;height:11px;border-radius:50%;background:var(--c);box-shadow:0 0 0 1.5px rgba(255,255,255,.22)}
 </style>
 </head>
 <body>
@@ -731,7 +751,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.46 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.47 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -742,22 +762,15 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
       <button id="gClose">Done</button>
     </div>
     <div class="gb">
-      <section class="gs">
-        <h3>Getting around</h3>
-        <div class="gi"><span class="gk">Switch</span><div><b>Current / Tonight</b><span>Now, or the 6–10 PM summary.</span></div></div>
-        <div class="gi"><span class="gk">Swipe ←→</span><div><b>Hourly panel</b><span>Swipe for the next hours, up to 24.</span></div></div>
-        <div class="gi"><span class="gk">Tap</span><div><b>City name</b><span>Search, or pick a saved place.</span></div></div>
-        <div class="gi"><span class="gk">Swipe ↑↓</span><div><b>Saved places</b><span>Swipe the main screen to cycle through them.</span></div></div>
-        <div class="gi"><span class="gk">Swipe ←</span><div><b>10-Day forecast</b><span>Swipe left, or tap 10-Day. Swipe right to return.</span></div></div>
-        <div class="gi"><span class="gk">Hold</span><div><b>Full day</b><span>Hold any day in the list to open it. All day / Night switches the view.</span></div></div>
-        <div class="gi"><span class="gk">Tap</span><div><b>°C / °F and Refresh</b><span>Both are on the top line.</span></div></div>
-      </section>
-      <section class="gs">
-        <h3>Good to know</h3>
-        <div class="gi"><span class="gk">Shoes</span><div><b>Ground conditions</b><span>Dry, Frosty, Damp, Wet, Puddles, Slushy, Icy, Snowy: mildest to worst.</span></div></div>
-        <div class="gi"><span class="gk">Install</span><div><b>Add to Home Screen</b><span>In Safari: Share, then Add to Home Screen.</span></div></div>
-      </section>
-      <p class="gf">Forecast data: Environment Canada via Open-Meteo</p>
+      <div class="gi"><div class="gv"><div class="v-seg"><span class="on">Current</span><span>Tonight</span></div></div><div class="gx"><b>Current / Tonight</b><span>Now, or the 6–10 PM summary.</span></div></div>
+      <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><rect x="8" y="2" width="30" height="40" rx="9"/><rect x="49" y="2" width="30" height="40" rx="9"/><rect x="90" y="2" width="30" height="40" rx="9"/><path class="ar" d="M22 50H106M28 45L22 50L28 55M100 45L106 50L100 55"/></svg></div><div class="gx"><b>Hourly panel</b><span>Swipe sideways for more hours.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-loc"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>City</span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></div></div><div class="gx"><b>Location</b><span>Tap to search or pick a saved place.</span></div></div>
+      <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Saved places</b><span>Swipe up or down on the main screen.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">10-Day</span><svg class="v-ar" viewBox="0 0 28 16" aria-hidden="true"><path d="M26 8H3M9 2L3 8l6 6"/></svg></div></div><div class="gx"><b>10-Day forecast</b><span>Tap, or swipe left. Swipe right to return.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-badge">Sat · Oct 31 <i>×</i></div></div><div class="gx"><b>Full day</b><span>Hold a day in the list. Tap × to go back.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-seg u"><span class="on">°C</span><span>°F</span></div></div><div class="gx"><b>Units</b><span>Switch °C and °F.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-row"><span class="v-circ"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg></span><span class="v-circ q">?</span></div></div><div class="gx"><b>Refresh and Guide</b><span>Reload the forecast, or reopen this guide.</span></div></div>
+      <div class="gi"><div class="gv"><div id="gShoe" class="v-shoe"></div><div class="v-dots"><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#9ad9ff"></i><i style="--c:#46b0ff"></i><i style="--c:#5a95ff"></i><i style="--c:#c9a8ff"></i><i style="--c:#5ff0ff"></i><i style="--c:#ffffff"></i></div></div><div class="gx"><b>Shoe conditions</b><span>Dry, Frosty, Damp, Wet, Puddles, Slushy, Icy, Snowy.</span></div></div>
     </div>
   </div>
 </div>
@@ -765,7 +778,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.46';
+const VER='2.47';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1761,7 +1774,7 @@ $('#d10close').onclick=()=>set10(false);
 })();
 $('#locBtn').onclick=openSheet; $('#dlocBtn').onclick=openSheet;
 /* quick guide */
-function openGuide(){ $('#gVer').textContent='Whether (or not) · v'+VER; $('#guide').hidden=false; $('#guide .gb').scrollTop=0 }
+function openGuide(){ $('#gShoe').innerHTML=SHOE; $('#gVer').textContent='Whether (or not) · v'+VER; $('#guide').hidden=false; $('#guide .gb').scrollTop=0 }
 function closeGuide(){ $('#guide').hidden=true }
 $('#helpBtn').onclick=openGuide; $('#gClose').onclick=closeGuide;
 $('#guide').addEventListener('click',e=>{ if(e.target.id==='guide') closeGuide() });
