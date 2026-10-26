@@ -695,6 +695,32 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 @keyframes fgA{0%,14%{opacity:0;transform:scale(1.5)}22%{opacity:1;transform:scale(1)}27%,56%{opacity:1;transform:scale(.88)}62%,100%{opacity:0;transform:scale(1)}}
 @keyframes rgA{0%,27%{opacity:0;transform:scale(.55)}30%{opacity:1;transform:scale(.55)}56%{opacity:1;transform:scale(1.2)}60%,100%{opacity:0;transform:scale(1.2)}}
 @media (prefers-reduced-motion:reduce){.v-hold .hg,.v-hold .hr.pick,.v-hold .fg,.v-hold .fg::after{animation:none}.v-hold .hs{display:none}.v-hold .fg{opacity:1}}
+/* v2.55: black ice risk, silky "No Silk", guide panels */
+.silk{background:linear-gradient(100deg,#ffe3f1 0%,#f4b6ff 28%,#fff1c2 52%,#a9e4ff 76%,#ffe3f1 100%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;text-shadow:none;font-weight:800;filter:drop-shadow(0 1px 0 rgba(0,0,0,.6)) drop-shadow(0 0 5px rgba(244,182,255,.5));animation:silkSheen 4.5s ease-in-out infinite}
+@keyframes silkSheen{0%,100%{background-position:0 0}50%{background-position:100% 0}}
+.bice{--c:#8fe3ff;display:inline-flex;align-items:center;gap:9px;margin-top:9px;padding:6px 15px 6px 10px;border-radius:16px;background:rgba(4,12,32,.68);border:2px solid var(--c);box-shadow:0 4px 14px rgba(0,0,0,.35);text-shadow:none;max-width:100%;box-sizing:border-box}
+.bice svg{width:27px;height:27px;flex:none;fill:none;stroke:var(--c);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.bice .bt{display:flex;flex-direction:column;line-height:1.05;min-width:0}
+.bice .bk{font-size:11px;font-weight:900;letter-spacing:1.1px;color:#fff;white-space:nowrap}
+.bice .bv{font-size:23px;font-weight:900;color:var(--c);letter-spacing:-.2px;white-space:nowrap}
+.bice .bn{font-size:12.5px;font-weight:800;color:#fff;margin-top:2px;white-space:nowrap}
+.bice.hot,.rc .bi.hot{animation:bicePulse 1.8s ease-in-out infinite}
+@keyframes bicePulse{0%,100%{box-shadow:0 4px 14px rgba(0,0,0,.35),0 0 0 0 rgba(255,77,77,0)}50%{box-shadow:0 4px 14px rgba(0,0,0,.35),0 0 0 5px rgba(255,77,77,.38)}}
+@media (prefers-reduced-motion:reduce){.bice.hot,.rc .bi.hot,.silk{animation:none}}
+.rc .bi{display:flex;flex-direction:column;align-items:center;line-height:1.05;margin-top:3px;padding:3px 3px 4px;border-radius:10px;border:1.5px solid var(--c);background:rgba(4,12,32,.52);text-shadow:none;width:calc(100% - 4px);max-width:100%;box-sizing:border-box}
+.rc .bi small{font-size:10.5px;font-weight:900;letter-spacing:.7px;color:#fff;white-space:nowrap}
+.rc .bi b{font-size:16px;font-weight:900;color:var(--c);white-space:nowrap}
+.rc .bi.z{border-color:rgba(255,255,255,.3)}
+.r.bir{height:clamp(24px,3.4vh,30px)}
+.bic{min-width:26px;height:21px;padding:0 4px;border-radius:7px;display:inline-grid;place-items:center;font-size:10.5px;font-weight:900;color:#10141f;background:var(--c);white-space:nowrap}
+.bic.z{background:none;color:rgba(255,255,255,.85);font-weight:600;font-size:12.5px}
+.gv .bice{margin:0 0 7px;padding:4px 11px 4px 8px;gap:7px;border-radius:13px}
+.gv .bice svg{width:21px;height:21px}
+.gv .bice .bk{font-size:8.5px}
+.gv .bice .bv{font-size:17px}
+@media (min-width:901px){.bice{margin-top:6px;padding:4px 12px 4px 8px;border-radius:13px}.bice svg{width:22px;height:22px}.bice .bt{flex-direction:row;align-items:baseline;gap:8px}.bice .bk{font-size:10.5px}.bice .bv{font-size:20px}.bice .bn{display:none}}
+.v-sw.hr rect{fill:rgba(40,90,170,.45);stroke:rgba(150,200,255,.7)}
+.v-sw.hr .tt{fill:#fff}
 </style>
 </head>
 <body>
@@ -749,6 +775,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
           </div>
           <div>
             <div class="cond" id="cond">&nbsp;</div>
+            <div class="bice" id="bice"></div>
             <div class="hilo" id="hilo">&nbsp;</div>
             <div class="upd" id="upd"></div>
           </div>
@@ -786,7 +813,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.54 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.55 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -799,7 +826,8 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div class="gb">
       <div class="gi"><div class="gv"><div class="v-seg"><span class="on">Current</span><span>Tonight</span></div></div><div class="gx"><b>Current / Tonight</b><span>Now, or the 6–10 PM summary. From 9 PM on, Tonight shows tomorrow's 6–10 PM.</span></div></div>
       <div class="gi"><div class="gv"><div id="gShoe" class="v-shoe"></div><div class="v-dots"><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#9ad9ff"></i><i style="--c:#46b0ff"></i><i style="--c:#5a95ff"></i><i style="--c:#ff9f2e"></i><i style="--c:#ff6a2e"></i><i style="--c:#ff3b3b"></i></div></div><div class="gx"><b>Shoe conditions</b><span>Dry, Frosty, Damp, Wet, Puddles, Slushy, Snowy, Icy.</span></div></div>
-      <div class="gi"><div class="gv"><svg class="v-sw hr" id="gHrs" viewBox="0 0 128 86" aria-hidden="true"></svg><svg x="52" y="8" width="24" height="24" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-part"/></svg><svg x="93" y="8" width="24" height="24" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-rain"/></svg><path class="ar" d="M22 50H106M28 45L22 50L28 55M100 45L106 50L100 55"/></svg></div><div class="gx"><b>Hourly panel</b><span>Swipe sideways for more hours.</span></div></div>
+      <div class="gi"><div class="gv"><svg class="v-sw hr" id="gHrs" viewBox="0 0 128 86" aria-hidden="true"></svg></div><div class="gx"><b>Hourly panel</b><span>Swipe sideways for more hours.</span></div></div>
+      <div class="gi"><div class="gv"><div class="bice" style="--c:#ff4d4d"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M9 3.6l3 2.4 3-2.4M9 20.4l3-2.4 3 2.4"/></svg><span class="bt"><span class="bk">BLACK ICE</span><span class="bv">High</span></span></div><div class="v-dots"><i style="--c:#8fe3ff"></i><i style="--c:#ffd04a"></i><i style="--c:#ff9f2e"></i><i style="--c:#ff4d4d"></i><i style="--c:#ff2d9a"></i></div></div><div class="gx"><b>Black ice</b><span>Estimated risk: None, Low, Moderate, High, Severe. Shown under the Current temp and in every hour.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">10-Day</span><svg class="v-ar" viewBox="0 0 28 16" aria-hidden="true"><path d="M3 8H25M9 2L3 8l6 6M19 2l6 6-6 6"/></svg></div></div><div class="gx"><b>10-Day forecast</b><span>Swipe left or right over the Current temp to open the 10-Day forecast.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-loc"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>City</span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></div></div><div class="gx"><b>Location</b><span>Tap to search or pick a saved location.</span></div></div>
       <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Cycle Through Saved Locations</b><span>Swipe up or down on the main screen.</span></div></div>
@@ -813,7 +841,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.54';
+const VER='2.55';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1268,20 +1296,30 @@ function render(){
     tile('Sunrise',t12(D.sunrise[dd]),dlTxt)+
     tile('Sunset',t12(D.sunset[dd]),D.sunset[dd+1]?`${DV?dayName(D.time[dd+1]):'Tomorrow'} ${clock(D.sunset[dd+1])}`:'');
 
-  const uvS=E?E.uv:uvNow, uvI=uvInfo(uvS), uvR=Math.max(0,Math.round(uvS)), gr=(DV&&!E)?DV.gd:ground(j,V,E?E.end:idx);
+  const uvS=E?E.uv:uvPeak, uvI=uvInfo(uvS), uvR=Math.max(0,Math.round(uvS)), gr=(DV&&!E)?DV.gd:ground(j,V,E?E.end:idx);
   const st=(k,v,cls='',w='')=>`<div class="st ${cls}"><div class="k">${k}</div><div class="v">${v}</div>${w?`<div class="w">${w}</div>`:''}</div>`;
   $('#nowSide').innerHTML=
     st('Feels like',fT(feel),'big')+
     st('Shoe Conditions',`<span class="gr" style="--c:${gr.c}">${SHOE}<b>${gr.t}</b></span>`)+
-    st('UV index',`<span style="color:${uvI.c}">${uvR}</span><small>${uvI.l}</small>`,'uvt')+
+    st('Max UV Index',`<span style="color:${uvI.c}">${uvR}</span><small>${uvI.l}</small>`,'uvt')+
     st('Wind',`${fW(V.wind_speed_10m)}<small>${wUnit()}</small>`,'wind',esc(windWord(V.wind_speed_10m,V.wind_gusts_10m)));
   // rain/snow so far today, shown beside the condition when it's coming down
   let sofar=0; H.time.forEach((t,i)=>{if(t.startsWith(D.time[0])&&i<=idx)sofar+=H.precipitation[i]??0});
   const falling=DV?(E?E.mm>0:DV.sum>0):(WET(V.weather_code)||SNOWY(V.weather_code)||(V.precipitation||0)>0);
-  const ct=(w.i==='rain'||w.i==='thunder')?w.t+' - No Silk':w.t;
+  const silkTxt=(w.i==='rain'||w.i==='thunder');
   const acc=DV?`${fP(E?E.mm:DV.sum)} expected`:E?(E.mm>0?fP(E.mm):`${Math.round(E.pop)}% chance`):(sofar>0?fP(sofar)+' today':'just started');
-  $('#cond').innerHTML=esc(ct)+(falling?` <span class="acc">${acc}</span>`:'');
+  $('#cond').innerHTML=esc(w.t)+(silkTxt?' - <span class="silk">No Silk</span>':'')+(falling?` <span class="acc">${acc}</span>`:'');
 
+
+  // black ice: now (plus the worst coming in the next 24 h), Tonight's 6-10 PM, or the whole day on a day page
+  { const dayKs=d=>{const a=[];H.time.forEach((t,i)=>{if(t.startsWith(d))a.push(i)});return a};
+    let r, note='';
+    if(E){ r=biWorst(j,dayKs(E.day).filter(i=>{const h=+H.time[i].slice(11,13);return h>=18&&h<=22})) }
+    else if(DV){ r=biWorst(j,dayKs(DV.date)); if(r.l>0) note='Worst around '+hourLabel(H.time[r.k]) }
+    else { r=blackIce(j,idx,C); const ks=[]; for(let i=1;i<24&&idx+i<H.time.length;i++) ks.push(idx+i);
+      const w24=biWorst(j,ks); if(w24.l>r.l) note='Up to '+w24.t+' by '+hourLabel(H.time[w24.k]) }
+    const el=$('#bice'); el.style.setProperty('--c',r.c); el.classList.toggle('hot',r.l>=3);
+    el.innerHTML=ICE_SVG+`<span class="bt"><span class="bk">BLACK ICE</span><span class="bv">${r.t}</span>${note?`<span class="bn">${note}</span>`:''}</span>`; }
   renderStrip(j,C); renderHourly(j); renderDaily(j); renderReadout();
   fitText(); fitStrip(); reservePager();
   slideIn();
@@ -1300,7 +1338,7 @@ function evening(j,C,dayStr){
   if(wetI.length){ wetI.sort((a,b)=>(H.precipitation[b]??0)-(H.precipitation[a]??0)||H.weather_code[b]-H.weather_code[a]); code=H.weather_code[wetI[0]] }
   else { const n={}; ix.forEach(i=>{const c=H.weather_code[i]; n[c]=(n[c]||0)+1}); code=+Object.keys(n).sort((a,b)=>n[b]-n[a]||b-a)[0] }
   const T=g('temperature_2m');
-  return {tom, end:ix[ix.length-1], hi:mx(T), lo:Math.min(...T), uv:mx(g('uv_index')), mm:pr.reduce((s,v)=>s+v,0), pop:mx(g('precipitation_probability')),
+  return {tom, day, end:ix[ix.length-1], hi:mx(T), lo:Math.min(...T), uv:mx(g('uv_index')), mm:pr.reduce((s,v)=>s+v,0), pop:mx(g('precipitation_probability')),
     C:{...C, temperature_2m:avg(T), apparent_temperature:avg(g('apparent_temperature')), relative_humidity_2m:avg(g('relative_humidity_2m')),
       weather_code:code, is_day:avg(g('is_day'))>=.5?1:0, cloud_cover:avg(g('cloud_cover')), precipitation:mx(pr),
       wind_speed_10m:mx(g('wind_speed_10m')), wind_gusts_10m:mx(g('wind_gusts_10m')), wind_direction_10m:H.wind_direction_10m?.[ix[Math.floor(ix.length/2)]]??C.wind_direction_10m}};
@@ -1378,6 +1416,30 @@ function ground(j,C,idx){
   if(T<=0||(T<=1&&!C.is_day&&(C.cloud_cover??100)<40&&(C.relative_humidity_2m??0)>=85)) return {t:'Frosty',c:'#c4f1ff'};   // v2.43: dry but at or below freezing = Frosty
   return {t:'Dry',c:'#ffd04a'};
 }
+/* v2.55: black ice risk, an estimate: the road at or below freezing with moisture to freeze (rain on cold ground, melt, dew/frost, freezing rain).
+   No forecast gives road-surface temperature, so surface = air temperature minus night-time radiative cooling (clear sky, light wind). */
+const BI=[{t:'None',c:'#8fe3ff'},{t:'Low',c:'#ffd04a'},{t:'Moderate',c:'#ff9f2e'},{t:'High',c:'#ff4d4d'},{t:'Severe',c:'#ff2d9a'}];
+const biOf=l=>({l,...BI[l]});
+const ICE_SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M9 3.6l3 2.4 3-2.4M9 20.4l3-2.4 3 2.4"/></svg>';
+function blackIce(j,k,C){
+  const H=j.hourly, v=(a,d)=>H[a]?.[k]??d;
+  const T=C?C.temperature_2m:v('temperature_2m',5); if(T==null) return biOf(0);
+  const rh=(C?C.relative_humidity_2m:v('relative_humidity_2m',70))??70, cc=(C?C.cloud_cover:v('cloud_cover',100))??100, ws=(C?C.wind_speed_10m:v('wind_speed_10m',10))??10,
+    day=((C?C.is_day:v('is_day',1))??1)>=.5, code=(C?C.weather_code:v('weather_code',0))??0, pNow=(C?C.precipitation:v('precipitation',0))||0;
+  let r12=pNow, s12=0; for(let i=Math.max(0,k-12);i<k;i++){ r12+=H.precipitation?.[i]??0; s12+=H.snowfall?.[i]??0 }
+  const snowing=SNOWY(code), liquid=(WET(code)||pNow>0)&&!snowing, recent=r12>=0.2||s12>=0.2;
+  const cool=day?0:2.5*(1-clamp(cc,0,100)/100)*(ws<8?1:ws<16?.6:.25), Ts=T-cool;
+  const dp=dewPoint(T,rh), spread=dp==null?9:T-dp;
+  const damp=rh>=90||spread<=1.5||code===45||code===48, humid=rh>=85||spread<=2;
+  if([56,57,66,67].includes(code)&&T<=1.5) return biOf(4);      // freezing rain or drizzle
+  if(Ts<=0&&(liquid||recent)) return biOf(3);                     // wet road at or below freezing
+  if(Ts<=0.5&&(damp||snowing)) return biOf(2);                    // frost, dew or fog about to freeze
+  if(Ts<=1&&recent) return biOf(2);                               // wet road just above freezing
+  if(Ts<=2&&(recent||humid)) return biOf(1);
+  return biOf(0);
+}
+/* the worst risk across some hours, and the first hour it happens */
+function biWorst(j,ks,curIdx,C){ let b=null; ks.forEach(k=>{const r=blackIce(j,k,k===curIdx?C:null); if(!b||r.l>b.l) b={...r,k}}); return b||{...biOf(0),k:0} }
 const DROP='<svg viewBox="0 0 12 12"><path d="M6 1C6 1 2 5.6 2 8a4 4 0 0 0 8 0C10 5.6 6 1 6 1z"/></svg>';
 
 function renderStrip(j,C){
@@ -1403,7 +1465,7 @@ function renderStrip(j,C){
       </svg><b style="top:${(+Y(pv)/34*100).toFixed(1)}%"></b></div>`;
     const rw=rainWord(mm);
     const gC=c0?C:{temperature_2m:temp,weather_code:code,precipitation:0,is_day:isDay,cloud_cover:H.cloud_cover[k],relative_humidity_2m:H.relative_humidity_2m[k]};
-    const gd=ground(j,gC,k);
+    const gd=ground(j,gC,k), bi=blackIce(j,k,c0?C:null);
     const uv=Math.max(0,H.uv_index[k]??0), ui=uvInfo(uv);
     const ws=c0?(C.wind_speed_10m??H.wind_speed_10m?.[k]):H.wind_speed_10m?.[k];
     const gu=c0?(C.wind_gusts_10m??H.wind_gusts_10m?.[k]):H.wind_gusts_10m?.[k];
@@ -1415,7 +1477,7 @@ function renderStrip(j,C){
       <div class="fl">Feels<b>${fT(feel)}</b></div>
       <div class="rc"><span class="p${pv>0?'':' z'}">${DROP}${p==null?'–':p+'%'}</span>${chart}
         <span class="mm${mm>0?'':' z'}">${met()?(mm>0?(mm<10?mm.toFixed(1):Math.round(mm)):'0'):(mm/25.4).toFixed(2)}<small>${met()?'mm':'in'}</small></span>
-        <span class="aw" style="color:${rw.c}">${rw.t}</span></div>
+        <span class="bi${bi.l?'':' z'}${bi.l>=3?' hot':''}" style="--c:${bi.c}"><small>BLACK ICE</small><b>${bi.t}</b></span></div>
       <div class="sh" style="--c:${gd.c}">${SHOE}<b>${gd.t}</b></div>
       <div class="uv">UV<b style="color:${ui.c}">${Math.round(uv)}</b></div>
       <div class="wd"><span class="ws">${arrow}${fW(ws)}<small>${wUnit()}</small></span><span class="ww">${ws==null?'':(()=>{const w=windWord(ws,gu);return WSHORT[w]||w})()}</span></div>
@@ -1450,6 +1512,7 @@ function renderHourly(j){
   rows.push(row('heat','Sun %',`rgb(${RGB.sun})`,cells((k,i,t,night)=>night?'<div class="hc none">–</div>':heat('sun',100-(H.cloud_cover[k]??0),Math.round(100-(H.cloud_cover[k]??0))))));
   rows.push(row('heat','Cloud %',`rgb(${RGB.cloud})`,cells(k=>heat('cloud',H.cloud_cover[k]??0,Math.round(H.cloud_cover[k]??0)))));
   rows.push(row('heat','Rain %',`rgb(${RGB.rain})`,cells(k=>{const p=H.precipitation_probability[k];return heat('rain',p,p==null?'–':p)})));
+  rows.push(row('bir','Black ice',BI[3].c,cells(k=>{const b=blackIce(j,k,(k===S.nowIdx&&!inDay())?j.current:null);return `<span class="bic${b.l?'':' z'}" style="--c:${b.c}">${['–','Low','Mod','High','Sev'][b.l]}</span>`})));
   rows.push(row('uv','UV','#f1d437',cells((k,i,t,night)=>uvChip(H.uv_index[k],night))));
   rows.push(row('hum','Humid. %','rgb(var(--hum))',cells(k=>Math.round(H.relative_humidity_2m[k])+'')));
   $('#hgrid').innerHTML=rows.join('');
@@ -1466,11 +1529,12 @@ function renderReadout(){
   const when=(S.sel===0&&!inDay())?`Now`:`${dayName(t)} ${hourLabel(t)}`;
   const w=wx(H.weather_code[k],H.is_day[k]);
   const it=(c,l,v,x='')=>`<span class="ro"><i style="background:${c}"></i>${l} <b>${v}</b>${x?` ${x}`:''}</span>`;
-  const p=H.precipitation_probability[k], mm=H.precipitation[k];
+  const p=H.precipitation_probability[k], mm=H.precipitation[k], biR=blackIce(j,k,(k===S.nowIdx&&!inDay())?j.current:null);
   $('#readout').innerHTML=`<span class="when">${when}</span><span class="ro"><b>${w.t}</b></span>`+
     it(`rgb(${RGB.sun})`,'Sun',night?'night':Math.round(sunV)+'%')+
     it(`rgb(${RGB.cloud})`,'Cloud',Math.round(H.cloud_cover[k]??0)+'%')+
     it(`rgb(${RGB.rain})`,'Rain',(p==null?'–':p+'%'),mm>0?`(${fP(mm)})`:'')+
+    it(biR.c,'Black ice',biR.t)+
     it('#f1d437','UV',Math.max(0,Math.round(H.uv_index[k]??0)))+
     it('rgb(var(--hum))','Humidity',Math.round(H.relative_humidity_2m[k])+'%')+
     it('#fff','Feels',fT(H.apparent_temperature[k]));
@@ -1675,7 +1739,7 @@ function fitText(){
   const inner=el=>{const cs=getComputedStyle(el);return el.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)};
   const nb=document.querySelector('.nowbody'), ns=document.querySelector('.nowside');
   const leftAvail=nb&&ns?nb.clientWidth-ns.offsetWidth-14:0;
-  document.querySelectorAll('.bigt,.scol .tp,.st .gr,.st .k,.st .v,.st .w,.cond,.hilo,.upd,.scol .tm,.scol .fl,.rc .p,.rc .mm,.rc .aw,.sh,.scol .uv,.wd .ws,.wd .ww,#strip .ph h2,.hint,.loc span,.brand .t1').forEach(el=>{
+  document.querySelectorAll('.bigt,.scol .tp,.st .gr,.st .k,.st .v,.st .w,.cond,.hilo,.upd,.scol .tm,.scol .fl,.rc .p,.rc .mm,.rc .aw,.rc .bi b,.rc .bi small,.sh,.scol .uv,.wd .ws,.wd .ww,#strip .ph h2,.hint,.loc span,.brand .t1').forEach(el=>{
     el.style.fontSize='';
     const left=el.closest('.nowmain'); let avail=left?leftAvail:inner(el.parentElement);
     if(el.classList.contains('bigt')){ const ic=el.closest('.nowtop')?.querySelector('.ic'); avail=leftAvail-(ic?ic.getBoundingClientRect().width-22:0)-8 }
@@ -1811,10 +1875,7 @@ $('#locBtn').onclick=openSheet; $('#dlocBtn').onclick=openSheet;
 /* quick guide */
 function guideHours(){
   const g=$('#gHrs'); if(!g) return;
-  let P=[{l:'Now',n:'sun',t:'14°'},{l:'6 PM',n:'part',t:'13°'},{l:'7 PM',n:'rain',t:'11°'}];
-  try{ const j=S.data; if(j&&j.current&&j.hourly){ const H=j.hourly,C=j.current,now=C.time.slice(0,13)+':00', i0=H.time.findIndex(t=>t>=now);
-    if(i0>=0&&H.time[i0+2]){ P=[0,1,2].map(k=>{ const i=i0+k, cur=k===0, h=+H.time[i].slice(11,13);
-      return {l:cur?'Now':(h%12||12)+(h<12?' AM':' PM'), n:wx(cur?C.weather_code:H.weather_code[i], cur?C.is_day:H.is_day[i]).i, t:fT(cur?C.temperature_2m:H.temperature_2m[i])} }) } } }catch(e){}
+  const P=[{l:'Now',n:'sun',t:'14\u00b0'},{l:'6 PM',n:'part',t:'13\u00b0'},{l:'7 PM',n:'rain',t:'11\u00b0'}];   // fixed colourful sample, so the guide always shows real icon colours
   g.innerHTML=P.map((p,k)=>{ const x=8+k*41; return `<rect x="${x}" y="2" width="30" height="64" rx="9"/><text class="tl" x="${x+15}" y="15">${p.l}</text><svg x="${x+3}" y="19" width="24" height="24" viewBox="0 0 48 48"><use href="#i-${p.n}"/></svg><text class="tt" x="${x+15}" y="58">${p.t}</text>` }).join('')+'<path class="ar" d="M22 78H106M28 73L22 78L28 83M100 73L106 78L100 83"/>';
 }
 function openGuide(){ $('#gShoe').innerHTML=SHOE; $('#gVer').innerHTML='<span class="gw1">Whether</span><span class="gor">(or not)</span><span class="gv2">v'+VER+'</span>'; guideHours(); $('#guide').hidden=false; $('#guide .gb').scrollTop=0 }
