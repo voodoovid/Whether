@@ -193,7 +193,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 }
 .vtag{font-size:11px;font-weight:800;letter-spacing:.3px;color:var(--mute);background:rgba(255,255,255,.12);padding:2px 7px;border-radius:999px;align-self:center;margin-left:-2px}
 #btn10,.dclose{display:none}
-.cond .acc{display:inline-block;vertical-align:.18em;font-size:.62em;font-weight:800;color:#dff0ff;background:rgba(74,168,255,.32);padding:.15em .6em;border-radius:999px;white-space:nowrap;text-shadow:none}
+.cond .acc{display:table;margin-top:5px;font-size:.62em;font-weight:800;color:#dff0ff;background:rgba(74,168,255,.32);padding:.15em .6em;border-radius:999px;white-space:nowrap;text-shadow:none}
 @media (max-width:900px), (min-width:901px) and (min-height:600px) and (orientation:landscape){
   :root{--lab:74px;--colmin:46px}
   html,body{height:100vh;height:100lvh;overflow:hidden}
@@ -539,6 +539,17 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 .shc .row:active{background:rgba(255,255,255,.2)}
 .shc .row small{color:#fff;opacity:.85;font-weight:600}
 .shc .row .x{color:#fff}
+/* v2.60: long place names are cut with an ellipsis instead of wrapping */
+.shc .row>span:first-child{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shc .row small{flex:none;white-space:nowrap}
+/* v2.60: black ice is a tile under Wind in the side column */
+.nowside .bice{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:6px;row-gap:1px;margin:0;padding:7px 12px 8px;border-radius:16px;width:100%;max-width:100%;box-sizing:border-box}
+.nowside .bice[hidden]{display:none}
+.nowside .bice .bt{display:contents}
+.nowside .bice svg{width:22px;height:22px;grid-column:1;grid-row:1}
+.nowside .bice .bk{grid-column:2;grid-row:1;font-size:12.5px;letter-spacing:.6px}
+.nowside .bice .bv{grid-column:1/-1;grid-row:2;font-size:23px;line-height:1.05}
+.nowside .bice .bn{grid-column:1/-1;grid-row:3;display:block;font-size:13px;line-height:1.15;white-space:normal;margin-top:1px}
 .rgps{color:#fff;background:rgba(255,255,255,.18)!important;border-radius:14px;margin-bottom:8px;gap:8px;justify-content:flex-start}
 .rgps::before{content:"";width:18px;height:18px;flex:none;background:#fff;-webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>') center/contain no-repeat;mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>') center/contain no-repeat}
 .shh{color:#fff;font-size:12.5px;padding:12px 4px 6px}
@@ -875,7 +886,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.59 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.60 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -903,7 +914,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.59';
+const VER='2.60';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -1361,12 +1372,14 @@ function render(){
 
   const uvS=E?E.uv:uvPeak, uvI=uvInfo(uvS), uvR=Math.max(0,Math.round(uvS)), gr=(DV&&!E)?DV.gd:ground(j,V,E?E.end:idx);
   const st=(k,v,cls='',w='')=>`<div class="st ${cls}"><div class="k">${k}</div><div class="v">${v}</div>${w?`<div class="w">${w}</div>`:''}</div>`;
+  const biceEl=$('#bice');   // v2.60: rescued before the side column is rebuilt, then placed under Wind
   $('#nowSide').innerHTML=
     st('Feels like',fT(feel),'big')+
     st('Shoe Conditions',`<span class="gr" style="--c:${gr.c}">${SHOE}<b>${gr.t}</b></span>`)+
     st('Max UV Index',`<span style="color:${uvI.c}">${uvR}</span><small>${uvI.l}</small>`,'uvt')+
     st('Wind',`${fW(V.wind_speed_10m)}<small>${wUnit()}</small>`,'wind',esc(windWord(V.wind_speed_10m,V.wind_gusts_10m)));
-  // rain/snow so far today, shown beside the condition when it's coming down
+  placeBice(biceEl);
+  // rain/snow so far today, shown on its own line under the condition when it's coming down
   let sofar=0; H.time.forEach((t,i)=>{if(t.startsWith(D.time[0])&&i<=idx)sofar+=H.precipitation[i]??0});
   const falling=DV?(E?E.mm>0:DV.sum>0):(WET(V.weather_code)||SNOWY(V.weather_code)||(V.precipitation||0)>0);
   const silkTxt=(w.i==='rain'||w.i==='thunder');
@@ -1390,6 +1403,9 @@ function render(){
   fitText(); fitStrip(); reservePager();
   slideIn();
 }
+/* v2.60: black ice sits under Wind where the side column shows, otherwise under the condition */
+function placeBice(el){ if(!el) return; if(LIKE.matches) $('#nowSide').appendChild(el); else $('#cond').after(el) }
+LIKE.addEventListener('change',()=>placeBice($('#bice')));
 /* Tonight: everything from 6 to 10 PM rolled into one (tomorrow's evening from 9 PM on) */
 function evening(j,C,dayStr){
   const H=j.hourly, hr=+C.time.slice(11,13), tom=dayStr?false:hr>=21, day=dayStr||(tom?j.daily.time[1]:C.time.slice(0,10));
