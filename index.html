@@ -208,6 +208,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .now.glass{background:none;border:0;border-radius:0;-webkit-backdrop-filter:none;backdrop-filter:none}
   .now{padding:0 4px;text-shadow:0 1px 12px rgba(0,0,0,.28);position:relative}
   .loc{margin:0;align-self:flex-start;text-shadow:none}
+  .now>.loc{max-width:calc(100% - min(168px,40vw) - 14px)}   /* v2.61: the name stops before the side tiles and ends in an ellipsis */
   .nowbody{display:grid;grid-template-columns:auto auto;justify-content:space-between;align-items:start;gap:12px;margin-top:10px}
   .nowmain{display:flex;flex-direction:column;min-width:0;align-self:center}
   .nowtop{gap:6px;margin-left:-4px}
@@ -886,7 +887,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.60 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.61 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -914,7 +915,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.60';
+const VER='2.61';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -1824,7 +1825,7 @@ function fitText(){
   const inner=el=>{const cs=getComputedStyle(el);return el.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)};
   const nb=document.querySelector('.nowbody'), ns=document.querySelector('.nowside');
   const leftAvail=nb&&ns?nb.clientWidth-ns.offsetWidth-14:0;
-  document.querySelectorAll('.bigt,.scol .tp,.st .gr,.st .k,.st .v,.st .w,.cond,.hilo,.upd,.scol .tm,.scol .fl,.rc .p,.rc .mm,.rc .aw,.rc .bi b,.rc .bi small,.sh,.scol .uv,.wd .ws,.wd .ww,#strip .ph h2,.hint,.loc span,.brand .t1').forEach(el=>{
+  document.querySelectorAll('.bigt,.scol .tp,.st .gr,.st .k,.st .v,.st .w,.cond,.hilo,.upd,.scol .tm,.scol .fl,.rc .p,.rc .mm,.rc .aw,.rc .bi b,.rc .bi small,.sh,.scol .uv,.wd .ws,.wd .ww,#strip .ph h2,.hint,.brand .t1').forEach(el=>{
     el.style.fontSize='';
     const left=el.closest('.nowmain'); let avail=left?leftAvail:inner(el.parentElement);
     if(el.classList.contains('bigt')){ const ic=el.closest('.nowtop')?.querySelector('.ic'); avail=leftAvail-(ic?ic.getBoundingClientRect().width-22:0)-8 }
