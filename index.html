@@ -740,7 +740,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 @media (min-width:901px) and (min-height:600px) and (orientation:landscape){
   :root{--lab:74px;--colmin:46px}
   #app{height:100vh;height:100lvh;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.04fr);grid-template-rows:auto auto minmax(0,1fr);column-gap:22px;row-gap:12px;
-    padding:calc(env(safe-area-inset-top) + 12px) max(22px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(22px,env(safe-area-inset-left))}
+    padding:calc(env(safe-area-inset-top) + 38px) max(22px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(22px,env(safe-area-inset-left))}
   .bar{grid-column:1/-1;grid-row:1;order:0}
   .now{grid-column:1;grid-row:2;order:0}
   #strip{grid-column:1;grid-row:3;order:0;min-height:0}
@@ -895,7 +895,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.65 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.66 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -923,7 +923,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.65';
+const VER='2.66';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
