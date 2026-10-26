@@ -746,8 +746,11 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
   #strip{grid-column:1;grid-row:3;order:0;min-height:0}
   #daily{grid-column:2;grid-row:2/4;position:relative;inset:auto;z-index:auto;transform:none!important;visibility:visible!important;transition:none;
     padding:0;display:flex;flex-direction:column;min-height:0;min-width:0;background:none}
-  #daily .ph{display:flex;margin:0 0 10px;padding:0 4px;min-height:0}
-  #daily .ph h2{display:block;font-size:22px;text-shadow:var(--ol)}
+  /* v2.68: the 10-day title moves up into the top bar row, so the ten days start higher and get more room */
+  #daily{grid-row:1/4}
+  #daily .ph{display:flex;align-items:center;height:56px;margin:0 0 8px;padding:0 4px;min-height:0;pointer-events:none;flex:none}
+  #daily .ph h2{display:block;font-size:24px;text-shadow:var(--ol)}
+  .bar{position:relative;z-index:3}
   #daily .dloc,#daily .dclose,#btn10{display:none!important}
   #drows{scrollbar-width:none} #drows::-webkit-scrollbar{display:none}
   body.d10 .now,body.d10 #strip{transform:none!important;opacity:1!important}
@@ -772,7 +775,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
   #scols{grid-auto-columns:20%}
   .scol .tm{font-size:18px} .scol .tp{font-size:40px}
   /* 10-day: one compact line per day so all ten fit on the page */
-  #drows{display:grid;grid-template-rows:repeat(10,minmax(66px,1fr));gap:6px;overflow-y:auto;padding-bottom:0}
+  #drows{display:grid;grid-template-rows:repeat(10,minmax(70px,1fr));gap:7px;overflow-y:auto;padding-bottom:0}
   .drow,.drow.today{grid-template-columns:60px 44px minmax(0,2.15fr) repeat(4,minmax(0,1fr));grid-template-areas:none;column-gap:8px;row-gap:0;padding:6px 12px;min-height:0;border-radius:18px}
   .dd,.ds,.dhl{grid-area:auto} .dw{display:none}
   .dd b{font-size:19px} .dd span{font-size:13px}
@@ -901,7 +904,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.67 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.68 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -929,7 +932,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.67';
+const VER='2.68';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -1787,17 +1790,22 @@ $('#gps').addEventListener('click',()=>{
 
 /* ---- swipe up / down on the main screen to cycle through saved locations ---- */
 (function(){
+  // v2.68: works from anywhere on the left half in iPad landscape; a cancelled touch (iPad scroll takeover) still counts using the last finger position
   const app=$('#app'), phone=LIKE; let g=null;
   app.addEventListener('touchstart',e=>{
-    if(!phone.matches||e.touches.length!==1||document.body.classList.contains('d10')||document.body.classList.contains('dayv')||e.target.closest('#daily,button,input,a')){g=null;return}
-    const t=e.touches[0]; g={x:t.clientX,y:t.clientY,t:Date.now()};
+    if(!phone.matches||e.touches.length!==1||document.body.classList.contains('d10')||document.body.classList.contains('dayv')||e.target.closest('#daily,input,a,#sheet,.sheet')){g=null;return}
+    const t=e.touches[0]; g={x:t.clientX,y:t.clientY,lx:t.clientX,ly:t.clientY,t:Date.now()};
   },{passive:true});
-  app.addEventListener('touchend',e=>{
-    if(!g) return; const t=e.changedTouches[0], dx=t.clientX-g.x, dy=t.clientY-g.y, dt=Date.now()-g.t; g=null;
-    if(Math.abs(dy)<70||Math.abs(dy)<Math.abs(dx)*1.6||dt>900) return;
+  app.addEventListener('touchmove',e=>{ if(!g) return; const t=e.touches[0]; g.lx=t.clientX; g.ly=t.clientY },{passive:true});
+  const fin=e=>{
+    if(!g) return; const G=g; g=null;
+    const t=e.changedTouches&&e.changedTouches[0], ex=t?t.clientX:G.lx, ey=t?t.clientY:G.ly;
+    const dx=ex-G.x, dy=ey-G.y, dt=Date.now()-G.t;
+    if(Math.abs(dy)<70||Math.abs(dy)<Math.abs(dx)*1.6||dt>1100) return;
     cycleLoc(dy<0?1:-1);
-  },{passive:true});
-  app.addEventListener('touchcancel',()=>{g=null},{passive:true});
+  };
+  app.addEventListener('touchend',fin,{passive:true});
+  app.addEventListener('touchcancel',fin,{passive:true});
 })();
 const MEM={};                     // in-memory forecast per location, for instant swipes
 let cycling=false;
