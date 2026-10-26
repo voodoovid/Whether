@@ -786,7 +786,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.53 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.54 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -798,7 +798,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     </div>
     <div class="gb">
       <div class="gi"><div class="gv"><div class="v-seg"><span class="on">Current</span><span>Tonight</span></div></div><div class="gx"><b>Current / Tonight</b><span>Now, or the 6–10 PM summary. From 9 PM on, Tonight shows tomorrow's 6–10 PM.</span></div></div>
-      <div class="gi"><div class="gv"><div id="gShoe" class="v-shoe"></div><div class="v-dots"><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#9ad9ff"></i><i style="--c:#46b0ff"></i><i style="--c:#5a95ff"></i><i style="--c:#ff9f2e"></i><i style="--c:#ff3b3b"></i><i style="--c:#ff6a2e"></i></div></div><div class="gx"><b>Shoe conditions</b><span>Dry, Frosty, Damp, Wet, Puddles, Slushy, Icy, Snowy.</span></div></div>
+      <div class="gi"><div class="gv"><div id="gShoe" class="v-shoe"></div><div class="v-dots"><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#9ad9ff"></i><i style="--c:#46b0ff"></i><i style="--c:#5a95ff"></i><i style="--c:#ff9f2e"></i><i style="--c:#ff6a2e"></i><i style="--c:#ff3b3b"></i></div></div><div class="gx"><b>Shoe conditions</b><span>Dry, Frosty, Damp, Wet, Puddles, Slushy, Snowy, Icy.</span></div></div>
       <div class="gi"><div class="gv"><svg class="v-sw hr" id="gHrs" viewBox="0 0 128 86" aria-hidden="true"></svg><svg x="52" y="8" width="24" height="24" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-part"/></svg><svg x="93" y="8" width="24" height="24" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-rain"/></svg><path class="ar" d="M22 50H106M28 45L22 50L28 55M100 45L106 50L100 55"/></svg></div><div class="gx"><b>Hourly panel</b><span>Swipe sideways for more hours.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">10-Day</span><svg class="v-ar" viewBox="0 0 28 16" aria-hidden="true"><path d="M3 8H25M9 2L3 8l6 6M19 2l6 6-6 6"/></svg></div></div><div class="gx"><b>10-Day forecast</b><span>Swipe left or right over the Current temp to open the 10-Day forecast.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-loc"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>City</span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></div></div><div class="gx"><b>Location</b><span>Tap to search or pick a saved location.</span></div></div>
@@ -813,7 +813,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.53';
+const VER='2.54';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1312,7 +1312,7 @@ function dayView(j,d){
   const start=H.time.findIndex(t=>t.startsWith(date)); if(start<0||start+24>H.time.length) return null;
   const ks=[]; for(let k=start+7;k<=start+19;k++) ks.push(k);
   const av=key=>mean(ks.map(k=>H[key]?.[k])), mx=key=>{let m=null;ks.forEach(k=>{const v=H[key]?.[k];if(v!=null&&(m==null||v>m))m=v});return m};
-  const RANK={'Dry':0,'Frosty':1,'Damp':2,'Wet':3,'Puddles':4,'Slushy':5,'Icy':6,'Snowy':7};   // worst shoe conditions of the day, same rule as the 10-day list
+  const RANK={'Dry':0,'Frosty':1,'Damp':2,'Wet':3,'Puddles':4,'Slushy':5,'Snowy':6,'Icy':7};   // worst shoe conditions of the day, same rule as the 10-day list
   let gd=null;
   ks.forEach(k=>{const g=ground(j,{temperature_2m:H.temperature_2m[k],weather_code:H.weather_code[k],precipitation:H.precipitation[k],is_day:H.is_day[k],cloud_cover:H.cloud_cover[k],relative_humidity_2m:H.relative_humidity_2m[k]},k);
     if(!gd||(RANK[g.t]??0)>(RANK[gd.t]??0)) gd=g});
@@ -1491,7 +1491,7 @@ function renderDaily(j){
     // rain: chance, total, and how hard at its heaviest hour
     const pp=D.precipitation_probability_max[d], sum=D.precipitation_sum[d]??0, rw=rainWord(max(H.precipitation)??0);
     // shoe: the worst it gets between 7 AM and 7 PM (today: from now on)
-    const RANK={'Dry':0,'Frosty':1,'Damp':2,'Wet':3,'Puddles':4,'Slushy':5,'Icy':6,'Snowy':7};
+    const RANK={'Dry':0,'Frosty':1,'Damp':2,'Wet':3,'Puddles':4,'Slushy':5,'Snowy':6,'Icy':7};
     let gd=d===0?ground(j,C,S.nowIdx):null;
     ix.forEach(k=>{const h=+H.time[k].slice(11,13); if(h<7||h>19||(d===0&&k<=S.nowIdx)) return;
       const g=ground(j,{temperature_2m:H.temperature_2m[k],weather_code:H.weather_code[k],precipitation:H.precipitation[k],is_day:H.is_day[k],cloud_cover:H.cloud_cover[k],relative_humidity_2m:H.relative_humidity_2m[k]},k);
