@@ -781,13 +781,16 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
   .dhl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:6px;align-items:center}
   .dhl small{display:block;font-size:9.5px;margin-bottom:1px}
   .dhl b,.dhl .fe b{font-size:calc(21px*var(--dk,1));letter-spacing:-.4px}
-  .dx{min-height:0;height:100%;max-height:none;padding:4px 2px;gap:1px;justify-content:center;align-items:center;text-align:center;border-radius:14px}
-  .dx>small{font-size:9.5px;margin:0;letter-spacing:.4px}
-  .dx b{font-size:17px} .dx i{font-size:10px;line-height:1.05;white-space:normal;overflow:visible;text-overflow:clip;text-align:center}
+  /* v2.64: label pinned at the top, everything else centred in the box; bigger description text */
+  .dx{position:relative;min-height:0;height:100%;max-height:none;padding:19px 3px 3px;gap:2px;justify-content:center;align-items:center;text-align:center;border-radius:14px}
+  .dx>small{position:absolute;top:5px;left:0;right:0;text-align:center;font-size:10px;margin:0;letter-spacing:.4px}
+  .dx b{font-size:23px;justify-content:center;text-align:center;margin:0;line-height:1.05}
+  .dx b em{font-size:13px}
+  .dx i{display:block;width:100%;font-size:14px;line-height:1.1;white-space:nowrap;overflow:visible;text-overflow:clip;text-align:center;margin:0}
+  .dx i u{display:block;text-decoration:none}
   .dhl small{font-size:8.5px;letter-spacing:.2px;white-space:nowrap}
-  .dx svg.shoe{width:30px;height:30px}
-  .dx b{justify-content:center;text-align:center}
-  .dx.shoe b{flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:15px;line-height:1.05}
+  .dx svg.shoe{width:22px;height:22px}
+  .dx.shoe b{flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:17px;line-height:1.05}
   .dx>b{margin-top:0}
 }
 /* shorter iPad screens (11 inch): a more compact Current block so the 24-hour columns fit */
@@ -892,7 +895,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.63 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.64 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -920,7 +923,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.61';
+const VER='2.64';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -1661,7 +1664,7 @@ function renderDaily(j){
       <div class="dw">${esc(w.t).replace('Thunderstorms','Thunder&shy;storms')}</div>
       <div class="dhl"><span class="hi"><small>High (feels)</small><b>${fT(D.temperature_2m_max[d])}<em>(${fT(fHi)})</em></b></span><span class="lo"><small>Low (feels)</small><b>${fT(D.temperature_2m_min[d])}<em>(${fT(fLo)})</em></b></span></div>
       <div class="dm">
-        ${x('Rain',`${DROP}${pp==null?'–':pp+'%'}`,sum>0?`${fP(sum)} · ${rw.t}`:'None',sum>0?rw.c:'')}
+        ${x('Rain',`${DROP}${pp==null?'–':pp+'%'}`,sum>0?`<u>${fP(sum)}</u><u>${rw.t}</u>`:'None',sum>0?rw.c:'')}
         ${x('Shoe',`${SHOE}<span style="color:${gd.c}">${gd.t}</span>`,'','','shoe')}
         ${x('Wind',`${fW(ws)}<em>${wUnit()}</em>`,esc(wword))}
         ${x('UV',`<span style="color:${ui.c}">${Math.round(uv)}</span>`,ui.l,ui.c)}
