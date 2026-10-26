@@ -751,7 +751,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.47 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.48 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -767,10 +767,10 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
       <div class="gi"><div class="gv"><div class="v-loc"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>City</span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></div></div><div class="gx"><b>Location</b><span>Tap to search or pick a saved place.</span></div></div>
       <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Saved places</b><span>Swipe up or down on the main screen.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">10-Day</span><svg class="v-ar" viewBox="0 0 28 16" aria-hidden="true"><path d="M26 8H3M9 2L3 8l6 6"/></svg></div></div><div class="gx"><b>10-Day forecast</b><span>Tap, or swipe left. Swipe right to return.</span></div></div>
-      <div class="gi"><div class="gv"><div class="v-badge">Sat · Oct 31 <i>×</i></div></div><div class="gx"><b>Full day</b><span>Hold a day in the list. Tap × to go back.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-badge">Sat · Oct 31 <i>×</i></div></div><div class="gx"><b>Hourly for any day</b><span>In the 10-Day list, press and hold a day to see its hourly details. Tap × to go back.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-seg u"><span class="on">°C</span><span>°F</span></div></div><div class="gx"><b>Units</b><span>Switch °C and °F.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-circ"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg></span><span class="v-circ q">?</span></div></div><div class="gx"><b>Refresh and Guide</b><span>Reload the forecast, or reopen this guide.</span></div></div>
-      <div class="gi"><div class="gv"><div id="gShoe" class="v-shoe"></div><div class="v-dots"><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#9ad9ff"></i><i style="--c:#46b0ff"></i><i style="--c:#5a95ff"></i><i style="--c:#c9a8ff"></i><i style="--c:#5ff0ff"></i><i style="--c:#ffffff"></i></div></div><div class="gx"><b>Shoe conditions</b><span>Dry, Frosty, Damp, Wet, Puddles, Slushy, Icy, Snowy.</span></div></div>
+      <div class="gi"><div class="gv"><div id="gShoe" class="v-shoe"></div><div class="v-dots"><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#9ad9ff"></i><i style="--c:#46b0ff"></i><i style="--c:#5a95ff"></i><i style="--c:#ff9f2e"></i><i style="--c:#ff3b3b"></i><i style="--c:#ff6a2e"></i></div></div><div class="gx"><b>Shoe conditions</b><span>Dry, Frosty, Damp, Wet, Puddles, Slushy, Icy, Snowy.</span></div></div>
     </div>
   </div>
 </div>
@@ -778,7 +778,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.47';
+const VER='2.48';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -1333,11 +1333,11 @@ function ground(j,C,idx){
   // v2.43: model snow depth alone is often a stale grid value on dry days; count it as snow cover only when snow actually fell in the last 48 h
   const cover=depth>=0.02&&back(H.snowfall,48)>=0.5;
   if(cover||(snowNow&&T<=1)||(sn12>=1&&T<=1)){
-    if(T>1&&(wetNow||r3>0.3)) return {t:'Slushy',c:'#c9a8ff'};
-    return {t:'Snowy',c:'#ffffff'};
+    if(T>1&&(wetNow||r3>0.3)) return {t:'Slushy',c:'#ff9f2e'};
+    return {t:'Snowy',c:'#ff6a2e'};
   }
-  if(T<=0&&(wetNow||r12>=0.2)) return {t:'Icy',c:'#5ff0ff'};
-  if(sn12>=0.3) return {t:'Slushy',c:'#c9a8ff'};
+  if(T<=0&&(wetNow||r12>=0.2)) return {t:'Icy',c:'#ff3b3b'};
+  if(sn12>=0.3) return {t:'Slushy',c:'#ff9f2e'};
   if(wetNow||r3>=0.5) return r3>=4?{t:'Puddles',c:'#5a95ff'}:{t:'Wet',c:'#46b0ff'};
   if(r3>0.05||r12>=0.5) return {t:'Damp',c:'#9ad9ff'};
   if(T<=0||(T<=1&&!C.is_day&&(C.cloud_cover??100)<40&&(C.relative_humidity_2m??0)>=85)) return {t:'Frosty',c:'#c4f1ff'};   // v2.43: dry but at or below freezing = Frosty
