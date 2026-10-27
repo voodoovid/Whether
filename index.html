@@ -675,6 +675,19 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 .v-sw .tt{font-size:12px}
 .gw1{font-size:24px;font-weight:800;letter-spacing:-.4px;color:#fff;line-height:1.1}
 .gor{font-size:17.3px;color:#f4b942;font-weight:800}
+/* v2.82: press and hold the title to jump Home; guide picture of the title with a hold ring */
+.brand{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;cursor:pointer;transition:transform .2s ease,opacity .2s ease}
+.brand.hold{transform:scale(.94);opacity:.8}
+.brand.homed{animation:homePop .45s ease}
+@keyframes homePop{0%{transform:scale(.94)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
+.v-title{position:relative;display:inline-flex;align-items:center;gap:7px;padding:6px 12px 6px 8px;border-radius:14px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22)}
+.v-title img{width:26px;height:26px;border-radius:7px}
+.v-title .tt{display:flex;flex-direction:column;align-items:center;line-height:1}
+.v-title .tt b{font-size:15px;font-weight:800;letter-spacing:-.3px;color:#fff}
+.v-title .tt i{font-style:normal;font-size:10.5px;font-weight:800;color:#f4b942;margin-top:2px}
+.v-title::after{content:"";position:absolute;inset:-4px;border-radius:18px;border:2px solid #f4b942;opacity:0;animation:holdRing 2.4s ease-in-out infinite}
+@keyframes holdRing{0%,30%{opacity:0;transform:scale(1.08)}60%{opacity:.95;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.v-title::after{animation:none;opacity:.8}}
 .gv2{flex-basis:100%;font-size:13px;margin-top:2px}
 .v-circ{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;font-size:17px;font-weight:800}
 .v-circ svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
@@ -979,7 +992,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.81 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.82 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -995,6 +1008,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
       <div class="gi"><div class="gv"><svg class="v-sw hr" id="gHrs" viewBox="0 0 128 86" aria-hidden="true"></svg></div><div class="gx"><b>Hourly panel</b><span>Swipe sideways for more hours.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">10-Day</span><svg class="v-ar" viewBox="0 0 28 16" aria-hidden="true"><path d="M3 8H25M9 2L3 8l6 6M19 2l6 6-6 6"/></svg></div></div><div class="gx"><b>10-Day forecast</b><span>Press the 10-Day button or swipe left or right over the Current temp to open the 10-Day forecast.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-loc"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>City</span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></div></div><div class="gx"><b>Location</b><span>Tap to search or pick a saved location.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-title"><img src="icon-192.png" alt="" width="26" height="26"><div class="tt"><b>Whether</b><i>(or not)</i></div></div></div><div class="gx"><b>Go Home</b><span>Press and hold the Whether (or not) title to jump to your Home location, the first one in your saved list.</span></div></div>
       <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Cycle Through Saved Locations</b><span>Swipe up or down on the main screen.</span></div></div>
       <div class="gi gh2"><div class="gv"><div class="v-hold" aria-hidden="true"><div class="hg"><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr pick"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div></div><div class="fg"></div><div class="hs"><div class="bd">SAT<i>×</i></div><div class="cols"><u style="--h:30%"></u><u style="--h:62%"></u><u style="--h:45%"></u><u style="--h:78%"></u></div></div></div></div><div class="gx"><b>Get Hourly for any day</b><span>In the 10-Day list, press and hold a day to open its hourly details. To go back:</span><div class="v-btns"><div class="v-badge s">Sat · Oct 31<i aria-hidden="true">✕</i></div><div class="v-or">or</div><div class="v-pill s">Back to 10-Day</div></div></div></div>
       <div class="gi"><div class="gv"><div class="v-seg u"><span class="on">°C</span><span>°F</span></div></div><div class="gx"><b>Units</b><span>Switch °C and °F.</span></div></div>
@@ -1007,7 +1021,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.81';
+const VER='2.82';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -1964,6 +1978,23 @@ function slideIn(){
   setTimeout(()=>{cycling=false},420);
 }
 $('#vtag').textContent='v'+VER; $('#vtag2').textContent='v'+VER; $('#rotv').textContent='v'+VER;
+/* ---- v2.82: press and hold the title to go Home (first saved location, else Vancouver) ---- */
+(function(){
+  const b=document.querySelector('.brand'); if(!b) return; let t=null,x0=0,y0=0,fired=false;
+  const clr=()=>{clearTimeout(t);t=null;b.classList.remove('hold')};
+  b.addEventListener('pointerdown',e=>{ if(e.button>0) return; fired=false; x0=e.clientX; y0=e.clientY; b.classList.add('hold');
+    t=setTimeout(()=>{ t=null; fired=true; b.classList.remove('hold'); b.classList.add('homed'); setTimeout(()=>b.classList.remove('homed'),460);
+      if(navigator.vibrate) navigator.vibrate(14); goHome() },600) });
+  b.addEventListener('pointermove',e=>{ if(t&&(Math.abs(e.clientX-x0)>10||Math.abs(e.clientY-y0)>10)) clr() });
+  ['pointerup','pointercancel','pointerleave'].forEach(n=>b.addEventListener(n,clr));
+  b.addEventListener('contextmenu',e=>e.preventDefault());
+})();
+function goHome(){
+  const h=S.saved[0]||DEFAULT_LOC;
+  if(key(h)===key(S.loc)){ toast('Already at Home · '+h.name); return }
+  const n=S.saved.findIndex(s=>key(s)===key(h)); if(n>=0&&S.saved.length>1) S.pg=`${n+1} of ${S.saved.length}`;
+  setLoc(h); toast('Home · '+h.name,2500);
+}
 function setBarH(){const r=document.documentElement.style, b=document.querySelector('.bar').getBoundingClientRect(), l=$('#locBtn').getBoundingClientRect(), top=Math.round(b.bottom+6);
   r.setProperty('--barH',top+'px'); if(l.height) r.setProperty('--locPad',Math.max(0,Math.round(l.top-top))+'px')}
 function syncBtn(){
