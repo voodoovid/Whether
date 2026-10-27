@@ -910,6 +910,16 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
   .dx.rain i u:first-child{font-size:clamp(9.5px,1.45cqw,11px);text-transform:none}
   .dx.rain i u+u{font-size:clamp(10px,1.5cqw,12.5px)}
 }
+/* v2.95: Mac only: fixed 16:9 stage (1600x900) scaled to fit the window; every size below is pinned so nothing depends on the window */
+html.mac,html.mac body{overflow:hidden}
+html.mac #app{position:fixed;left:50%;top:50%;width:1600px;height:900px;margin:-450px 0 0 -800px;padding:38px 22px 14px;row-gap:12px;transform:scale(var(--ms,1));transform-origin:50% 50%}
+html.mac .bigt{font-size:132px} html.mac .nowtop .ic{font-size:112px}
+html.mac .nowside{width:224px;gap:6px} html.mac .now>.loc{max-width:calc(100% - 224px - 14px)}
+html.mac .cond{font-size:26px;margin-top:10px} html.mac .hilo{font-size:23px;margin-top:8px} html.mac .hilo b{font-size:32px} html.mac .upd{font-size:17px;margin-top:6px}
+html.mac .bice{margin-top:9px;padding:6px 15px 6px 10px} html.mac .bice .bv{font-size:23px} html.mac .bice svg{width:27px;height:27px}
+html.mac .st{padding:7px 12px 8px} html.mac .st .v{font-size:34px} html.mac .st.big .v,html.mac .st.uvt .v{font-size:46px} html.mac .st.wind .v{font-size:27px}
+html.mac .st .gr{font-size:32px} html.mac .st .gr svg{width:30px;height:30px} html.mac .st .w{font-size:16px} html.mac .st.wind .w{font-size:20px}
+html.mac .curk.mode{margin-bottom:8px} html.mac .nowmain{margin-top:14px}
 /* v2.88: iPhone portrait only: bigger top row (10-Day, units, refresh, ?), tighter space around the hourly weather icon */
 @media (max-width:500px){
   .brand{font-size:20px;gap:7px} .brand img{width:28px;height:28px}
@@ -1059,7 +1069,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="recent"></div>
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.94 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.95 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1088,8 +1098,16 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.94';
+const VER='2.95';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
+/* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
+const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
+let SC=1;
+function stage(){
+  const on=MACMQ.matches; SC=on?Math.min(innerWidth/1600,innerHeight/900):1;
+  const de=document.documentElement; de.classList.toggle('mac',on); de.style.setProperty('--ms',SC.toFixed(4));
+}
+stage(); addEventListener('resize',stage);
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
@@ -2049,9 +2067,9 @@ function fitText(){
   document.querySelectorAll('.bigt,.scol .tp,.st .gr,.st .k,.st .v,.st .w,.cond,.hilo,.upd,.scol .tm,.scol .fl,.rc .p,.rc .mm,.rc .aw,.rc .bi b,.rc .bi small,.sh,.scol .uv,.wd .ws,.wd .ww,#strip .ph h2,.hint,.brand .t1').forEach(el=>{
     el.style.fontSize='';
     const left=el.closest('.nowmain'); let avail=left?leftAvail:inner(el.parentElement);
-    if(el.classList.contains('bigt')){ const ic=el.closest('.nowtop')?.querySelector('.ic'); avail=leftAvail-(ic?ic.getBoundingClientRect().width-22:0)-8 }
+    if(el.classList.contains('bigt')){ const ic=el.closest('.nowtop')?.querySelector('.ic'); avail=leftAvail-(ic?ic.getBoundingClientRect().width/SC-22:0)-8 }
     if(!avail) return;
-    rg.selectNodeContents(el); let w=rg.getBoundingClientRect().width, fs=parseFloat(getComputedStyle(el).fontSize);
+    rg.selectNodeContents(el); let w=rg.getBoundingClientRect().width/SC, fs=parseFloat(getComputedStyle(el).fontSize);
     if(w>avail+0.5){ el.style.fontSize=Math.max(9,Math.floor(fs*avail/w*10)/10-0.2)+'px' }
   });
 }
@@ -2060,16 +2078,16 @@ addEventListener('resize',()=>requestAnimationFrame(fitText));
 function reservePager(){
   const el=$('#pager'), lb=$('#locBtn'), cu=$('#mode'); if(!el||!lb||!cu||!cu.offsetParent) return;
   if(!el.textContent) el.textContent='1 of 1';
-  cu.style.marginTop=''; const need=el.offsetHeight+(phoneMQ.matches&&matchMedia('(max-width:500px)').matches?3:8), gap=cu.getBoundingClientRect().top-lb.getBoundingClientRect().bottom;
+  cu.style.marginTop=''; const need=el.offsetHeight+(phoneMQ.matches&&matchMedia('(max-width:500px)').matches?3:8), gap=(cu.getBoundingClientRect().top-lb.getBoundingClientRect().bottom)/SC;
   if(gap<need) cu.style.marginTop=Math.ceil(need-gap)+'px';
 }
 addEventListener('resize',()=>requestAnimationFrame(reservePager));
 function showPager(){
   const el=$('#pager'); if(!el||!S.pg) return; el.textContent=S.pg; S.pg=''; reservePager();
   const now=el.offsetParent, lb=$('#locBtn'), cu=$('#mode');
-  if(now&&lb){const nr=now.getBoundingClientRect(), r=lb.getBoundingClientRect(), w=el.offsetWidth;
-    const cr=cu?cu.getBoundingClientRect():r; el.style.left=Math.max(0,Math.min(nr.width-w,Math.round(cr.left-nr.left+cr.width/2-w/2)))+'px';
-    el.style.top=Math.round(cu?Math.max(r.bottom-nr.top+3,cr.top-nr.top-el.offsetHeight-5):r.bottom-nr.top+8)+'px'}
+  if(now&&lb){const nr=now.getBoundingClientRect(), r=lb.getBoundingClientRect(), w=el.offsetWidth, k=1/SC;
+    const cr=cu?cu.getBoundingClientRect():r; el.style.left=Math.max(0,Math.min(nr.width*k-w,Math.round((cr.left-nr.left+cr.width/2)*k-w/2)))+'px';
+    el.style.top=Math.round(cu?Math.max((r.bottom-nr.top)*k+3,(cr.top-nr.top)*k-el.offsetHeight-5):(r.bottom-nr.top)*k+8)+'px'}
   el.classList.add('on'); clearTimeout(showPager._t); showPager._t=setTimeout(()=>el.classList.remove('on'),2200);
 }
 function slideIn(){
