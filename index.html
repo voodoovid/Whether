@@ -1069,7 +1069,7 @@ html.mac .curk.mode{margin-bottom:8px} html.mac .nowmain{margin-top:14px}
     <div id="recent"></div>
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.95 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.96 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1098,7 +1098,7 @@ html.mac .curk.mode{margin-bottom:8px} html.mac .nowmain{margin-top:14px}
 
 <script>
 'use strict';
-const VER='2.95';
+const VER='2.96';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1499,6 +1499,13 @@ function toast(t,ms=3500){const m=$('#msg');if(!t){m.hidden=true;return}m.textCo
 
 /* ---------- render ---------- */
 function rainPass(j){
+  // v2.96: a forecast model can label an hour "snow" at mild temperatures (it showed snow at 8°C); snow can't fall that warm, so show it as rain
+  const unsnow=(o,tk,thr)=>{ if(!o||!o.weather_code||!o[tk]) return;
+    o.weather_code=o.weather_code.map((c,i)=>{ const t=o[tk][i]; if(!SNOWY(c)||t==null||t<=thr) return c;
+      return (c===85||c===86)?(c===86?81:80):((o.precipitation||o.precipitation_sum)?.[i]??0)>=2.5||c>=75?63:61 }) };
+  unsnow(j.hourly,'temperature_2m',3);
+  unsnow(j.daily,'temperature_2m_min',3);
+  if(j.current&&SNOWY(j.current.weather_code)&&(j.current.temperature_2m??-99)>3){ const c=j.current.weather_code; j.current.weather_code=(c===85||c===86)?80:(j.current.precipitation>=2.5?63:61) }
   const fix=(o,pk,probK,thr)=>{ if(!o||!o.weather_code||!o[probK]) return;
     o.weather_code=o.weather_code.map((c,i)=>{ if(PCODE(c)) return c;
       const pr=o[probK][i]??0, mm=o[pk]?.[i]??0;
