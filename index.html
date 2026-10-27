@@ -575,6 +575,7 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 .shc .shh{font-size:14px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;padding:14px 4px 8px}
 .shc .ver{padding:6px 4px 2px;font-size:12px;text-align:center}
 .shc .row .x{font-size:22px;padding:2px 8px}
+.shc .row .hm{flex:none;font-style:normal;font-size:12px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#1a1300;background:#f4b942;border-radius:999px;padding:3px 10px;text-shadow:none;margin-left:-2px}
 /* v2.25: High (feels) / Low (feels); 10-day sits on the same sky and glass boxes as Today */
 .dhl b em{font-style:normal;font-weight:700;margin-left:.3em}
 @media (min-width:901px){ .dhl{gap:16px} }
@@ -1041,9 +1042,9 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="results"></div>
     <div class="shh" id="recentH">Recent · tap Save to keep</div>
     <div id="recent"></div>
-    <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
+    <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.90 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.91 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1072,7 +1073,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.90';
+const VER='2.91';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -1447,6 +1448,7 @@ async function load(manual){
     S.data=j; S.offline=false; S.sel=0; MEM[key(S.loc)]=j;
     LS.set('cache',{k:key(S.loc),j});
     render();
+    prefetchSaved();
   }catch(e){
     const c=LS.get('cache',null);
     if(c&&c.k===key(S.loc)){S.data=c.j;S.offline=true;S.sel=0;render();toast(manual?'Offline — showing last saved forecast':'');}
@@ -1883,7 +1885,7 @@ function saveLoc(i){
   const l=S.recent[i]; if(!l) return;
   if(S.saved.length>=12){toast('Saved list is full (12) — remove one to add more');return}
   if(!isSaved(l)){S.saved.push(l);LS.set('saved',S.saved)}
-  S.recent.splice(i,1); LS.set('recent',S.recent); drawSaved(); drawRecent();
+  S.recent.splice(i,1); LS.set('recent',S.recent); drawSaved(); drawRecent(); prefetchSaved();
 }
 function drawRecent(){
   S.recent=S.recent.filter(r=>!isSaved(r)).slice(0,3);
@@ -1898,7 +1900,7 @@ $('#recent').addEventListener('click',e=>{
 });
 function drawSaved(){
   $('#savedH').style.display=S.saved.length?'':'none';
-  $('#saved').innerHTML=S.saved.map((s,i)=>`<div class="row" data-s="${i}"><span>${esc(s.name)}</span><svg class="grip" viewBox="0 0 18 18" aria-hidden="true"><circle cx="6" cy="4" r="1.6"/><circle cx="12" cy="4" r="1.6"/><circle cx="6" cy="9" r="1.6"/><circle cx="12" cy="9" r="1.6"/><circle cx="6" cy="14" r="1.6"/><circle cx="12" cy="14" r="1.6"/></svg><button class="x" data-x="${i}" aria-label="Remove">×</button></div>`).join('');
+  $('#saved').innerHTML=S.saved.map((s,i)=>`<div class="row" data-s="${i}"><span>${esc(s.name)}</span>${i===0?'<em class="hm">Home</em>':''}<svg class="grip" viewBox="0 0 18 18" aria-hidden="true"><circle cx="6" cy="4" r="1.6"/><circle cx="12" cy="4" r="1.6"/><circle cx="6" cy="9" r="1.6"/><circle cx="12" cy="9" r="1.6"/><circle cx="6" cy="14" r="1.6"/><circle cx="12" cy="14" r="1.6"/></svg><button class="x" data-x="${i}" aria-label="Remove">×</button></div>`).join('');
 }
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let qT;
@@ -1975,6 +1977,21 @@ $('#gps').addEventListener('click',()=>{
   app.addEventListener('touchcancel',fin,{passive:true});
 })();
 const MEM={};                     // in-memory forecast per location, for instant swipes
+/* v2.91: fetch every saved location's forecast in the background so swiping in EITHER direction slides in smoothly (before, places not yet visited had to wait for the network and jumped) */
+async function fetchWx(l){
+  const base=`https://api.open-meteo.com/v1/forecast?latitude=${l.lat}&longitude=${l.lon}&timezone=auto&forecast_days=10&past_days=1&current=${CURRENT}&hourly=${HOURLY}&daily=${DAILY}`;
+  const get=async u=>{const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),15000);
+    try{const r=await fetch(u,{signal:ctl.signal}); if(!r.ok) throw new Error('http '+r.status); return await r.json()} finally{clearTimeout(to)}};
+  let j; try{ j=mergeModels(await get(base+'&models='+MODELS.join(','))) } catch(_){ j=await get(base) }
+  if(!j.hourly||!j.daily||!j.current) throw new Error('bad data');
+  trimPast(j); j._at=Date.now(); return j;
+}
+const PF={};
+function prefetchSaved(){
+  if(navigator.onLine===false) return;
+  (S.saved||[]).forEach((l,k)=>{ const kk=key(l); if(PF[kk]||(MEM[kk]&&Date.now()-MEM[kk]._at<600000)) return; PF[kk]=1;
+    setTimeout(()=>fetchWx(l).then(j=>{MEM[kk]=j}).catch(()=>{}).finally(()=>{PF[kk]=0}),600+k*500) });
+}
 let cycling=false;
 function cycleLoc(dir){
   const L=S.saved; if(!L||L.length<2){toast(L&&L.length?'Only one saved location — add more with the location button':'Save locations with the location button');return}
