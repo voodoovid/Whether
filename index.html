@@ -908,11 +908,13 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
   .now>.loc{font-size:19px;gap:6px;padding:7px 11px 7px 9px;min-height:38px;max-width:calc(100% - min(168px,40vw) - 6px)}
   .now>.loc svg{width:18px;height:18px} .now>.loc .chev{width:11px;height:11px}
   .curk.mode{padding:3px;margin-bottom:4px}
-  .curk.mode button{font-size:14.5px;padding:8px 10px;letter-spacing:.3px}
+  .curk.mode button{font-size:15.5px;padding:9px 9px;letter-spacing:.2px}
+  .nowbody{margin-top:4px} .nowmain{align-self:start;margin-top:0}
+  .pager{font-size:11.5px;padding:1px 9px}   /* v2.90: slimmer counter so Current/Tonight can sit closer to the location bubble */
   .curk.mode button::after{content:"";position:absolute;inset:-8px -4px}
 }
 @media (max-width:380px){
-  .curk.mode button{font-size:13.5px;padding:7px 8px}
+  .curk.mode button{font-size:14px;padding:8px 7px}
   .now>.loc{font-size:18.5px}
   .brand{font-size:19px} .tools{gap:4px}
   #btn10{font-size:13.5px;padding:0 9px;min-height:34px}
@@ -1041,7 +1043,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="recent"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.89 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.90 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1070,7 +1072,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.89';
+const VER='2.90';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -2026,7 +2028,7 @@ addEventListener('resize',()=>requestAnimationFrame(fitText));
 function reservePager(){
   const el=$('#pager'), lb=$('#locBtn'), cu=$('#mode'); if(!el||!lb||!cu||!cu.offsetParent) return;
   if(!el.textContent) el.textContent='1 of 1';
-  cu.style.marginTop=''; const need=el.offsetHeight+8, gap=cu.getBoundingClientRect().top-lb.getBoundingClientRect().bottom;
+  cu.style.marginTop=''; const need=el.offsetHeight+(phoneMQ.matches&&matchMedia('(max-width:500px)').matches?3:8), gap=cu.getBoundingClientRect().top-lb.getBoundingClientRect().bottom;
   if(gap<need) cu.style.marginTop=Math.ceil(need-gap)+'px';
 }
 addEventListener('resize',()=>requestAnimationFrame(reservePager));
