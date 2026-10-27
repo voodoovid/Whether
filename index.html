@@ -905,9 +905,13 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
   .dx i{white-space:normal;font-size:clamp(11px,1.95cqw,14px);line-height:1.08;text-wrap:balance;overflow-wrap:normal}
   .dx i u{white-space:normal}
   .dx.shoe b{font-size:clamp(14px,2.6cqw,17px)}
-  .dx.rain b{font-size:clamp(16px,3cqw,21px)}
-  .dx.rain i u:first-child{font-size:clamp(10px,1.6cqw,10.5px)}
-  .dx.rain i u+u{font-size:clamp(11px,1.9cqw,12.5px)}
+  /* v2.93: Rain box has 4 things; amount and word share one line (wrapping only if the word is long) so nothing is clipped; "mm" stays lowercase */
+  .dx.rain{padding:17px 2px 3px;gap:1px}
+  .dx.rain b{font-size:clamp(15px,2.7cqw,19px);line-height:1}
+  .dx.rain i{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:5px;row-gap:0;line-height:1.05}
+  .dx.rain i u{display:inline}
+  .dx.rain i u:first-child{font-size:clamp(10px,1.6cqw,11px);text-transform:none}
+  .dx.rain i u+u{font-size:clamp(11px,1.85cqw,12.5px)}
 }
 /* v2.88: iPhone portrait only: bigger top row (10-Day, units, refresh, ?), tighter space around the hourly weather icon */
 @media (max-width:500px){
@@ -1058,7 +1062,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="recent"></div>
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.92 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.93 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1087,7 +1091,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.92';
+const VER='2.93';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
