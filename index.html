@@ -895,23 +895,20 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 @keyframes rotPulse{0%,100%{opacity:1}50%{opacity:.3}}
 @keyframes rotStripe{to{background-position:28px 0}}
 @media (prefers-reduced-motion:reduce){#rot .rotph svg,#rot .rotbadge i,#rot .rotbar b{animation:none!important}}
-/* v2.92: Mac only (wide window with a mouse): 10-day boxes were crowded. Wording may wrap to two lines, text scales with the 10-day column width, a little more room per box. iPhone portrait and iPad are not touched. */
+/* v2.92/2.94: Mac only (wide window with a mouse): 10-day boxes were crowded. Every line stays on its own line and no word is ever split or wrapped; text scales with the 10-day column width and rows are a little taller. iPhone portrait and iPad are not touched. */
 @media (min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine){
   #daily{container-type:inline-size}
-  .drow,.drow.today{grid-template-columns:54px 40px minmax(0,1.9fr) repeat(4,minmax(0,1fr));column-gap:6px;padding:6px 8px}
+  #drows{grid-template-rows:repeat(10,minmax(80px,1fr))}
+  .drow,.drow.today{grid-template-columns:54px 40px minmax(0,1.9fr) repeat(4,minmax(0,1fr));column-gap:6px;padding:4px 8px}
   .dhl b,.dhl .fe b{font-size:calc(clamp(17px,3.1cqw,21px)*var(--dk,1))}
-  .dx{padding:20px 2px 4px}
-  .dx b{font-size:clamp(17px,3.2cqw,23px)}
-  .dx i{white-space:normal;font-size:clamp(11px,1.95cqw,14px);line-height:1.08;text-wrap:balance;overflow-wrap:normal}
-  .dx i u{white-space:normal}
+  .dx{padding:17px 2px 3px;gap:1px}
+  .dx b{font-size:clamp(16px,2.9cqw,21px);line-height:1.05}
+  .dx i{display:block;white-space:nowrap;overflow:visible;font-size:clamp(9.5px,1.5cqw,13px);line-height:1.1}
+  .dx i u{display:block;white-space:nowrap}
   .dx.shoe b{font-size:clamp(14px,2.6cqw,17px)}
-  /* v2.93: Rain box has 4 things; amount and word share one line (wrapping only if the word is long) so nothing is clipped; "mm" stays lowercase */
-  .dx.rain{padding:17px 2px 3px;gap:1px}
-  .dx.rain b{font-size:clamp(15px,2.7cqw,19px);line-height:1}
-  .dx.rain i{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:5px;row-gap:0;line-height:1.05}
-  .dx.rain i u{display:inline}
-  .dx.rain i u:first-child{font-size:clamp(10px,1.6cqw,11px);text-transform:none}
-  .dx.rain i u+u{font-size:clamp(11px,1.85cqw,12.5px)}
+  .dx.rain b{font-size:clamp(15px,2.6cqw,19px);line-height:1}
+  .dx.rain i u:first-child{font-size:clamp(9.5px,1.45cqw,11px);text-transform:none}
+  .dx.rain i u+u{font-size:clamp(10px,1.5cqw,12.5px)}
 }
 /* v2.88: iPhone portrait only: bigger top row (10-Day, units, refresh, ?), tighter space around the hourly weather icon */
 @media (max-width:500px){
@@ -1062,7 +1059,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="recent"></div>
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.93 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.94 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1091,7 +1088,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.93';
+const VER='2.94';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
