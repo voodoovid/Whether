@@ -894,6 +894,23 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 @keyframes rotPulse{0%,100%{opacity:1}50%{opacity:.3}}
 @keyframes rotStripe{to{background-position:28px 0}}
 @media (prefers-reduced-motion:reduce){#rot .rotph svg,#rot .rotbadge i,#rot .rotbar b{animation:none!important}}
+/* v2.88: iPhone portrait only: bigger top row (10-Day, units, refresh, ?), tighter space around the hourly weather icon */
+@media (max-width:500px){
+  .brand{font-size:20px;gap:7px} .brand img{width:28px;height:28px}
+  .tools{gap:5px}
+  #btn10{font-size:14.5px;padding:0 11px;min-height:36px}
+  .tools .seg{padding:2px}
+  .tools .seg button{font-size:14.5px;padding:0 9px;min-height:32px}
+  .tools .rbtn{width:36px;height:36px}
+  .rbtn.hq{font-size:18px} .rbtn svg{width:18px;height:18px}
+  .scol .ic{margin:-5px 0}
+}
+@media (max-width:380px){
+  .brand{font-size:19px} .tools{gap:4px}
+  #btn10{font-size:13.5px;padding:0 9px;min-height:34px}
+  .tools .seg button{font-size:13.5px;padding:0 7px;min-height:30px}
+  .tools .rbtn{width:34px;height:34px}
+}
 </style>
 </head>
 <body>
@@ -1016,7 +1033,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="recent"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.87 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.88 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1045,7 +1062,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.87';
+const VER='2.88';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
