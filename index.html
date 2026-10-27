@@ -670,8 +670,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 .gx{min-width:0}
 .gx b{display:block;font-size:19px;font-weight:800;line-height:1.2}
 .gx span{display:block;font-size:16px;line-height:1.32;color:rgba(255,255,255,.86);margin-top:3px}
-/* v2.86: guide text is justified left and right; every "(or not)" is yellow */
-.gx span{text-align:justify;text-justify:inter-word;hyphens:auto;-webkit-hyphens:auto}
+/* v2.86: every "(or not)" is yellow */
 .yor{font-style:normal;font-weight:800;color:#f4b942}
 .v-row{display:flex;align-items:center;gap:9px}
 .v-pill,.v-badge,.v-loc,.v-seg,.v-circ{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.30);box-shadow:inset 0 1px 0 rgba(255,255,255,.18);color:#fff;white-space:nowrap}
@@ -1017,7 +1016,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
     <div id="recent"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.86 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.87 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1046,7 +1045,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.86';
+const VER='2.87';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
