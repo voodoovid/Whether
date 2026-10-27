@@ -557,6 +557,24 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 .shh{color:#fff;font-size:12.5px;padding:12px 4px 6px}
 .ver{color:#fff;opacity:.85}
 #saved .row.lift{background:rgba(255,255,255,.3)}
+/* v2.85: location sheet restyled to match the app: title bar like the main header, glass tiles like the 24-hour panel, section labels like "Current" */
+.shc{border-radius:26px;padding:18px 16px 14px;-webkit-backdrop-filter:blur(18px) saturate(1.35);backdrop-filter:blur(18px) saturate(1.35)}
+.shtop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px;text-shadow:var(--ol,0 1px 3px rgba(0,0,0,.5))}
+.shtop b{font-size:24px;font-weight:800;letter-spacing:.2px;color:#fff}
+.shtop button{color:#fff;font-weight:800;font-size:15px;min-height:36px;padding:0 18px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);border-radius:999px;box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+.shtop button:active{background:rgba(255,255,255,.28)}
+.sht{margin-bottom:10px}
+.sht input{width:100%;box-sizing:border-box;min-height:48px;padding:0 14px 0 42px;border-radius:16px;color:#fff;background:rgba(255,255,255,.15) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>') 14px center/18px 18px no-repeat;box-shadow:0 6px 16px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.2)}
+.shc .row{min-height:50px;padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);box-shadow:0 6px 16px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.2);margin-bottom:8px}
+.shc .rgps{background:rgba(255,255,255,.22)!important}
+.shc .rgps::before{width:20px;height:20px}
+.shc #results .row::before,.shc #recent .row::before,.shc #saved .row::before{content:"";width:17px;height:17px;flex:none;opacity:.9;background:#fff;-webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>') center/contain no-repeat;mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>') center/contain no-repeat}
+.shc #recent .row{background:rgba(255,255,255,.10);border-style:dashed}
+.shc .sv{flex:none;color:#fff;font-size:13.5px;font-weight:800;letter-spacing:.3px;min-height:32px;padding:0 16px;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.4);border-radius:999px;text-shadow:inherit;box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
+.shc .sv:active{background:rgba(255,255,255,.38)}
+.shc .shh{font-size:14px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;padding:14px 4px 8px}
+.shc .ver{padding:6px 4px 2px;font-size:12px;text-align:center}
+.shc .row .x{font-size:22px;padding:2px 8px}
 /* v2.25: High (feels) / Low (feels); 10-day sits on the same sky and glass boxes as Today */
 .dhl b em{font-style:normal;font-weight:700;margin-left:.3em}
 @media (min-width:901px){ .dhl{gap:16px} }
@@ -988,12 +1006,15 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <div id="sheet" hidden>
   <div class="shc">
-    <div class="sht"><input id="q" placeholder="City or postal code" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="search"><button id="shClose">Done</button></div>
+    <div class="shtop"><b>Location</b><button id="shClose">Done</button></div>
+    <div class="sht"><input id="q" placeholder="City or postal code" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="search"></div>
     <button class="row rgps" id="gps"><span>Use my current location</span></button>
     <div id="results"></div>
+    <div class="shh" id="recentH">Recent · tap Save to keep</div>
+    <div id="recent"></div>
     <div class="shh" id="savedH">Saved · hold and drag to reorder</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.84 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.85 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1008,7 +1029,7 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
       <div class="gi"><div class="gv"><div id="gShoe" class="v-shoe"></div><div class="v-dots"><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#9ad9ff"></i><i style="--c:#46b0ff"></i><i style="--c:#5a95ff"></i><i style="--c:#ff9f2e"></i><i style="--c:#ff6a2e"></i><i style="--c:#ff3b3b"></i></div></div><div class="gx"><b>Shoe conditions</b><span>Dry, Frosty, Damp, Wet, Puddles, Slushy, Snowy, Icy.</span></div></div>
       <div class="gi"><div class="gv"><svg class="v-sw hr" id="gHrs" viewBox="0 0 128 86" aria-hidden="true"></svg></div><div class="gx"><b>Hourly panel</b><span>Swipe sideways for more hours.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">10-Day</span><svg class="v-ar" viewBox="0 0 28 16" aria-hidden="true"><path d="M3 8H25M9 2L3 8l6 6M19 2l6 6-6 6"/></svg></div></div><div class="gx"><b>10-Day forecast</b><span>Press the 10-Day button or swipe left or right over the Current temp to open the 10-Day forecast.</span></div></div>
-      <div class="gi"><div class="gv"><div class="v-loc"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>City</span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></div></div><div class="gx"><b>Location</b><span>Tap to search or pick a saved location.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-loc"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>City</span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></div></div><div class="gx"><b>Location</b><span>Tap to search or pick a saved place. Searched places wait under Recent until you tap Save.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-title"><img src="icon-192.png" alt="" width="26" height="26"><div class="tt"><b>Whether</b><i>(or not)</i></div></div></div><div class="gx"><b>Go Home</b><span>Press and hold the Whether (or not) title to jump to your Home location, the first one in your saved list.</span></div></div>
       <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Cycle Through Saved Locations</b><span>Swipe up or down on the main screen.</span></div></div>
       <div class="gi gh2"><div class="gv"><div class="v-hold" aria-hidden="true"><div class="hg"><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr pick"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div></div><div class="fg"></div><div class="hs"><div class="bd">SAT<i>×</i></div><div class="cols"><u style="--h:30%"></u><u style="--h:62%"></u><u style="--h:45%"></u><u style="--h:78%"></u></div></div></div></div><div class="gx"><b>Get Hourly for any day</b><span>In the 10-Day list, press and hold a day to open its hourly details. To go back:</span><div class="v-btns"><div class="v-badge s">Sat · Oct 31<i aria-hidden="true">✕</i></div><div class="v-or">or</div><div class="v-pill s">Back to 10-Day</div></div></div></div>
@@ -1022,12 +1043,12 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 
 <script>
 'use strict';
-const VER='2.84';
+const VER='2.85';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
-const S={loc:LS.get('loc',DEFAULT_LOC),units:LS.get('units','metric'),saved:LS.get('saved',[]),data:null,sel:0,idx:0,offline:false};
+const S={loc:LS.get('loc',DEFAULT_LOC),units:LS.get('units','metric'),saved:LS.get('saved',[]),recent:LS.get('recent',[]),data:null,sel:0,idx:0,offline:false};
 
 const PROV={'British Columbia':'BC','Alberta':'AB','Saskatchewan':'SK','Manitoba':'MB','Ontario':'ON','Quebec':'QC','Québec':'QC','New Brunswick':'NB','Nova Scotia':'NS','Prince Edward Island':'PE','Newfoundland and Labrador':'NL','Yukon':'YT','Northwest Territories':'NT','Nunavut':'NU'};
 const STATES={'Alabama':'AL','Alaska':'AK','Arizona':'AZ','Arkansas':'AR','California':'CA','Colorado':'CO','Connecticut':'CT','Delaware':'DE','District of Columbia':'DC','Florida':'FL','Georgia':'GA','Hawaii':'HI','Idaho':'ID','Illinois':'IL','Indiana':'IN','Iowa':'IA','Kansas':'KS','Kentucky':'KY','Louisiana':'LA','Maine':'ME','Maryland':'MD','Massachusetts':'MA','Michigan':'MI','Minnesota':'MN','Mississippi':'MS','Missouri':'MO','Montana':'MT','Nebraska':'NE','Nevada':'NV','New Hampshire':'NH','New Jersey':'NJ','New Mexico':'NM','New York':'NY','North Carolina':'NC','North Dakota':'ND','Ohio':'OH','Oklahoma':'OK','Oregon':'OR','Pennsylvania':'PA','Rhode Island':'RI','South Carolina':'SC','South Dakota':'SD','Tennessee':'TN','Texas':'TX','Utah':'UT','Vermont':'VT','Virginia':'VA','Washington':'WA','West Virginia':'WV','Wisconsin':'WI','Wyoming':'WY'};
@@ -1822,13 +1843,30 @@ async function search(q){
   if(region){const m=res.filter(x=>(x.admin1&&(abbr(x.admin1).toLowerCase()===region||x.admin1.toLowerCase().startsWith(region)))||(x.country_code||'').toLowerCase()===region||(x.country||'').toLowerCase().startsWith(region));if(m.length)res=m}
   return res.slice(0,6).map(x=>{const dom=x.country_code==='CA'||x.country_code==='US';return {name:`${x.name}, ${x.admin1?abbr(x.admin1):x.country}`,lat:x.latitude,lon:x.longitude,sub:dom?'':(x.country||'')}});
 }
+/* v2.85: picking a place only views it. It is not saved: it joins "Recent" (last 3, not on the saved list) until you tap Save. */
+const isSaved=l=>S.saved.some(s=>key(s)===key(l));
 function setLoc(l){
   S.loc={name:l.name,lat:l.lat,lon:l.lon}; LS.set('loc',S.loc);
-  if(!S.saved.some(s=>key(s)===key(l))){ if(S.saved.length<12){S.saved.push(S.loc);LS.set('saved',S.saved)} else toast('Saved list is full (12) — remove one to add more') }
+  if(!isSaved(l)){ S.recent=[S.loc,...S.recent.filter(r=>key(r)!==key(l))].slice(0,3); LS.set('recent',S.recent) }
   closeSheet(); S.data=null; $('#locName').textContent=l.name; load(true);
 }
-function openSheet(){ $('#sheet').hidden=false; $('#q').value=''; $('#results').innerHTML=''; drawSaved(); setTimeout(()=>$('#q').focus(),50) }
+function saveLoc(i){
+  const l=S.recent[i]; if(!l) return;
+  if(S.saved.length>=12){toast('Saved list is full (12) — remove one to add more');return}
+  if(!isSaved(l)){S.saved.push(l);LS.set('saved',S.saved)}
+  S.recent.splice(i,1); LS.set('recent',S.recent); drawSaved(); drawRecent();
+}
+function drawRecent(){
+  S.recent=S.recent.filter(r=>!isSaved(r)).slice(0,3);
+  $('#recentH').style.display=S.recent.length?'':'none';
+  $('#recent').innerHTML=S.recent.map((s,i)=>`<div class="row" data-q="${i}"><span>${esc(s.name)}</span><button class="sv" data-v="${i}" aria-label="Save ${esc(s.name)}">Save</button></div>`).join('');
+}
+function openSheet(){ $('#sheet').hidden=false; $('#q').value=''; $('#results').innerHTML=''; drawRecent(); drawSaved(); setTimeout(()=>$('#q').focus(),50) }
 function closeSheet(){ $('#sheet').hidden=true; $('#q').blur() }
+$('#recent').addEventListener('click',e=>{
+  const v=e.target.closest('[data-v]'); if(v){saveLoc(+v.dataset.v);return}
+  const r=e.target.closest('[data-q]'); if(r){setLoc(S.recent[+r.dataset.q])}
+});
 function drawSaved(){
   $('#savedH').style.display=S.saved.length?'':'none';
   $('#saved').innerHTML=S.saved.map((s,i)=>`<div class="row" data-s="${i}"><span>${esc(s.name)}</span><svg class="grip" viewBox="0 0 18 18" aria-hidden="true"><circle cx="6" cy="4" r="1.6"/><circle cx="12" cy="4" r="1.6"/><circle cx="6" cy="9" r="1.6"/><circle cx="12" cy="9" r="1.6"/><circle cx="6" cy="14" r="1.6"/><circle cx="12" cy="14" r="1.6"/></svg><button class="x" data-x="${i}" aria-label="Remove">×</button></div>`).join('');
