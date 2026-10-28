@@ -962,7 +962,9 @@ html.mac .curk.mode{margin-bottom:8px} html.mac .nowmain{margin-top:14px}
 .locksw.on .tk{background:#34c759;border-color:#34c759}
 .locksw.on .tk b{transform:translateX(14px)}
 .locksw::after{content:"";position:absolute;inset:-6px -4px}
-body.dayv .locksw{display:none}
+.shc .locksw{display:flex;align-self:auto;width:100%;height:46px;margin:10px 0 4px;padding:0 14px;font-size:15px;gap:10px;justify-content:flex-start}
+.shc .locksw .ll{flex:1;text-align:left}
+.shc .locksw svg{width:18px;height:18px}
 </style>
 </head>
 <body>
@@ -1033,7 +1035,6 @@ body.dayv .locksw{display:none}
         <span id="locName">Loading…</span>
         <svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg>
       </button>
-      <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
       <button class="daybadge" id="dayb" aria-label="Back to the 10-day list"></button>
       <div class="pager" id="pager" aria-live="polite"></div>
       <div class="nowbody">
@@ -1081,12 +1082,13 @@ body.dayv .locksw{display:none}
     <div class="shtop"><b>Location</b><button id="shClose">Done</button></div>
     <div class="sht"><input id="q" placeholder="City or postal code" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="search"></div>
     <button class="row rgps" id="gps"><span>Use my current location</span></button>
+    <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
     <div id="results"></div>
     <div class="shh" id="recentH">Recent · tap Save to keep</div>
     <div id="recent"></div>
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.98 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.99 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1116,7 +1118,7 @@ body.dayv .locksw{display:none}
 
 <script>
 'use strict';
-const VER='2.98';
+const VER='2.99';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
