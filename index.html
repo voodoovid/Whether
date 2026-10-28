@@ -973,6 +973,33 @@ html.mac .curk.mode{margin-bottom:8px} html.mac .nowmain{margin-top:14px}
 body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;box-shadow:0 0 0 1.5px rgba(52,199,89,.95),0 4px 14px rgba(52,199,89,.3)!important;border-color:rgba(52,199,89,.95)!important}
 #locBtn{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;transition:transform .2s ease}
 #locBtn.lhold{transform:scale(.95)}
+
+/* v2.104: live readings from the home Tempest station (Home location only) */
+.st.wind{position:relative}
+.wdial{position:absolute;top:5px;right:7px;width:44px;height:44px;overflow:visible;pointer-events:none}
+.wdial .wr{fill:none;stroke:rgba(255,255,255,.42);stroke-width:2.4}
+.wdial .wt{fill:none;stroke:rgba(255,255,255,.2);stroke-width:6}
+.wdial .wa{fill:none;stroke:#8fdcf8;stroke-width:6;stroke-linecap:round}
+.wdial .wg{stroke:#ffcf7a;stroke-width:4;stroke-linecap:round}
+.wdial .wk{stroke:rgba(255,255,255,.55);stroke-width:2.4;stroke-linecap:round}
+.wdial .wk.n{stroke:#fff;stroke-width:3.4}
+.wdial .wnd{fill:#7fd4f5;stroke:rgba(0,0,0,.7);stroke-width:2.2;paint-order:stroke;stroke-linejoin:round}
+.upd .evt.lcl{display:flex;align-items:center;gap:.38em;white-space:nowrap}
+.upd .ld{display:inline-block;flex:none;width:.46em;height:.46em;border-radius:50%;background:#5fd3a0;box-shadow:0 0 0 1.5px rgba(0,0,0,.55),0 0 8px #5fd3a0;animation:ldbeat 2s ease-in-out infinite}
+@keyframes ldbeat{0%,100%{opacity:1}50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.upd .ld{animation:none}}
+.tpbox{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);border-radius:16px;padding:12px 14px;margin-bottom:8px;font-size:14px;font-weight:600;line-height:1.35}
+.tpbox p{margin:0 0 10px;color:#fff;opacity:.92}
+.tpf{display:flex;gap:8px;margin-bottom:10px}
+.tpf input{flex:1;min-width:0;box-sizing:border-box;min-height:44px;padding:0 12px;border-radius:14px;font-size:16px;font-weight:600;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);outline:none;-webkit-text-security:disc}
+.tpf input::placeholder{color:rgba(255,255,255,.8)}
+.tpf button,.tpx{flex:none;color:#fff;font-weight:800;font-size:14px;min-height:44px;padding:0 16px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.34);border-radius:999px}
+.tpx{min-height:34px;padding:0 14px;margin-top:2px}
+.tpr{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:13.5px}
+.tpr i{flex:none;width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.4);box-shadow:0 0 0 1.5px rgba(0,0,0,.5)}
+.tpr i.pass{background:#5fd3a0}.tpr i.fail{background:#ff5d6c}.tpr i.wait{background:#f2c14e}
+.tpr.fail span{color:#ffb3ba}
+.tpbox[hidden],.tpf[hidden],.tpx[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -1096,7 +1123,16 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
     <div id="recent"></div>
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.103 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="shh" id="tpH">Home weather station</div>
+    <div class="tpbox" id="tpBox">
+      <p id="tpIntro">Paste your Tempest access token to show your own station's live readings at Home. It stays on this device and is sent only to Tempest.</p>
+      <form class="tpf" id="tpForm" autocomplete="off"><input id="tpTok" type="text" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Tempest access token" aria-label="Tempest access token"><button type="submit" id="tpGo">Connect</button></form>
+      <div class="tpr" id="tpR1"><i></i><span>Station: not connected</span></div>
+      <div class="tpr" id="tpR2"><i></i><span>Live feed: not connected</span></div>
+      <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
+      <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
+    </div>
+    <div class="ver">Whether v2.104 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1114,6 +1150,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="gi"><div class="gv"><div class="v-loc"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>City</span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></div></div><div class="gx"><b>Location</b><span>Tap to search or pick a saved place. Searched places wait under Recent until you tap Save.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Location Lock</span><i class="tk"><b></b></i></div></div><div class="gx"><b>Location Lock</b><span>After 30 minutes away, Whether returns to Home. Press and hold the location name, or use the switch in the location menu, to stay where you are.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-title"><img src="icon-192.png" alt="" width="26" height="26"><div class="tt"><b>Whether</b><i>(or not)</i></div></div></div><div class="gx"><b>Go Home</b><span>Press and hold the Whether <em class="yor">(or not)</em> title to jump to your Home location, the first one in your saved list.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill"><i class="ld" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#5fd3a0;margin-right:6px"></i>Local station</span></div></div><div class="gx"><b>Local station</b><span>At Home, with your Tempest connected, the temperature, Feels like, wind (with its live dial), rain and shoe conditions come from your own station. Everything else stays forecast.</span></div></div>
       <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Cycle Through Saved Locations</b><span>Swipe up or down on the main screen.</span></div></div>
       <div class="gi gh2"><div class="gv"><div class="v-hold" aria-hidden="true"><div class="hg"><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr pick"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div></div><div class="fg"></div><div class="hs"><div class="bd">SAT<i>×</i></div><div class="cols"><u style="--h:30%"></u><u style="--h:62%"></u><u style="--h:45%"></u><u style="--h:78%"></u></div></div></div></div><div class="gx"><b>Get Hourly for any day</b><span>In the 10-Day list, press and hold a day to open its hourly details. To go back:</span><div class="v-btns"><div class="v-badge s">Sat · Oct 31<i aria-hidden="true">✕</i></div><div class="v-or">or</div><div class="v-pill s">Back to 10-Day</div></div></div></div>
       <div class="gi"><div class="gv"><div class="v-seg u"><span class="on">°C</span><span>°F</span></div></div><div class="gx"><b>Units</b><span>Switch °C and °F.</span></div></div>
@@ -1126,7 +1163,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.103';
+const VER='2.104';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1546,6 +1583,188 @@ function rainPass(j){
   floor(j.hourly,'precipitation','precipitation_probability',[[0.1,40],[0.5,60],[2,80]]);
   floor(j.daily,'precipitation_sum','precipitation_probability_max',[[0.2,40],[1,60],[5,80]]);
 }
+/* ---- v2.104: live readings from the home Tempest station.
+   Home location only, and never in Tonight or on a day page. Anything missing or stale falls back to the forecast.
+   The access token lives only in this browser (never in the code) and is sent only to Tempest. ---- */
+const TW=(()=>{
+  const REST='https://swd.weatherflow.com/swd/rest', WSU='wss://ws.weatherflow.com/swd/data', KEY='tempestToken';
+  const st={token:'',station:null,ws:null,retry:0,timer:null,manual:false,lastMsg:0,obs:null,obsAt:0,rapid:null,rapidAt:0,dayTotal:null,extra:0,seenT:0,logT:0,rainLog:[],wasOn:false,lastWord:''};
+  try{ st.token=localStorage.getItem(KEY)||'' }catch(e){}
+  const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isHome=()=>{ try{ return !!S.loc&&key(S.loc)===key(homeLoc()) }catch(e){ return false } };
+  const fresh=()=>!!st.obs&&Date.now()-st.obsAt<180000;       // a station reading arrives about once a minute
+  const on=()=>!!st.token&&isHome()&&fresh()&&!S.offline&&!(S.day>0);
+  const shown=()=>on()&&S.mode!=='eve';
+  const rapidOk=()=>!!st.rapid&&Date.now()-st.rapidAt<15000;  // live wind arrives every 3 seconds
+  function windNow(){ const o=st.obs; if(!o) return {kmh:0,dir:0,gust:0};
+    const r=rapidOk(), kmh=(r?st.rapid.ms:o.avg)*3.6, dir=r?st.rapid.dir:o.dir;
+    return {kmh,dir,gust:Math.max(o.gust*3.6,kmh)} }
+  /* feels like, worked out from the station's own readings: wind chill (Environment Canada) or humidex, else the air temperature */
+  const dew=(t,rh)=>{const a=17.625,b=243.04,g=Math.log(rh/100)+(a*t)/(b+t);return (b*g)/(a-g)};
+  function feels(t,rh,ms){ const v=ms*3.6;
+    if(t<=10&&v>4.8) return 13.12+0.6215*t-11.37*Math.pow(v,.16)+0.3965*t*Math.pow(v,.16);
+    if(t>=27&&rh>=40){ const e=6.11*Math.exp(5417.753*(1/273.16-1/(dew(t,rh)+273.15))); return t+0.5555*(e-10) }
+    return t }
+  function rain1h(){ const cut=Date.now()/1000-3600; st.rainLog=st.rainLog.filter(r=>r.t>cut); return st.rainLog.reduce((a,r)=>a+r.mm,0) }
+  const rainToday=()=>st.dayTotal==null?null:st.dayTotal+st.extra;
+  /* the forecast's "current" with the station's own readings laid over it */
+  function overlay(C){
+    if(!on()) return C;
+    const o=st.obs, w=windNow();
+    return {...C,temperature_2m:o.temp,apparent_temperature:feels(o.temp,o.rh,w.kmh/3.6),wind_speed_10m:w.kmh,wind_gusts_10m:w.gust,wind_direction_10m:w.dir,
+      _live:1,_rain1h:rain1h(),_raining:o.ptype>0,_today:rainToday(),_t:o.t*1000};
+  }
+
+  /* ---------- mini wind dial ---------- */
+  const CIRC=2*Math.PI*26;
+  const frac=v=>Math.min(1,Math.pow(Math.max(0,v)/60,.7));
+  const angDiff=(a,b)=>((b-a+540)%360)-180;
+  const dial={sS:0,sD:0,has:false,run:false,last:0};
+  function dialHTML(){
+    let k='';
+    for(let a=0;a<360;a+=90){ const t=(a-90)*Math.PI/180, r1=a===0?38:40, r2=47;
+      k+=`<line class="wk${a===0?' n':''}" x1="${(50+r1*Math.cos(t)).toFixed(1)}" y1="${(50+r1*Math.sin(t)).toFixed(1)}" x2="${(50+r2*Math.cos(t)).toFixed(1)}" y2="${(50+r2*Math.sin(t)).toFixed(1)}"/>` }
+    return `<svg class="wdial" id="wdial" viewBox="0 0 100 100" aria-hidden="true"><circle class="wr" cx="50" cy="50" r="44"/>${k}<circle class="wt" cx="50" cy="50" r="26"/>`+
+      `<circle id="wdA" class="wa" cx="50" cy="50" r="26" transform="rotate(-90 50 50)" stroke-dasharray="0 400" stroke-opacity="0"/>`+
+      `<line id="wdG" class="wg" x1="0" y1="0" x2="0" y2="0" opacity="0"/>`+
+      `<g id="wdN" opacity="0"><circle class="wnd" cx="50" cy="8" r="8"/><path class="wnd" d="M50 42 L39 21 L61 21 Z"/></g></svg>`;
+  }
+  function mount(){
+    const t=document.querySelector('#nowSide .st.wind'); if(!t) return;
+    const old=t.querySelector('.wdial'); if(old) old.remove();
+    if(!shown()) return;
+    t.insertAdjacentHTML('beforeend',dialHTML());
+    const w=windNow(); if(!dial.has){ dial.sS=w.kmh; dial.sD=w.dir; dial.has=true }
+    startDial();
+  }
+  function startDial(){ if(dial.run) return; dial.run=true; dial.last=performance.now(); requestAnimationFrame(frame) }
+  function frame(now){
+    const el=document.getElementById('wdial');
+    if(!el||document.hidden||!shown()){ dial.run=false; return }
+    const dt=Math.min(.1,(now-dial.last)/1000); dial.last=now;
+    const w=windNow();
+    dial.sS+=(w.kmh-dial.sS)*(1-Math.exp(-dt*4));
+    dial.sD=(dial.sD+angDiff(dial.sD,w.dir)*(1-Math.exp(-dt*3))+360)%360;
+    const v=dial.sS;
+    // wobble only while live wind readings keep arriving, so movement always means data is arriving
+    const amp=(REDUCED||!rapidOk())?0:Math.min(6,Math.max(0,w.gust-v)*.3)*Math.min(1,v/5);
+    const wob=amp*(Math.sin(now/430)+.6*Math.sin(now/197+1.3));
+    const nd=document.getElementById('wdN'), arc=document.getElementById('wdA'), gt=document.getElementById('wdG');
+    nd.setAttribute('transform',`rotate(${(dial.sD+wob).toFixed(2)} 50 50)`);
+    nd.setAttribute('opacity',v>.3?'1':'.25');
+    const f=frac(v);
+    arc.setAttribute('stroke-dasharray',`${(f*CIRC).toFixed(1)} ${CIRC.toFixed(1)}`);
+    arc.setAttribute('stroke-opacity',f>.004?'1':'0');
+    const gf=frac(Math.max(w.gust,v));
+    if(w.gust>v+.5&&gf>.02){ const a=gf*2*Math.PI-Math.PI/2;
+      gt.setAttribute('x1',(50+21*Math.cos(a)).toFixed(2)); gt.setAttribute('y1',(50+21*Math.sin(a)).toFixed(2));
+      gt.setAttribute('x2',(50+31*Math.cos(a)).toFixed(2)); gt.setAttribute('y2',(50+31*Math.sin(a)).toFixed(2));
+      gt.setAttribute('opacity','1') } else gt.setAttribute('opacity','0');
+    requestAnimationFrame(frame);
+  }
+  /* between full refreshes, keep the Wind tile's number and word in step with the live wind */
+  function paintWind(){
+    const t=document.querySelector('#nowSide .st.wind'); if(!t||!t.querySelector('.wdial')) return;
+    const w=windNow(), v=t.querySelector('.v'), wd=t.querySelector('.w');
+    const html=`${fW(w.kmh)}<small>${wUnit()}</small>`;
+    if(v&&v.dataset.s!==html){ v.innerHTML=html; v.dataset.s=html }
+    const word=windWord(w.kmh,w.gust);
+    if(wd&&st.lastWord!==word){ wd.textContent=word; st.lastWord=word; fitText() }
+  }
+
+  /* ---------- connection ---------- */
+  const mark=(n,state,msg)=>{ const r=document.getElementById('tpR'+n); if(!r) return; r.className='tpr'+(state==='fail'?' fail':''); r.firstElementChild.className=state||''; r.lastElementChild.textContent=msg };
+  function ui(){
+    const has=!!st.token, f=document.getElementById('tpForm'), d=document.getElementById('tpDel'), i=document.getElementById('tpIntro');
+    if(f) f.hidden=has; if(d) d.hidden=!has;
+    if(i) i.textContent=has?'Connected on this device. At Home, these readings come from your own station. The token is sent only to Tempest.':'Paste your Tempest access token to show your own station’s live readings at Home. It stays on this device and is sent only to Tempest.';
+    if(!has){ mark(1,'','Station: not connected'); mark(2,'','Live feed: not connected'); mark(3,'','Rain today: not loaded') }
+  }
+  async function getJSON(path,params){
+    const q=new URLSearchParams({...params,token:st.token}).toString();
+    let res; try{ res=await fetch(`${REST}${path}?${q}`,{cache:'no-store',referrerPolicy:'no-referrer'}) }
+    catch(e){ throw new Error('no connection, or the browser blocked the request') }
+    if(res.status===401||res.status===403) throw new Error('Tempest rejected the token');
+    if(!res.ok) throw new Error('Tempest error '+res.status);
+    return res.json();
+  }
+  async function findStation(){
+    mark(1,'wait','Station: looking up');
+    try{
+      const list=(await getJSON('/stations',{})).stations||[];
+      if(!list.length) throw new Error('no stations on this account');
+      const s=list[0], dev=(s.devices||[]).find(d=>d.device_type==='ST');
+      if(!dev) throw new Error('no Tempest sensor on this station');
+      st.station={id:s.station_id,deviceId:dev.device_id};
+      mark(1,'pass','Station: found'); return true;
+    }catch(e){ st.station=null; mark(1,'fail','Station: '+e.message); mark(2,'','Live feed: skipped'); mark(3,'','Rain today: skipped'); return false }
+  }
+  function connect(){
+    if(!st.station||!st.token) return;
+    clearTimeout(st.timer); st.manual=false; mark(2,'wait','Live feed: connecting');
+    let w; try{ w=new WebSocket(`${WSU}?token=${encodeURIComponent(st.token)}`) }catch(e){ mark(2,'fail','Live feed: could not open'); return }
+    st.ws=w;
+    w.onopen=()=>{ st.retry=0; st.lastMsg=Date.now();
+      w.send(JSON.stringify({type:'listen_start',device_id:st.station.deviceId,id:'obs'}));
+      w.send(JSON.stringify({type:'listen_rapid_start',device_id:st.station.deviceId,id:'wind'})) };
+    w.onmessage=ev=>{ st.lastMsg=Date.now(); let m; try{ m=JSON.parse(ev.data) }catch(e){ return } onMsg(m) };
+    w.onclose=()=>{ if(st.ws===w) st.ws=null; if(st.manual||!st.token) return;
+      mark(2,'fail','Live feed: reconnecting');
+      st.timer=setTimeout(connect,Math.min(30000,1000*Math.pow(2,st.retry++))) };
+  }
+  function stopWS(){ st.manual=true; clearTimeout(st.timer); if(st.ws){ try{ st.ws.close() }catch(e){} st.ws=null } }
+  function onMsg(m){
+    if(m.type==='connection_opened'){ mark(2,'pass','Live feed: connected'); return }
+    if(m.type==='rapid_wind'&&m.ob){ st.rapid={ms:m.ob[1],dir:m.ob[2]}; st.rapidAt=Date.now(); mark(2,'pass','Live feed: receiving'); paintWind(); return }
+    if(m.type==='obs_st'&&m.obs&&m.obs[0]) onObs(m.obs[0]);
+  }
+  // obs_st field order per Tempest's docs
+  function onObs(o){
+    const [t,lull,avg,gust,dir,,pres,temp,rh,lux,uv,solar,rain,ptype]=o;
+    if(temp==null||isNaN(temp)) return;
+    st.obs={t,lull,avg:avg||0,gust:gust||0,dir:dir||0,temp,rh:rh==null?50:rh,rain:rain||0,ptype:ptype||0}; st.obsAt=Date.now();
+    if(t>st.seenT){ st.extra+=rain||0; st.seenT=t }          // added on top of the fetched daily total
+    if(t>st.logT){ st.logT=t; st.rainLog.push({t,mm:rain||0}) }   // the last hour's rain, from the live readings
+    refresh();
+  }
+  let rt=0;
+  function refresh(){ st.wasOn=on(); if(!S.data) return; const n=Date.now(); if(n-rt<5000) return; rt=n; render() }
+  async function loadSeed(quiet){
+    if(!st.station) return;
+    if(!quiet) mark(3,'wait','Rain today: loading');
+    try{
+      const d=await getJSON('/better_forecast',{station_id:st.station.id,units_temp:'c',units_wind:'kph',units_pressure:'mb',units_precip:'mm',units_distance:'km'});
+      const c=d.current_conditions||{};
+      if(c.precip_accum_local_day==null) throw new Error('not provided');
+      st.dayTotal=c.precip_accum_local_day; st.extra=0; st.seenT=Date.now()/1000;
+      mark(3,'pass','Rain today: loaded');
+      if(S.data&&on()) refresh();
+    }catch(e){ if(!quiet) mark(3,'fail','Rain today: '+e.message) }
+  }
+  async function start(){
+    ui(); if(!st.token) return;
+    if(await findStation()){ connect(); loadSeed(false) }
+  }
+  function forget(){
+    stopWS(); try{ localStorage.removeItem(KEY) }catch(e){}
+    st.token=''; st.station=null; st.obs=null; st.obsAt=0; st.rapid=null; st.dayTotal=null; st.extra=0; st.rainLog=[]; st.logT=0; st.wasOn=false;
+    ui(); if(S.data) render();
+  }
+  const form=document.getElementById('tpForm');
+  if(form) form.addEventListener('submit',e=>{ e.preventDefault();
+    const inp=document.getElementById('tpTok'), v=(inp.value||'').trim(); if(!v){ inp.focus(); return }
+    stopWS(); st.token=v; inp.value=''; inp.blur();
+    try{ localStorage.setItem(KEY,v) }catch(e){ mark(1,'fail','Station: could not save the token on this device') ; return }
+    start() });
+  const del=document.getElementById('tpDel'); if(del) del.addEventListener('click',forget);
+  // notice when the station goes quiet (or comes back) and redraw with the forecast or the live readings
+  setInterval(()=>{ const n=on(); if(n!==st.wasOn){ st.wasOn=n; if(S.data) render() } },20000);
+  setInterval(()=>{ if(st.token&&st.station&&document.visibilityState==='visible') loadSeed(true) },300000);
+  // iOS suspends sockets in the background: reconnect when back in view
+  document.addEventListener('visibilitychange',()=>{ if(document.hidden) return; startDial();
+    if(st.token&&st.station&&(!st.ws||st.ws.readyState>1||Date.now()-st.lastMsg>45000)){ stopWS(); connect() } });
+  return {overlay,mount,start,at:()=>st.obs?st.obs.t*1000:Date.now()};
+})();
 function render(){
   const j=S.data; if(!j) return;
   // new location: every time view goes back to "now"
@@ -1558,7 +1777,7 @@ function render(){
   // day page: a future day opened from the 10-day list; it reuses Today's layout with that day's values
   const DV=S.day>0?dayView(j,S.day):null; if(S.day>0&&!DV){ S.day=null; document.body.classList.remove('dayv') }
   const dd=DV?S.day:0;
-  const C=DV?DV.C:PREVIEW?{...j.current,...PREVIEW}:j.current;
+  const C=DV?DV.C:PREVIEW?{...j.current,...PREVIEW}:TW.overlay(j.current);   // v2.104: at Home the station's own readings go over the forecast
   const nowStr=j.current.time.slice(0,13)+':00';
   let idx=H.time.findIndex(t=>t>=nowStr); if(idx<0) idx=0; idx=Math.min(idx,H.time.length-24); S.nowIdx=idx;
   if(DV) idx=DV.start; S.idx=idx;
@@ -1568,9 +1787,9 @@ function render(){
 
   $('#locName').textContent=S.loc.name;
   $('#uC').classList.toggle('on',met()); $('#uF').classList.toggle('on',!met());
-  { const ev=`<span class="evt">${(E?E.tom:+C.time.slice(11,13)>=21)?'Tomorrow':'Tonight'} 6–10 PM</span>`, up=`<span class="evu">${S.offline?'Offline · saved ':'Updated '}${new Date(j._at).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</span>`;
+  { const ev=`<span class="evt">${(E?E.tom:+C.time.slice(11,13)>=21)?'Tomorrow':'Tonight'} 6–10 PM</span>`, L=!E&&!DV&&!!C._live, up=`<span class="evu">${S.offline?'Offline · saved ':'Updated '}${new Date(L?C._t:j._at).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</span>`;
     // same two lines in both modes (Current keeps an invisible copy below) so the Current/Tonight switch never shifts
-    $('#upd').innerHTML=E?ev+up:up+ev.replace('class="evt"','class="evt ghost" aria-hidden="true"');
+    $('#upd').innerHTML=E?ev+up:up+(L?'<span class="evt lcl"><i class="ld"></i>Local station</span>':ev.replace('class="evt"','class="evt ghost" aria-hidden="true"'));
     if(DV) $('#upd').innerHTML=`<span class="evt">${E?'Night 6–10 PM':dd===1?'Tomorrow':'In '+dd+' days'}</span><span class="evu">Forecast · updated ${new Date(j._at).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</span>`; }
   { const db=$('#dayb'); if(DV) db.innerHTML=`${dayName(DV.date)} · ${dayDate(DV.date)}<i aria-hidden="true">✕</i>`; }
   document.body.classList.toggle('dayv',!!DV); syncBtn();
@@ -1597,7 +1816,7 @@ function render(){
   const uvSub=`Peak ${Math.round(uvPeak)} at ${hourLabel(H.time[pk])}`;
   const dl=D.daylight_duration[dd]/3600;
   const dlTxt=`${Math.floor(dl)}h ${String(Math.round((dl%1)*60)).padStart(2,'0')}m of daylight`;
-  const pv=fP(D.precipitation_sum[dd]).split(' ');
+  const pv=fP((C._live&&!DV&&C._today!=null)?C._today:D.precipitation_sum[dd]).split(' ');
   const t12=s=>{const c=clock(s).split(' ');return `${c[0]}<small>${c[1]}</small>`};
 
   $('#tiles').innerHTML=
@@ -1616,12 +1835,12 @@ function render(){
     st('Shoe Conditions',`<span class="gr" style="--c:${gr.c}">${SHOE}<b>${gr.t}</b></span>`)+
     st('Max UV Index',`<span style="color:${uvI.c}">${uvR}</span><small>${uvI.l}</small>`,'uvt')+
     st('Wind',`${fW(V.wind_speed_10m)}<small>${wUnit()}</small>`,'wind',esc(windWord(V.wind_speed_10m,V.wind_gusts_10m)));
-  placeBice(biceEl);
+  placeBice(biceEl); TW.mount();
   // rain/snow so far today, shown on its own line under the condition when it's coming down
   let sofar=0; H.time.forEach((t,i)=>{if(t.startsWith(D.time[0])&&i<=idx)sofar+=H.precipitation[i]??0});
-  const falling=DV?(E?E.mm>0:DV.sum>0):(WET(V.weather_code)||SNOWY(V.weather_code)||(V.precipitation||0)>0);
+  const falling=DV?(E?E.mm>0:DV.sum>0):(WET(V.weather_code)||SNOWY(V.weather_code)||(V.precipitation||0)>0||!!V._raining||(V._rain1h||0)>0), sf=(V._live&&V._today!=null)?V._today:sofar;
   const silkTxt=(/^rain/.test(w.i)||w.i==='thunder');
-  const acc=DV?`${fP(E?E.mm:DV.sum)} expected`:E?(E.mm>0?fP(E.mm):`${Math.round(E.pop)}% chance`):(sofar>0?fP(sofar)+' today':'just started');
+  const acc=DV?`${fP(E?E.mm:DV.sum)} expected`:E?(E.mm>0?fP(E.mm):`${Math.round(E.pop)}% chance`):(sf>0?fP(sf)+' today':'just started');
   $('#cond').innerHTML=esc(w.t)+(silkTxt?' - <span class="silk">No Silk</span>':'')+(falling?` <span class="acc">${acc}</span>`:'');
 
 
@@ -1721,8 +1940,8 @@ const wUnit=()=>met()?'km/h':'mph';
 function ground(j,C,idx){
   const H=j.hourly, T=C.temperature_2m??5, code=C.weather_code;
   const back=(arr,n)=>{let t=0;if(!arr)return 0;for(let i=Math.max(0,idx-n);i<=idx;i++)t+=arr[i]??0;return t};
-  const r3=back(H.precipitation,3)+(C.precipitation||0), r12=back(H.precipitation,12), sn12=back(H.snowfall,12);
-  const depth=H.snow_depth?.[idx]??0, wetNow=WET(code)||(C.precipitation||0)>0, snowNow=SNOWY(code);
+  const pn=C._rain1h!=null?C._rain1h:(C.precipitation||0), r3=back(H.precipitation,3)+pn, r12=back(H.precipitation,12), sn12=back(H.snowfall,12);
+  const depth=H.snow_depth?.[idx]??0, wetNow=WET(code)||pn>0||!!C._raining, snowNow=SNOWY(code);
   // v2.43: model snow depth alone is often a stale grid value on dry days; count it as snow cover only when snow actually fell in the last 48 h
   const cover=depth>=0.02&&back(H.snowfall,48)>=0.5;
   if(cover||(snowNow&&T<=1)||(sn12>=1&&T<=1)){
@@ -1746,7 +1965,7 @@ function blackIce(j,k,C){
   const H=j.hourly, v=(a,d)=>H[a]?.[k]??d;
   const T=C?C.temperature_2m:v('temperature_2m',5); if(T==null) return biOf(0);
   const rh=(C?C.relative_humidity_2m:v('relative_humidity_2m',70))??70, cc=(C?C.cloud_cover:v('cloud_cover',100))??100, ws=(C?C.wind_speed_10m:v('wind_speed_10m',10))??10,
-    day=((C?C.is_day:v('is_day',1))??1)>=.5, code=(C?C.weather_code:v('weather_code',0))??0, pNow=(C?C.precipitation:v('precipitation',0))||0;
+    day=((C?C.is_day:v('is_day',1))??1)>=.5, code=(C?C.weather_code:v('weather_code',0))??0, pNow=(C?(C._rain1h!=null?C._rain1h:C.precipitation):v('precipitation',0))||0;
   let r12=pNow, s12=0; for(let i=Math.max(0,k-12);i<k;i++){ r12+=H.precipitation?.[i]??0; s12+=H.snowfall?.[i]??0 }
   const snowing=SNOWY(code), liquid=(WET(code)||pNow>0)&&!snowing, recent=r12>=0.2||s12>=0.2;
   const cool=day?0:2.5*(1-clamp(cc,0,100)/100)*(ws<8?1:ws<16?.6:.25), Ts=T-cool;
@@ -1784,7 +2003,7 @@ function renderStrip(j,C){
         <path d="${line}" fill="none" stroke="#e6f5ff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
         <line x1="0" x2="100" y1="32" y2="32" stroke="rgba(255,255,255,.55)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
       </svg><b style="top:${(+Y(pv)/34*100).toFixed(1)}%"></b></div>`;
-    const rw=rainWord(mm);
+    const mmS=(c0&&C._rain1h!=null)?C._rain1h:mm, rw=rainWord(mmS);
     const gC=c0?C:{temperature_2m:temp,weather_code:code,precipitation:0,is_day:isDay,cloud_cover:H.cloud_cover[k],relative_humidity_2m:H.relative_humidity_2m[k]};
     const gd=ground(j,gC,k), bi=blackIce(j,k,c0?C:null);
     const uv=Math.max(0,H.uv_index[k]??0), ui=uvInfo(uv);
@@ -1797,7 +2016,7 @@ function renderStrip(j,C){
       <div class="tp">${fT(temp)}</div>
       <div class="fl">Feels<b>${fT(feel)}</b></div>
       <div class="rc"><span class="p${pv>0?'':' z'}">${DROP}${p==null?'–':p+'%'}</span>${chart}
-        <span class="mm${mm>0?'':' z'}">${met()?(mm>0?(mm<10?mm.toFixed(1):Math.round(mm)):'0'):(mm/25.4).toFixed(2)}<small>${met()?'mm':'in'}</small></span>
+        <span class="mm${mmS>0?'':' z'}">${met()?(mmS>0?(mmS<10?mmS.toFixed(1):Math.round(mmS)):'0'):(mmS/25.4).toFixed(2)}<small>${met()?'mm':'in'}</small></span>
         ${bi.l>=BI_MIN?`<span class="bi${bi.l>=3?' hot':''}" style="--c:${bi.c}"><small>BLACK ICE</small><b>${bi.t}</b></span>`:`<span class="aw" style="color:${rw.c}">${rw.t}</span>`}</div>
       <div class="sh" style="--c:${gd.c}">${SHOE}<b>${gd.t}</b></div>
       <div class="uv">UV<b style="color:${ui.c}">${Math.round(uv)}</b></div>
@@ -2319,6 +2538,7 @@ document.addEventListener('visibilitychange',()=>{
   if(!moved&&(!S.data||Date.now()-S.data._at>10*60e3)) load();
 });
 setInterval(()=>{if(!document.hidden&&S.data&&Date.now()-S.data._at>15*60e3)load()},60e3);
+TW.start();
 
 /* ---------- boot ---------- */
 (function(){
