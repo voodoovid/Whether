@@ -1,4 +1,4 @@
-const CACHE = 'whether-v2.101';
+const CACHE = 'whether-v2.102';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
