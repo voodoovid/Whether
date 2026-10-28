@@ -965,6 +965,8 @@ html.mac .curk.mode{margin-bottom:8px} html.mac .nowmain{margin-top:14px}
 .shc .locksw{display:flex;align-self:auto;width:100%;height:46px;margin:10px 0 4px;padding:0 14px;font-size:15px;gap:10px;justify-content:flex-start}
 .shc .locksw .ll{flex:1;text-align:left}
 .shc .locksw svg{width:18px;height:18px}
+/* v2.101: a locked location shows in green */
+body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;box-shadow:0 0 0 1.5px rgba(52,199,89,.95),0 4px 14px rgba(52,199,89,.3)!important;border-color:rgba(52,199,89,.95)!important}
 </style>
 </head>
 <body>
@@ -1088,7 +1090,7 @@ html.mac .curk.mode{margin-bottom:8px} html.mac .nowmain{margin-top:14px}
     <div id="recent"></div>
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.100 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.101 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1118,7 +1120,7 @@ html.mac .curk.mode{margin-bottom:8px} html.mac .nowmain{margin-top:14px}
 
 <script>
 'use strict';
-const VER='2.100';
+const VER='2.101';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2140,7 +2142,7 @@ const AWAY_MS=30*60e3;
 const homeLoc=()=>S.saved[0]||DEFAULT_LOC;
 const awayLong=()=>{const t=LS.get('seen',0); return !!t&&Date.now()-t>AWAY_MS};
 const touchSeen=()=>LS.set('seen',Date.now());
-function drawLock(){const b=$('#lockSw'); if(!b) return; b.classList.toggle('on',!!S.locked); b.setAttribute('aria-checked',S.locked?'true':'false')}
+function drawLock(){document.body.classList.toggle('locked',!!S.locked); const b=$('#lockSw'); if(!b) return; b.classList.toggle('on',!!S.locked); b.setAttribute('aria-checked',S.locked?'true':'false')}
 function autoHome(){          // true when it moved you Home
   if(S.locked||!awayLong()) return false;
   const h=homeLoc(); if(key(h)===key(S.loc)) return false;
