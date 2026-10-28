@@ -1013,6 +1013,11 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
   .nowside .upd .evt{font-size:1.07em;line-height:1.1;min-height:17px;display:flex;align-items:center}
   .nowside .upd .evt.lcl{font-size:.82em;font-weight:700;min-height:17px}
   .nowside .upd .evu{line-height:1.15}
+  /* v2.107: smaller Current/Tonight switch, closer to the location bubble; bigger main temperature */
+  .curk.mode{padding:2px;margin-bottom:2px}
+  .curk.mode button{font-size:13.5px;padding:7px 8px}
+  .nowtop .ic{font-size:min(80px,20vw);margin:-8px -20px -4px -10px}
+  .bigt{font-size:min(112px,27vw)}
 }
 .tpbox{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);border-radius:16px;padding:12px 14px;margin-bottom:8px;font-size:14px;font-weight:600;line-height:1.35}
 .tpbox p{margin:0 0 10px;color:#fff;opacity:.92}
@@ -1159,7 +1164,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.106 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.107 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1190,7 +1195,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.106';
+const VER='2.107';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2384,7 +2389,7 @@ addEventListener('resize',()=>requestAnimationFrame(fitText));
 function reservePager(){
   const el=$('#pager'), lb=$('#locBtn'), cu=$('#mode'); if(!el||!lb||!cu||!cu.offsetParent) return;
   if(!el.textContent) el.textContent='1 of 1';
-  cu.style.marginTop=''; const need=el.offsetHeight+(phoneMQ.matches&&matchMedia('(max-width:500px)').matches?3:8), gap=(cu.getBoundingClientRect().top-lb.getBoundingClientRect().bottom)/SC;
+  cu.style.marginTop=''; const need=el.offsetHeight+(phoneMQ.matches&&matchMedia('(max-width:500px)').matches?1:8), gap=(cu.getBoundingClientRect().top-lb.getBoundingClientRect().bottom)/SC;
   if(gap<need) cu.style.marginTop=Math.ceil(need-gap)+'px';
 }
 addEventListener('resize',()=>requestAnimationFrame(reservePager));
