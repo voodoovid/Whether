@@ -1132,7 +1132,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.104 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.105 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1151,7 +1151,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="gi"><div class="gv"><div class="v-lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Location Lock</span><i class="tk"><b></b></i></div></div><div class="gx"><b>Location Lock</b><span>After 30 minutes away, Whether returns to Home. Press and hold the location name, or use the switch in the location menu, to stay where you are.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-title"><img src="icon-192.png" alt="" width="26" height="26"><div class="tt"><b>Whether</b><i>(or not)</i></div></div></div><div class="gx"><b>Go Home</b><span>Press and hold the Whether <em class="yor">(or not)</em> title to jump to your Home location, the first one in your saved list.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill"><i class="ld" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#5fd3a0;margin-right:6px"></i>Local station</span></div></div><div class="gx"><b>Local station</b><span>At Home, with your Tempest connected, the temperature, Feels like, wind (with its live dial), rain and shoe conditions come from your own station. Everything else stays forecast.</span></div></div>
-      <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Cycle Through Saved Locations</b><span>Swipe up or down on the main screen.</span></div></div>
+      <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Cycle Through Saved Locations</b><span>Swipe up or down on the main screen. Stops at Home and at the last place.</span></div></div>
       <div class="gi gh2"><div class="gv"><div class="v-hold" aria-hidden="true"><div class="hg"><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr pick"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div></div><div class="fg"></div><div class="hs"><div class="bd">SAT<i>×</i></div><div class="cols"><u style="--h:30%"></u><u style="--h:62%"></u><u style="--h:45%"></u><u style="--h:78%"></u></div></div></div></div><div class="gx"><b>Get Hourly for any day</b><span>In the 10-Day list, press and hold a day to open its hourly details. To go back:</span><div class="v-btns"><div class="v-badge s">Sat · Oct 31<i aria-hidden="true">✕</i></div><div class="v-or">or</div><div class="v-pill s">Back to 10-Day</div></div></div></div>
       <div class="gi"><div class="gv"><div class="v-seg u"><span class="on">°C</span><span>°F</span></div></div><div class="gx"><b>Units</b><span>Switch °C and °F.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-circ"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg></span><span class="v-circ q">?</span></div></div><div class="gx"><b>Refresh and Guide</b><span>Reload the forecast, or reopen this guide.</span></div></div>
@@ -1163,7 +1163,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.104';
+const VER='2.105';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2250,11 +2250,17 @@ $('#gps').addEventListener('click',()=>{
   const app=$('#app'), phone=LIKE; let g=null;
   app.addEventListener('touchstart',e=>{
     if(!phone.matches||e.touches.length!==1||document.body.classList.contains('d10')||document.body.classList.contains('dayv')||e.target.closest('input,a,#sheet,.sheet')||(e.target.closest('#daily')&&(matchMedia('(max-width:900px)').matches||(()=>{const r=$('#drows');return r&&r.scrollHeight>r.clientHeight+2})()))){g=null;return}   // v2.69: on iPad landscape the 10-day list swipes locations too (unless it needs to scroll)
-    const t=e.touches[0]; g={x:t.clientX,y:t.clientY,lx:t.clientX,ly:t.clientY,t:Date.now()};
+    const t=e.touches[0];
+    // v2.105: a swipe starting at the very top or bottom edge belongs to iOS (Notification Centre, home bar / app switcher), not to Whether
+    if(t.clientY<EDGE_TOP()||t.clientY>innerHeight-EDGE_BOT()){g=null;return}
+    g={x:t.clientX,y:t.clientY,lx:t.clientX,ly:t.clientY,t:Date.now()};
   },{passive:true});
   app.addEventListener('touchmove',e=>{ if(!g) return; const t=e.touches[0]; g.lx=t.clientX; g.ly=t.clientY },{passive:true});
+  const sa=n=>{const d=document.createElement('div');d.style.cssText='position:fixed;visibility:hidden;height:env(safe-area-inset-'+n+',0px)';document.body.appendChild(d);const h=d.offsetHeight;d.remove();return h};
+  const EDGE_TOP=()=>Math.max(30,sa('top')+6), EDGE_BOT=()=>Math.max(44,sa('bottom')+24);
   const fin=e=>{
     if(!g) return; const G=g; g=null;
+    if(e.type==='touchcancel'&&matchMedia('(max-width:900px)').matches) return;   // v2.105: on iPhone a cancelled touch means iOS took the gesture
     const t=e.changedTouches&&e.changedTouches[0], ex=t?t.clientX:G.lx, ey=t?t.clientY:G.ly;
     const dx=ex-G.x, dy=ey-G.y, dt=Date.now()-G.t;
     if(Math.abs(dy)<70||Math.abs(dy)<Math.abs(dx)*1.6||dt>1100) return;
@@ -2280,11 +2286,16 @@ function prefetchSaved(){
     setTimeout(()=>fetchWx(l).then(j=>{MEM[kk]=j}).catch(()=>{}).finally(()=>{PF[kk]=0}),600+k*500) });
 }
 let cycling=false;
+/* v2.105: a short bounce when there's no further location in that direction */
+function endBump(dir){ if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('#app .now,#app #strip').forEach(el=>el.animate&&el.animate([{transform:'none'},{transform:`translateY(${-dir*14}px)`},{transform:'none'}],{duration:260,easing:'ease-out'})) }
 function cycleLoc(dir){
   const L=S.saved; if(!L||L.length<2){toast(L&&L.length?'Only one saved location — add more with the location button':'Save locations with the location button');return}
   if(cycling) return;
   let i=L.findIndex(s=>key(s)===key(S.loc)); if(i<0) i=dir>0?-1:0;
-  const n=(i+dir+L.length)%L.length, l=L[n];
+  const n=i+dir;
+  if(n<0||n>=L.length){ endBump(dir); S.pg=n<0?`Home · 1 of ${L.length}`:`Last · ${L.length} of ${L.length}`; showPager(); return }   // v2.105: no wrap-around
+  const l=L[n];
   S.loc={name:l.name,lat:l.lat,lon:l.lon}; LS.set('loc',S.loc);
   S.pg=`${n+1} of ${L.length}`;
   const els=[...document.querySelectorAll('#app .now,#app #strip')], D=dir>0?1:-1;
