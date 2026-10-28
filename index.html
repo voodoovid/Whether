@@ -988,6 +988,32 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 .upd .ld{display:inline-block;flex:none;width:.46em;height:.46em;border-radius:50%;background:#5fd3a0;box-shadow:0 0 0 1.5px rgba(0,0,0,.55),0 0 8px #5fd3a0;animation:ldbeat 2s ease-in-out infinite}
 @keyframes ldbeat{0%,100%{opacity:1}50%{opacity:.45}}
 @media (prefers-reduced-motion:reduce){.upd .ld{animation:none}}
+
+/* v2.106: iPhone portrait: Wind (bigger, bigger dial) under the condition; High/Low box + Updated in the side column */
+@media (max-width:500px){
+  #hilo{display:none}
+  #nowWind:empty{display:none}
+  .cond{margin-top:3px}
+  #nowWind{margin-top:7px}
+  #nowWind .st.wind{display:flex;flex-direction:column;justify-content:center;min-height:94px;padding:6px 12px 7px;box-sizing:border-box;position:relative}
+  #nowWind .st.wind .k{font-size:12.5px}
+  #nowWind .st.wind .v{font-size:34px;line-height:1.05}
+  #nowWind .st.wind .v small{font-size:15px;margin-left:4px}
+  #nowWind .st.wind .w{font-size:20px;font-weight:800;line-height:1.08;margin-top:1px}
+  #nowWind .st.wind.hasd{padding-left:98px}
+  #nowWind .st.wind.hasd .v{font-size:27px}
+  #nowWind .st.wind.hasd .v small{font-size:13px}
+  #nowWind .st.wind.hasd .w{font-size:16.5px;white-space:normal}
+  #nowWind .st.wind .wdial{left:9px;right:auto;top:50%;width:80px;height:80px;margin-top:-40px}
+  .st.hlb{display:grid;grid-template-columns:1fr 1fr;column-gap:6px;padding:3px 12px 4px}
+  .st.hlb .hlc{display:flex;flex-direction:column;min-width:0}
+  .st.hlb .k{font-size:10px;letter-spacing:.7px;line-height:1.15}
+  .st.hlb .v{font-size:24px;font-weight:700;letter-spacing:-.5px;line-height:1.05}
+  .nowside .upd{font-size:14px;line-height:1.15;margin-top:-2px;padding:0 3px}
+  .nowside .upd .evt{font-size:1.07em;line-height:1.1;min-height:17px;display:flex;align-items:center}
+  .nowside .upd .evt.lcl{font-size:.82em;font-weight:700;min-height:17px}
+  .nowside .upd .evu{line-height:1.15}
+}
 .tpbox{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);border-radius:16px;padding:12px 14px;margin-bottom:8px;font-size:14px;font-weight:600;line-height:1.35}
 .tpbox p{margin:0 0 10px;color:#fff;opacity:.92}
 .tpf{display:flex;gap:8px;margin-bottom:10px}
@@ -1082,6 +1108,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
           <div>
             <div class="cond" id="cond">&nbsp;</div>
             <div class="bice" id="bice"></div>
+            <div id="nowWind"></div>
             <div class="hilo" id="hilo">&nbsp;</div>
             <div class="upd" id="upd"></div>
           </div>
@@ -1132,7 +1159,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.105 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.106 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1163,10 +1190,11 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.105';
+const VER='2.106';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
+const PH=matchMedia('(max-width:500px)');
 let SC=1;
 function stage(){
   const on=MACMQ.matches; SC=on?Math.min(innerWidth/1600,innerHeight/900):1;
@@ -1630,10 +1658,11 @@ const TW=(()=>{
       `<g id="wdN" opacity="0"><circle class="wnd" cx="50" cy="8" r="8"/><path class="wnd" d="M50 42 L39 21 L61 21 Z"/></g></svg>`;
   }
   function mount(){
-    const t=document.querySelector('#nowSide .st.wind'); if(!t) return;
+    const t=document.querySelector('.now .st.wind'); if(!t) return;
     const old=t.querySelector('.wdial'); if(old) old.remove();
+    t.classList.remove('hasd');
     if(!shown()) return;
-    t.insertAdjacentHTML('beforeend',dialHTML());
+    t.insertAdjacentHTML('beforeend',dialHTML()); t.classList.add('hasd');
     const w=windNow(); if(!dial.has){ dial.sS=w.kmh; dial.sD=w.dir; dial.has=true }
     startDial();
   }
@@ -1664,7 +1693,7 @@ const TW=(()=>{
   }
   /* between full refreshes, keep the Wind tile's number and word in step with the live wind */
   function paintWind(){
-    const t=document.querySelector('#nowSide .st.wind'); if(!t||!t.querySelector('.wdial')) return;
+    const t=document.querySelector('.now .st.wind'); if(!t||!t.querySelector('.wdial')) return;
     const w=windNow(), v=t.querySelector('.v'), wd=t.querySelector('.w');
     const html=`${fW(w.kmh)}<small>${wUnit()}</small>`;
     if(v&&v.dataset.s!==html){ v.innerHTML=html; v.dataset.s=html }
@@ -1801,7 +1830,8 @@ function render(){
   const w=wx(V.weather_code,V.is_day,V.precipitation);
   $('#nowIcon').innerHTML=icoA(w.i);
   $('#bigT').textContent=fT(V.temperature_2m);
-  $('#hilo').innerHTML=`High <b>${fT(E?E.hi:D.temperature_2m_max[dd])}</b>&nbsp; · &nbsp;Low <b>${fT(E?E.lo:D.temperature_2m_min[dd])}</b>`;
+  const hiT=fT(E?E.hi:D.temperature_2m_max[dd]), loT=fT(E?E.lo:D.temperature_2m_min[dd]);
+  $('#hilo').innerHTML=`High <b>${hiT}</b>&nbsp; · &nbsp;Low <b>${loT}</b>`;
 
   const feel=V.apparent_temperature, act=V.temperature_2m;
   const dF=Math.round(nT(feel))-Math.round(nT(act));
@@ -1829,13 +1859,13 @@ function render(){
 
   const uvS=E?E.uv:uvPeak, uvI=uvInfo(uvS), uvR=Math.max(0,Math.round(uvS)), gr=(DV&&!E)?DV.gd:ground(j,V,E?E.end:idx);
   const st=(k,v,cls='',w='')=>`<div class="st ${cls}"><div class="k">${k}</div><div class="v">${v}</div>${w?`<div class="w">${w}</div>`:''}</div>`;
-  const biceEl=$('#bice');   // v2.60: rescued before the side column is rebuilt, then placed under Wind
+  const biceEl=$('#bice'), updEl=$('#upd');   // v2.60: rescued before the side column is rebuilt, then placed under Wind (v2.106: #upd too)
   $('#nowSide').innerHTML=
     st('Feels like',fT(feel),'big')+
     st('Shoe Conditions',`<span class="gr" style="--c:${gr.c}">${SHOE}<b>${gr.t}</b></span>`)+
     st('Max UV Index',`<span style="color:${uvI.c}">${uvR}</span><small>${uvI.l}</small>`,'uvt')+
     st('Wind',`${fW(V.wind_speed_10m)}<small>${wUnit()}</small>`,'wind',esc(windWord(V.wind_speed_10m,V.wind_gusts_10m)));
-  placeBice(biceEl); TW.mount();
+  arrangePhone(updEl,hiT,loT); placeBice(biceEl); TW.mount();
   // rain/snow so far today, shown on its own line under the condition when it's coming down
   let sofar=0; H.time.forEach((t,i)=>{if(t.startsWith(D.time[0])&&i<=idx)sofar+=H.precipitation[i]??0});
   const falling=DV?(E?E.mm>0:DV.sum>0):(WET(V.weather_code)||SNOWY(V.weather_code)||(V.precipitation||0)>0||!!V._raining||(V._rain1h||0)>0), sf=(V._live&&V._today!=null)?V._today:sofar;
@@ -1860,6 +1890,17 @@ function render(){
   fitText(); fitStrip(); reservePager();
   slideIn();
 }
+/* v2.106: iPhone portrait only. Wind (bigger, with a bigger dial) takes the space under the condition; High/Low becomes a box where Wind was,
+   with Updated (and "Local station") below it. Every other screen keeps the old arrangement. */
+function arrangePhone(updEl,hiT,loT){
+  const ns=$('#nowSide'), slot=$('#nowWind'); if(!ns||!slot||!updEl) return;
+  if(PH.matches){
+    const wt=ns.querySelector('.st.wind'); if(wt) slot.replaceChildren(wt);
+    ns.insertAdjacentHTML('beforeend',`<div class="st hlb"><div class="hlc"><span class="k">High</span><span class="v">${hiT}</span></div><div class="hlc"><span class="k">Low</span><span class="v">${loT}</span></div></div>`);
+    ns.appendChild(updEl);
+  } else { slot.replaceChildren(); $('#hilo').after(updEl) }
+}
+PH.addEventListener('change',()=>{ if(S.data) render() });
 /* v2.60: black ice sits under Wind where the side column shows, otherwise under the condition */
 function placeBice(el){ if(!el) return; if(LIKE.matches) $('#nowSide').appendChild(el); else $('#cond').after(el) }
 LIKE.addEventListener('change',()=>placeBice($('#bice')));
