@@ -953,18 +953,16 @@ html.mac .curk.mode{margin-bottom:8px} html.mac .nowmain{margin-top:14px}
 }
 /* v2.97: Lock location switch beside the location bubble (sits in the free space above the side tiles) */
 .now{position:relative}
-.locksw{position:absolute;top:0;right:4px;height:38px;z-index:5;display:inline-flex;align-items:center;gap:7px;padding:0 9px 0 10px;border-radius:999px;box-sizing:border-box;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);
+.locksw{position:relative;align-self:flex-start;margin:7px 0 0;height:32px;z-index:5;display:inline-flex;align-items:center;gap:7px;padding:0 9px 0 10px;border-radius:999px;box-sizing:border-box;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);
   box-shadow:0 6px 16px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.2);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:#fff;font:inherit;font-size:13px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap;
   text-shadow:-1px -1px 0 rgba(0,0,0,.55),1px -1px 0 rgba(0,0,0,.55),-1px 1px 0 rgba(0,0,0,.55),1px 1px 0 rgba(0,0,0,.55);-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .locksw svg{width:15px;height:15px;flex:none;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 1px rgba(0,0,0,.7))}
-.locksw .lf{display:none}
 .locksw .tk{position:relative;flex:none;width:34px;height:20px;border-radius:10px;background:rgba(255,255,255,.28);border:1px solid rgba(255,255,255,.45);box-sizing:border-box;transition:background .2s,border-color .2s}
 .locksw .tk b{position:absolute;top:1px;left:1px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.4);transition:transform .2s}
 .locksw.on .tk{background:#34c759;border-color:#34c759}
 .locksw.on .tk b{transform:translateX(14px)}
 .locksw::after{content:"";position:absolute;inset:-6px -4px}
 body.dayv .locksw{display:none}
-@media (min-width:1000px){.locksw .ls{display:none}.locksw .lf{display:inline}.locksw{font-size:12.5px;letter-spacing:.3px;gap:6px}}
 </style>
 </head>
 <body>
@@ -1035,7 +1033,7 @@ body.dayv .locksw{display:none}
         <span id="locName">Loading…</span>
         <svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg>
       </button>
-      <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Lock location"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ls">Lock</span><span class="lf">Lock location</span><i class="tk"><b></b></i></button>
+      <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
       <button class="daybadge" id="dayb" aria-label="Back to the 10-day list"></button>
       <div class="pager" id="pager" aria-live="polite"></div>
       <div class="nowbody">
@@ -1088,7 +1086,7 @@ body.dayv .locksw{display:none}
     <div id="recent"></div>
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
-    <div class="ver">Whether v2.97 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.98 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1104,7 +1102,7 @@ body.dayv .locksw{display:none}
       <div class="gi"><div class="gv"><svg class="v-sw hr" id="gHrs" viewBox="0 0 128 86" aria-hidden="true"></svg></div><div class="gx"><b>Hourly panel</b><span>Swipe sideways for more hours.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">10-Day</span><svg class="v-ar" viewBox="0 0 28 16" aria-hidden="true"><path d="M3 8H25M9 2L3 8l6 6M19 2l6 6-6 6"/></svg></div></div><div class="gx"><b>10-Day forecast</b><span>Press the 10-Day button or swipe left or right over the Current temp to open the 10-Day forecast.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-loc"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>City</span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></div></div><div class="gx"><b>Location</b><span>Tap to search or pick a saved place. Searched places wait under Recent until you tap Save.</span></div></div>
-      <div class="gi"><div class="gv"><div class="v-lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Lock</span><i class="tk"><b></b></i></div></div><div class="gx"><b>Lock location</b><span>After an hour away, Whether returns to Home. Switch Lock on to stay where you are.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Location Lock</span><i class="tk"><b></b></i></div></div><div class="gx"><b>Location Lock</b><span>After an hour away, Whether returns to Home. Switch Location Lock on to stay where you are.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-title"><img src="icon-192.png" alt="" width="26" height="26"><div class="tt"><b>Whether</b><i>(or not)</i></div></div></div><div class="gx"><b>Go Home</b><span>Press and hold the Whether <em class="yor">(or not)</em> title to jump to your Home location, the first one in your saved list.</span></div></div>
       <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Cycle Through Saved Locations</b><span>Swipe up or down on the main screen.</span></div></div>
       <div class="gi gh2"><div class="gv"><div class="v-hold" aria-hidden="true"><div class="hg"><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr pick"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div></div><div class="fg"></div><div class="hs"><div class="bd">SAT<i>×</i></div><div class="cols"><u style="--h:30%"></u><u style="--h:62%"></u><u style="--h:45%"></u><u style="--h:78%"></u></div></div></div></div><div class="gx"><b>Get Hourly for any day</b><span>In the 10-Day list, press and hold a day to open its hourly details. To go back:</span><div class="v-btns"><div class="v-badge s">Sat · Oct 31<i aria-hidden="true">✕</i></div><div class="v-or">or</div><div class="v-pill s">Back to 10-Day</div></div></div></div>
@@ -1118,7 +1116,7 @@ body.dayv .locksw{display:none}
 
 <script>
 'use strict';
-const VER='2.97';
+const VER='2.98';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2141,8 +2139,6 @@ const homeLoc=()=>S.saved[0]||DEFAULT_LOC;
 const awayLong=()=>{const t=LS.get('seen',0); return !!t&&Date.now()-t>AWAY_MS};
 const touchSeen=()=>LS.set('seen',Date.now());
 function drawLock(){const b=$('#lockSw'); if(!b) return; b.classList.toggle('on',!!S.locked); b.setAttribute('aria-checked',S.locked?'true':'false')}
-function fitLock(){const n=$('#locBtn'),b=$('#lockSw'); if(!n||!b||!n.offsetHeight) return;
-  b.style.height=n.offsetHeight+'px'; b.style.top=n.offsetTop+'px'; b.style.right=Math.max(4,n.offsetLeft)+'px'}
 function autoHome(){          // true when it moved you Home
   if(S.locked||!awayLong()) return false;
   const h=homeLoc(); if(key(h)===key(S.loc)) return false;
@@ -2151,8 +2147,7 @@ function autoHome(){          // true when it moved you Home
 }
 $('#lockSw').onclick=()=>{ S.locked=!S.locked; LS.set('lock',S.locked); drawLock();
   toast(S.locked?'Location locked':'Lock off · returns Home after 1 hour away',2500) };
-drawLock(); fitLock(); addEventListener('resize',fitLock);
-if(window.ResizeObserver){ const ro=new ResizeObserver(fitLock); ro.observe($('#locBtn')); ro.observe($('.now')) }
+drawLock();
 addEventListener('pagehide',touchSeen);
 setInterval(()=>{ if(!document.hidden) touchSeen() },30e3);
 function goHome(){
