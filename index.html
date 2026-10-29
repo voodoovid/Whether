@@ -1016,6 +1016,11 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
   .nowside .upd .evt{font-size:1.07em;line-height:1.1;min-height:17px;display:flex;align-items:center}
   .nowside .upd .evt.lcl{font-size:.82em;font-weight:700;min-height:17px}
   .nowside .upd .evu{line-height:1.15}
+  /* v2.109: darker dial background so it stands out */
+  .wdial .wbg{fill:rgba(0,10,32,.55)}
+  .wdial .wr{stroke:rgba(255,255,255,.7)}
+  .wdial .wt{stroke:rgba(255,255,255,.3)}
+  .wdial .wk{stroke:rgba(255,255,255,.8)}
   /* v2.107: smaller Current/Tonight switch, closer to the location bubble; bigger main temperature */
   .curk.mode{padding:2px;margin-bottom:2px}
   .curk.mode button{font-size:13.5px;padding:7px 8px}
@@ -1167,7 +1172,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.108 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.109 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1198,7 +1203,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.108';
+const VER='2.109';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1660,7 +1665,7 @@ const TW=(()=>{
     let k='';
     for(let a=0;a<360;a+=90){ const t=(a-90)*Math.PI/180, r1=a===0?38:40, r2=47;
       k+=`<line class="wk${a===0?' n':''}" x1="${(50+r1*Math.cos(t)).toFixed(1)}" y1="${(50+r1*Math.sin(t)).toFixed(1)}" x2="${(50+r2*Math.cos(t)).toFixed(1)}" y2="${(50+r2*Math.sin(t)).toFixed(1)}"/>` }
-    return `<svg class="wdial" id="wdial" viewBox="0 0 100 100" aria-hidden="true"><circle class="wr" cx="50" cy="50" r="44"/>${k}<circle class="wt" cx="50" cy="50" r="26"/>`+
+    return `<svg class="wdial" id="wdial" viewBox="0 0 100 100" aria-hidden="true"><circle class="wbg" cx="50" cy="50" r="46"/><circle class="wr" cx="50" cy="50" r="44"/>${k}<circle class="wt" cx="50" cy="50" r="26"/>`+
       `<circle id="wdA" class="wa" cx="50" cy="50" r="26" transform="rotate(-90 50 50)" stroke-dasharray="0 400" stroke-opacity="0"/>`+
       `<line id="wdG" class="wg" x1="0" y1="0" x2="0" y2="0" opacity="0"/>`+
       `<g id="wdN" opacity="0"><circle class="wnd" cx="50" cy="8" r="8"/><path class="wnd" d="M50 42 L39 21 L61 21 Z"/></g></svg>`;
