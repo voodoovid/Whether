@@ -1336,7 +1336,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.136 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.137 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1367,7 +1367,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.136';
+const VER='2.137';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1854,6 +1854,13 @@ const TW=(()=>{
     dial.sS+=(w.kmh-dial.sS)*(1-Math.exp(-dt*4));
     if(w.kmh>.3) dial.sD=(dial.sD+angDiff(dial.sD,w.dir)*(1-Math.exp(-dt*3))+360)%360;   // v2.108: in a calm the needle keeps its last direction instead of jumping
     const v=dial.sS;
+    /* v2.137: like the Sandbox, the Wind tile's number, word and direction glide with the dial every frame, instead of stepping only when a reading arrives */
+    { let t=dial.t; if(!t||!t.isConnected) t=dial.t=document.querySelector('.now .st.wind');
+      if(t){ const vv=t.querySelector('.v'), wd=t.querySelector('.w'), df=t.querySelector('.wfrom b');
+        t.classList.toggle('d3',fW(v)>=100);
+        const html=`${fW1(v)}<small>${wUnit()}</small>`; if(vv&&vv.dataset.s!==html){ vv.innerHTML=html; vv.dataset.s=html }
+        const word=windWord(v,Math.max(w.gust,v)); if(wd&&st.lastWord!==word){ wd.textContent=word; st.lastWord=word; fitText() }
+        if(df&&v>.3){ const c=compass(dial.sD); if(df.textContent!==c) df.textContent=c } } }
     // wobble only while live wind readings keep arriving, so movement always means data is arriving
     const amp=(REDUCED||!rapidOk())?0:Math.min(6,Math.max(0,w.gust-v)*.3)*Math.min(1,v/5);
     const wob=amp*(Math.sin(now/430)+.6*Math.sin(now/197+1.3));
@@ -1882,16 +1889,7 @@ const TW=(()=>{
     requestAnimationFrame(frame);
   }
   /* between full refreshes, keep the Wind tile's number and word in step with the live wind */
-  function paintWind(){
-    const t=document.querySelector('.now .st.wind'); if(!t||!t.querySelector('.wdial')) return;
-    const w=windNow(), v=t.querySelector('.v'), wd=t.querySelector('.w');
-    t.classList.toggle('d3',fW(w.kmh)>=100);
-    { const df=t.querySelector('.wfrom b'); if(df&&w.kmh>.3){ const c=compass(w.dir); if(df.textContent!==c) df.textContent=c } }   // v2.132
-    const html=`${fW1(w.kmh)}<small>${wUnit()}</small>`;
-    if(v&&v.dataset.s!==html){ v.innerHTML=html; v.dataset.s=html }
-    const word=windWord(w.kmh,w.gust);
-    if(wd&&st.lastWord!==word){ wd.textContent=word; st.lastWord=word; fitText() }
-  }
+  function paintWind(){ startDial() }   // v2.137: the dial's frame loop now keeps the number, word and direction in step
 
   /* ---------- connection ---------- */
   const mark=(n,state,msg)=>{ const r=document.getElementById('tpR'+n); if(!r) return; r.className='tpr'+(state==='fail'?' fail':''); r.firstElementChild.className=state||''; r.lastElementChild.textContent=msg };
