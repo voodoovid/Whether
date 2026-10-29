@@ -1024,6 +1024,12 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
   .wdial .wr{stroke:rgba(255,255,255,.7)}
   .wdial .wt{stroke:rgba(255,255,255,.3)}
   .wdial .wk{stroke:rgba(255,255,255,.8)}
+  /* v2.113: black ice replaces Max UV in the same slot */
+  .nowside>.bice{height:68px;padding:4px 12px 5px;column-gap:6px;row-gap:0;align-content:center;overflow:hidden}
+  .nowside>.bice svg{width:20px;height:20px}
+  .nowside>.bice .bk{font-size:11.5px}
+  .nowside>.bice .bv{font-size:21px;line-height:1.05}
+  .nowside>.bice .bn{font-size:11.5px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:0}
   /* v2.107: smaller Current/Tonight switch, closer to the location bubble; bigger main temperature */
   .curk.mode{padding:2px;margin-bottom:2px}
   .curk.mode button{font-size:13.5px;padding:7px 8px}
@@ -1062,6 +1068,9 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
   html:not(.mac) .nowside .upd .evt{font-size:1.07em;line-height:1.1;min-height:18px;display:flex;align-items:center}
   html:not(.mac) .nowside .upd .evt.lcl{font-size:.82em;font-weight:700;min-height:18px}
   html:not(.mac) .nowside .upd .evu{line-height:1.15}
+  html:not(.mac) .nowside>.bice{height:79px;padding:5px 14px 6px;row-gap:0;align-content:center;overflow:hidden}
+  html:not(.mac) .nowside>.bice .bv{font-size:25px}
+  html:not(.mac) .nowside>.bice .bn{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   html:not(.mac) .curk.mode{padding:2px;margin-bottom:2px}
   html:not(.mac) .curk.mode button{font-size:11.5px;padding:5px 9px}
   html:not(.mac) .nowmain{margin-top:2px}
@@ -1078,6 +1087,9 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
   html:not(.mac) #nowWind .st.wind.hasd .w{font-size:15px}
   html:not(.mac) #nowWind .st.wind .wdial{width:66px;height:66px;margin-top:-33px;left:8px}
   html:not(.mac) .st.hlb .v{font-size:30px}
+  html:not(.mac) .nowside>.bice{height:63px;padding:3px 12px 4px}
+  html:not(.mac) .nowside>.bice .bv{font-size:20px}
+  html:not(.mac) .nowside>.bice .bn{font-size:11.5px}
   html:not(.mac) #nowSide>.st:nth-child(2) .gr{font-size:23px}
   html:not(.mac) #nowSide>.st:nth-child(2) .gr svg{width:23px;height:23px}
   html:not(.mac) .nowside .upd{font-size:13.5px}
@@ -1228,7 +1240,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.112 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.113 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1259,7 +1271,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.112';
+const VER='2.113';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1962,6 +1974,7 @@ function render(){
       else r=cur }
     const el=$('#bice'); el.hidden=r.l<BI_MIN; el.style.setProperty('--c',r.c); el.classList.toggle('hot',r.l>=3);
     el.innerHTML=ICE_SVG+`<span class="bt"><span class="bk">BLACK ICE</span><span class="bv">${r.t}</span>${note?`<span class="bn">${note}</span>`:''}</span>`; }
+  iceForUV($('#bice'));
   renderStrip(j,C); renderHourly(j); renderDaily(j); renderReadout();
   fitText(); fitStrip(); reservePager();
   slideIn();
@@ -1982,6 +1995,8 @@ PH.addEventListener('change',()=>{ if(S.data) render() });
 addEventListener('resize',()=>{ if(S.data&&ARR!==null&&phl()!==ARR) render() });
 /* v2.60: black ice sits under Wind where the side column shows, otherwise under the condition */
 function placeBice(el){ if(!el) return; if(LIKE.matches) $('#nowSide').appendChild(el); else $('#cond').after(el) }
+/* v2.113: in the phone/iPad-landscape layout a black ice warning takes the place of the Max UV box instead of adding a tall box below */
+function iceForUV(el){ if(!el||!phl()||el.hidden) return; const uv=$('#nowSide .st.uvt'); if(uv) uv.replaceWith(el) }
 LIKE.addEventListener('change',()=>placeBice($('#bice')));
 /* Tonight: everything from 6 to 10 PM rolled into one (tomorrow's evening from 9 PM on) */
 function evening(j,C,dayStr){
