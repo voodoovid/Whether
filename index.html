@@ -1171,22 +1171,22 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
   html:not(.mac) .st.rnb .v small{font-size:10.5px}
   html:not(.mac) #daily .ph .upd{font-size:15px}
 }
-/* v2.132: iPad landscape: Wind speed and words sit further right; "From" + direction fill the space on the left */
+/* v2.134: iPad landscape: "From" + direction sit right beside the wind speed (with or without the dial): From lines up with WIND, the direction with the speed */
 @media (min-width:901px) and (min-height:600px) and (orientation:landscape){
-  html:not(.mac) #nowWind .st.wind{padding-left:90px}
-  html:not(.mac) #nowWind .st.wind.hasd{padding-left:190px}
-  html:not(.mac) .wfrom{position:absolute;top:0;bottom:0;left:10px;width:74px;padding-top:16px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:3px;text-shadow:var(--ol);pointer-events:none}
-  html:not(.mac) #nowWind .st.wind.hasd .wfrom{left:108px;width:70px}
-  html:not(.mac) .wfrom span{font-size:13px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;line-height:1.2}
-  html:not(.mac) .wfrom b{font-size:26px;font-weight:800;line-height:1.05;letter-spacing:-.3px}
+  html:not(.mac) #nowWind .st.wind{display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto auto;justify-content:center;align-content:center;align-items:center;column-gap:12px;padding-left:14px;padding-right:14px}
+  html:not(.mac) #nowWind .st.wind.hasd{padding-left:104px}
+  html:not(.mac) #nowWind .st.wind>.k{grid-column:2;grid-row:1}
+  html:not(.mac) #nowWind .st.wind>.v{grid-column:2;grid-row:2}
+  html:not(.mac) #nowWind .st.wind>.w{grid-column:2;grid-row:3}
+  html:not(.mac) #nowWind .st.wind>.wfrom{display:contents}
+  html:not(.mac) .wfrom span{grid-column:1;grid-row:1;font-size:13px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;line-height:1.2;text-align:center;text-shadow:var(--ol)}
+  html:not(.mac) .wfrom b{grid-column:1;grid-row:2;font-size:28px;font-weight:800;line-height:1.05;letter-spacing:-.3px;text-align:center;text-shadow:var(--ol)}
 }
 @media (min-width:901px) and (min-height:600px) and (orientation:landscape) and (max-height:900px){
-  html:not(.mac) #nowWind .st.wind{padding-left:64px}
-  html:not(.mac) #nowWind .st.wind.hasd{padding-left:130px}
-  html:not(.mac) .wfrom{left:8px;width:52px;padding-top:14px}
-  html:not(.mac) #nowWind .st.wind.hasd .wfrom{left:80px;width:48px}
+  html:not(.mac) #nowWind .st.wind{column-gap:7px;padding-left:10px;padding-right:10px}
+  html:not(.mac) #nowWind .st.wind.hasd{padding-left:78px}
   html:not(.mac) .wfrom span{font-size:11.5px}
-  html:not(.mac) .wfrom b{font-size:17px}
+  html:not(.mac) .wfrom b{font-size:19px}
   html:not(.mac) #nowWind .st.wind.hasd .v{font-size:21px}
   html:not(.mac) #nowWind .st.wind.hasd .w{font-size:13.5px}
 }
@@ -1328,7 +1328,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.133 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.134 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1359,7 +1359,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.133';
+const VER='2.134';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
