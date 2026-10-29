@@ -115,7 +115,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .r.feel{height:clamp(18px,2.6vh,24px)} .r.feel .c{color:var(--mute);font-size:12px}
 .r.heat{flex:1 1 0;min-height:27px;max-height:46px}
 .hc{width:calc(100% - 4px);height:calc(100% - 4px);margin:2px;border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:13px;font-variant-numeric:tabular-nums;line-height:1}
-.tpb{font-size:.72em;font-weight:700;opacity:.9;margin-left:2px;white-space:nowrap}   /* v2.124 (temporary) */
+.tpb{font-size:.72em;font-weight:700;opacity:.9;margin-left:2px;white-space:nowrap}
+.bigt .tpb{font-size:.3em;font-weight:700;margin-left:.15em;vertical-align:.55em}   /* v2.125 (temporary) */   /* v2.124 (temporary) */
 .hc.none{background:transparent!important;color:rgba(255,255,255,.85)!important;font-weight:600}
 .r.uv{height:clamp(24px,3.4vh,30px)}
 .uvc{min-width:23px;height:21px;padding:0 5px;border-radius:7px;display:inline-grid;place-items:center;font-size:12.5px;font-weight:800;color:#0b1220}
@@ -1271,7 +1272,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.124 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.125 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1955,7 +1956,7 @@ function render(){
 
   const w=wx(V.weather_code,V.is_day,V.precipitation);
   $('#nowIcon').innerHTML=icoA(w.i);
-  $('#bigT').textContent=fT(V.temperature_2m);
+  $('#bigT').innerHTML=fT(V.temperature_2m)+((V._live&&!phoneMQ.matches&&matchMedia('(hover:none) and (pointer:coarse)').matches&&j.current.temperature_2m!=null)?`<small class="tpb">(${fT(j.current.temperature_2m)})</small>`:'');   // v2.125 (temporary): iPad landscape: the forecast provider's current temp in brackets beside the station's
   const hiT=fT(E?E.hi:D.temperature_2m_max[dd]), loT=fT(E?E.lo:D.temperature_2m_min[dd]);
   $('#hilo').innerHTML=`High <b>${hiT}</b>&nbsp; · &nbsp;Low <b>${loT}</b>`;
 
