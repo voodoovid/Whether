@@ -1228,7 +1228,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.111 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.112 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1259,7 +1259,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.111';
+const VER='2.112';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2414,8 +2414,7 @@ function cycleLoc(dir){
   if(cycling) return;
   let i=L.findIndex(s=>key(s)===key(S.loc)); if(i<0) i=dir>0?-1:0;
   let n=i+dir;
-  if(n>=L.length&&dir>0) n=0;   // v2.108: after the last saved location, roll round to the first (going back past Home still stops)
-  if(n<0||n>=L.length){ endBump(dir); S.pg=n<0?`Home · 1 of ${L.length}`:`Last · ${L.length} of ${L.length}`; showPager(); return }   // v2.105: no wrap-around
+  if(n>=L.length) n=0; else if(n<0) n=L.length-1;   // v2.112: rolls round both ways (after the last comes the first, before the first comes the last)
   const l=L[n];
   S.loc={name:l.name,lat:l.lat,lon:l.lon}; LS.set('loc',S.loc);
   S.pg=`${n+1} of ${L.length}`;
