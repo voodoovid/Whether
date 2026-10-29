@@ -1336,7 +1336,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.135 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.136 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1367,7 +1367,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.135';
+const VER='2.136';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2059,7 +2059,7 @@ function render(){
     st('Shoe Conditions',`<span class="gr" style="--c:${gr.c}">${SHOE}<b>${gr.t}</b></span>`)+
     (phl()&&!E&&!DV
       ? (()=>{ /* v2.127: iPhone portrait + iPad landscape: UV box shows the current UV (station at Home, else forecast) and today's high */
-          const uvTxt=x=>IPLMQ.matches?Math.max(0,x).toFixed(1):String(Math.max(0,Math.round(x))), uvCur=(C._live&&C._uv!=null)?C._uv:uvNow, uvHigh=Math.max(uvPeak,uvCur), cI=uvInfo(uvCur), hI=uvInfo(uvHigh);
+          const uvTxt=x=>Math.max(0,x).toFixed(1),   /* v2.136: one decimal on iPhone portrait too */ uvCur=(C._live&&C._uv!=null)?C._uv:uvNow, uvHigh=Math.max(uvPeak,uvCur), cI=uvInfo(uvCur), hI=uvInfo(uvHigh);
           return `<div class="st hlb uvb"><div class="hlc"><span class="k">UV Now</span><span class="v" style="color:${cI.c}">${uvTxt(uvCur)}</span></div><div class="hlc"><span class="k">UV High</span><span class="v" style="color:${hI.c}">${uvTxt(uvHigh)}</span></div></div>` })()
       : st('Max UV Index',`<span style="color:${uvI.c}">${uvR}</span><small>${uvI.l}</small>`,'uvt'))+
     st('Wind',`${fW1(V.wind_speed_10m)}<small>${wUnit()}</small>`,'wind',esc(windWord(V.wind_speed_10m,V.wind_gusts_10m)));
