@@ -1151,6 +1151,25 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
   html:not(.mac) .st.hlb .hlc{align-items:center;justify-content:center;text-align:center}
   html:not(.mac) .st.hlb .k,html:not(.mac) .st.hlb .v{width:100%;text-align:center}
 }
+/* v2.130: iPad landscape: Amankenzie Station + Updated sit to the right of the "10-day forecast" title; the Rain box fills the freed space */
+@media (min-width:901px) and (min-height:600px) and (orientation:landscape){
+  html:not(.mac) #daily .ph{justify-content:flex-start}
+  html:not(.mac) #daily .ph .upd{flex:none;margin:0 0 0 26px;padding:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;font-size:17px;line-height:1.15;color:#fff;font-weight:600;text-shadow:var(--ol)}
+  html:not(.mac) #daily .ph .upd .evt{display:flex;align-items:center;justify-content:flex-start;font-size:1.05em;line-height:1.15;min-height:0}
+  html:not(.mac) #daily .ph .upd .evt.lcl{order:-1;font-size:1.1em;font-weight:800}
+  html:not(.mac) #daily .ph .upd .evt.ghost{display:none}
+  html:not(.mac) #daily .ph .upd .evu{line-height:1.15}
+  html:not(.mac) #nowSide>.st.rnb{flex:1 1 auto;align-content:center;padding:4px 10px 5px}
+  html:not(.mac) .st.rnb .k{font-size:12px;white-space:nowrap}
+  html:not(.mac) .st.rnb .v{font-size:27px;line-height:1.1;white-space:nowrap}
+  html:not(.mac) .st.rnb .v small{font-size:12px;margin-left:2px}
+}
+@media (min-width:901px) and (min-height:600px) and (orientation:landscape) and (max-height:900px){
+  html:not(.mac) .st.rnb .k{font-size:11px}
+  html:not(.mac) .st.rnb .v{font-size:21px}
+  html:not(.mac) .st.rnb .v small{font-size:10.5px}
+  html:not(.mac) #daily .ph .upd{font-size:15px}
+}
 /* v2.128: UV box: each number centred under its title, titles evenly spaced */
 .st.uvb{column-gap:0}
 .st.uvb .hlc{align-items:center;justify-content:center;text-align:center}
@@ -1289,7 +1308,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.129 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.130 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1320,7 +1339,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.129';
+const VER='2.130';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1748,7 +1767,7 @@ function rainPass(j){
    The access token lives only in this browser (never in the code) and is sent only to Tempest. ---- */
 const TW=(()=>{
   const REST='https://swd.weatherflow.com/swd/rest', WSU='wss://ws.weatherflow.com/swd/data', KEY='tempestToken';
-  const st={token:'',station:null,ws:null,retry:0,timer:null,manual:false,lastMsg:0,obs:null,obsAt:0,rapid:null,rapidAt:0,dayTotal:null,extra:0,seenT:0,logT:0,rainLog:[],wasOn:false,lastWord:''};
+  const st={token:'',station:null,ws:null,retry:0,timer:null,manual:false,lastMsg:0,obs:null,obsAt:0,rapid:null,rapidAt:0,dayTotal:null,extra:0,dayMin:null,extraMin:0,seenT:0,logT:0,rainLog:[],wasOn:false,lastWord:''};
   try{ st.token=localStorage.getItem(KEY)||'' }catch(e){}
   const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const isHome=()=>{ try{ return !!S.loc&&key(S.loc)===key(homeLoc()) }catch(e){ return false } };
@@ -1767,12 +1786,13 @@ const TW=(()=>{
     return t }
   function rain1h(){ const cut=Date.now()/1000-3600; st.rainLog=st.rainLog.filter(r=>r.t>cut); return st.rainLog.reduce((a,r)=>a+r.mm,0) }
   const rainToday=()=>st.dayTotal==null?null:st.dayTotal+st.extra;
+  const rainMinToday=()=>st.dayMin==null?null:st.dayMin+st.extraMin;   // v2.130
   /* the forecast's "current" with the station's own readings laid over it */
   function overlay(C){
     if(!on()) return C;
     const o=st.obs, w=windNow();
     return {...C,temperature_2m:o.temp,apparent_temperature:feels(o.temp,o.rh,w.kmh/3.6),wind_speed_10m:w.kmh,wind_gusts_10m:w.gust,wind_direction_10m:w.dir,
-      _live:1,_uv:o.uv,_rain1h:rain1h(),_raining:o.ptype>0,_today:rainToday(),_t:o.t*1000};
+      _live:1,_uv:o.uv,_rain1h:rain1h(),_raining:o.ptype>0,_today:rainToday(),_rmin:rainMinToday(),_t:o.t*1000};
   }
 
   /* ---------- mini wind dial ---------- */
@@ -1894,7 +1914,7 @@ const TW=(()=>{
     const [t,lull,avg,gust,dir,,pres,temp,rh,lux,uv,solar,rain,ptype]=o;
     if(temp==null||isNaN(temp)) return;
     st.obs={t,lull,avg:avg||0,gust:gust||0,dir:dir||0,temp,rh:rh==null?50:rh,rain:rain||0,ptype:ptype||0,uv:(uv==null||isNaN(uv))?null:uv}; st.obsAt=Date.now();
-    if(t>st.seenT){ st.extra+=rain||0; st.seenT=t }          // added on top of the fetched daily total
+    if(t>st.seenT){ st.extra+=rain||0; if((rain||0)>0) st.extraMin+=(o[17]||1); st.seenT=t }          // added on top of the fetched daily total
     if(t>st.logT){ st.logT=t; st.rainLog.push({t,mm:rain||0}) }   // the last hour's rain, from the live readings
     refresh();
   }
@@ -1908,7 +1928,7 @@ const TW=(()=>{
       const c=d.current_conditions||{};
       try{ st.fc={}; for(const h of (d.forecast&&d.forecast.hourly)||[]) if(h.air_temperature!=null) st.fc[h.local_day+'-'+h.local_hour]=h.air_temperature }catch(e){ st.fc=null }   // v2.124 (temporary): Tempest's own hourly temperatures
       if(c.precip_accum_local_day==null) throw new Error('not provided');
-      st.dayTotal=c.precip_accum_local_day; st.extra=0; st.seenT=Date.now()/1000;
+      st.dayTotal=c.precip_accum_local_day; st.extra=0; st.dayMin=c.precip_minutes_local_day==null?null:c.precip_minutes_local_day; st.extraMin=0; st.seenT=Date.now()/1000;
       mark(3,'pass','Rain today: loaded');
       if(S.data&&on()) refresh();
     }catch(e){ if(!quiet) mark(3,'fail','Rain today: '+e.message) }
@@ -1919,7 +1939,7 @@ const TW=(()=>{
   }
   function forget(){
     stopWS(); try{ localStorage.removeItem(KEY) }catch(e){}
-    st.token=''; st.station=null; st.obs=null; st.obsAt=0; st.rapid=null; st.dayTotal=null; st.extra=0; st.rainLog=[]; st.logT=0; st.wasOn=false;
+    st.token=''; st.station=null; st.obs=null; st.obsAt=0; st.rapid=null; st.dayTotal=null; st.extra=0; st.dayMin=null; st.extraMin=0; st.rainLog=[]; st.logT=0; st.wasOn=false;
     ui(); if(S.data) render();
   }
   const form=document.getElementById('tpForm');
@@ -2009,8 +2029,8 @@ function render(){
     st('Shoe Conditions',`<span class="gr" style="--c:${gr.c}">${SHOE}<b>${gr.t}</b></span>`)+
     (phl()&&!E&&!DV
       ? (()=>{ /* v2.127: iPhone portrait + iPad landscape: UV box shows the current UV (station at Home, else forecast) and today's high */
-          const uvCur=(C._live&&C._uv!=null)?C._uv:uvNow, uvHigh=Math.max(uvPeak,uvCur), cI=uvInfo(uvCur), hI=uvInfo(uvHigh);
-          return `<div class="st hlb uvb"><div class="hlc"><span class="k">UV Now</span><span class="v" style="color:${cI.c}">${Math.max(0,Math.round(uvCur))}</span></div><div class="hlc"><span class="k">UV High</span><span class="v" style="color:${hI.c}">${Math.max(0,Math.round(uvHigh))}</span></div></div>` })()
+          const uvTxt=x=>IPLMQ.matches?Math.max(0,x).toFixed(1):String(Math.max(0,Math.round(x))), uvCur=(C._live&&C._uv!=null)?C._uv:uvNow, uvHigh=Math.max(uvPeak,uvCur), cI=uvInfo(uvCur), hI=uvInfo(uvHigh);
+          return `<div class="st hlb uvb"><div class="hlc"><span class="k">UV Now</span><span class="v" style="color:${cI.c}">${uvTxt(uvCur)}</span></div><div class="hlc"><span class="k">UV High</span><span class="v" style="color:${hI.c}">${uvTxt(uvHigh)}</span></div></div>` })()
       : st('Max UV Index',`<span style="color:${uvI.c}">${uvR}</span><small>${uvI.l}</small>`,'uvt'))+
     st('Wind',`${fW1(V.wind_speed_10m)}<small>${wUnit()}</small>`,'wind',esc(windWord(V.wind_speed_10m,V.wind_gusts_10m)));
   arrangePhone(updEl,hiT,loT); placeBice(biceEl); TW.mount();
@@ -2020,6 +2040,17 @@ function render(){
   const silkTxt=(/^rain/.test(w.i)||w.i==='thunder');
   const acc=DV?`${fP(E?E.mm:DV.sum)} expected`:E?(E.mm>0?fP(E.mm):`${Math.round(E.pop)}% chance`):(sf>0?fP(sf)+' today':'just started');
   $('#cond').innerHTML=esc(w.t)+(silkTxt?' - <span class="silk">No Silk</span>':'')+(falling?` <span class="acc">${acc}</span>`:'');
+  /* v2.130: iPad landscape only: a Rain box fills the space the station/Updated lines left: rain so far today, and how long it has rained */
+  if(phl()&&IPLMQ.matches){
+    const wetMin=(day,h0,h1,upto)=>{ let n=0; H.time.forEach((t,i)=>{ if(!t.startsWith(day)) return; const h=+t.slice(11,13); if(h<h0||h>h1||(upto!=null&&i>upto)) return; if((H.precipitation[i]??0)>0) n++ }); return n*60 };
+    let rmm, rmin, rk='Rain Today';
+    if(DV){ rmm=E?E.mm:DV.sum; rmin=wetMin(DV.date,E?19:0,E?22:23); rk=E?'Rain Night':'Rain Expected' }
+    else if(E){ rmm=E.mm; rmin=wetMin(E.day,19,22); rk='Rain Tonight' }
+    else { rmm=sf; rmin=(V._live&&V._rmin!=null)?V._rmin:wetMin(D.time[0],0,23,idx) }
+    const rp=fP(rmm||0).split(' '), mt=Math.max(0,Math.round(rmin||0)), rh=Math.floor(mt/60), rmn=mt%60;
+    const rt=rh?`${rh}<small>h</small>${rmn?` ${rmn}<small>m</small>`:''}`:`${rmn}<small>min</small>`;
+    $('#nowSide').insertAdjacentHTML('beforeend',`<div class="st hlb rnb"><div class="hlc"><span class="k">${rk}</span><span class="v">${rp[0]}<small>${rp[1]||''}</small></span></div><div class="hlc"><span class="k">Rain Time</span><span class="v">${rt}</span></div></div>`);
+  }
 
 
   // black ice: now (plus the worst coming in the next 24 h), Tonight's 6-10 PM, or the whole day on a day page
@@ -2048,7 +2079,8 @@ function arrangePhone(updEl,hiT,loT){
   if(ARR){
     const wt=ns.querySelector('.st.wind'); if(wt) slot.replaceChildren(wt);
     ns.insertAdjacentHTML('beforeend',`<div class="st hlb"><div class="hlc"><span class="k">High</span><span class="v">${hiT}</span></div><div class="hlc"><span class="k">Low</span><span class="v">${loT}</span></div></div>`);
-    ns.appendChild(updEl);
+    if(IPLMQ.matches){ const ph=document.querySelector('#daily .ph'); if(ph) ph.appendChild(updEl); else ns.appendChild(updEl) }   // v2.130: iPad landscape: station + Updated sit right of the "10-day forecast" title
+    else ns.appendChild(updEl);
   } else { slot.replaceChildren(); $('#hilo').after(updEl) }
 }
 PH.addEventListener('change',()=>{ if(S.data) render() });
