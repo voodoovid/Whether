@@ -1274,7 +1274,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.126 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.127 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1305,7 +1305,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.126';
+const VER='2.127';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1757,7 +1757,7 @@ const TW=(()=>{
     if(!on()) return C;
     const o=st.obs, w=windNow();
     return {...C,temperature_2m:o.temp,apparent_temperature:feels(o.temp,o.rh,w.kmh/3.6),wind_speed_10m:w.kmh,wind_gusts_10m:w.gust,wind_direction_10m:w.dir,
-      _live:1,_rain1h:rain1h(),_raining:o.ptype>0,_today:rainToday(),_t:o.t*1000};
+      _live:1,_uv:o.uv,_rain1h:rain1h(),_raining:o.ptype>0,_today:rainToday(),_t:o.t*1000};
   }
 
   /* ---------- mini wind dial ---------- */
@@ -1878,7 +1878,7 @@ const TW=(()=>{
   function onObs(o){
     const [t,lull,avg,gust,dir,,pres,temp,rh,lux,uv,solar,rain,ptype]=o;
     if(temp==null||isNaN(temp)) return;
-    st.obs={t,lull,avg:avg||0,gust:gust||0,dir:dir||0,temp,rh:rh==null?50:rh,rain:rain||0,ptype:ptype||0}; st.obsAt=Date.now();
+    st.obs={t,lull,avg:avg||0,gust:gust||0,dir:dir||0,temp,rh:rh==null?50:rh,rain:rain||0,ptype:ptype||0,uv:(uv==null||isNaN(uv))?null:uv}; st.obsAt=Date.now();
     if(t>st.seenT){ st.extra+=rain||0; st.seenT=t }          // added on top of the fetched daily total
     if(t>st.logT){ st.logT=t; st.rainLog.push({t,mm:rain||0}) }   // the last hour's rain, from the live readings
     refresh();
@@ -1992,7 +1992,11 @@ function render(){
   $('#nowSide').innerHTML=
     st('Feels like',fT(feel),'big')+
     st('Shoe Conditions',`<span class="gr" style="--c:${gr.c}">${SHOE}<b>${gr.t}</b></span>`)+
-    st('Max UV Index',`<span style="color:${uvI.c}">${uvR}</span><small>${uvI.l}</small>`,'uvt')+
+    (phl()&&!E&&!DV
+      ? (()=>{ /* v2.127: iPhone portrait + iPad landscape: UV box shows the current UV (station at Home, else forecast) and today's high */
+          const uvCur=(C._live&&C._uv!=null)?C._uv:uvNow, uvHigh=Math.max(uvPeak,uvCur), cI=uvInfo(uvCur), hI=uvInfo(uvHigh);
+          return `<div class="st hlb uvb"><div class="hlc"><span class="k">UV Now</span><span class="v" style="color:${cI.c}">${Math.max(0,Math.round(uvCur))}</span></div><div class="hlc"><span class="k">UV High</span><span class="v" style="color:${hI.c}">${Math.max(0,Math.round(uvHigh))}</span></div></div>` })()
+      : st('Max UV Index',`<span style="color:${uvI.c}">${uvR}</span><small>${uvI.l}</small>`,'uvt'))+
     st('Wind',`${fW1(V.wind_speed_10m)}<small>${wUnit()}</small>`,'wind',esc(windWord(V.wind_speed_10m,V.wind_gusts_10m)));
   arrangePhone(updEl,hiT,loT); placeBice(biceEl); TW.mount();
   // rain/snow so far today, shown on its own line under the condition when it's coming down
@@ -2037,7 +2041,7 @@ addEventListener('resize',()=>{ if(S.data&&ARR!==null&&phl()!==ARR) render() });
 /* v2.60: black ice sits under Wind where the side column shows, otherwise under the condition */
 function placeBice(el){ if(!el) return; if(LIKE.matches) $('#nowSide').appendChild(el); else $('#cond').after(el) }
 /* v2.113: in the phone/iPad-landscape layout a black ice warning takes the place of the Max UV box instead of adding a tall box below */
-function iceForUV(el){ if(!el||!phl()||el.hidden) return; const uv=$('#nowSide .st.uvt'); if(uv) uv.replaceWith(el) }
+function iceForUV(el){ if(!el||!phl()||el.hidden) return; const uv=$('#nowSide .st.uvt, #nowSide .st.uvb'); if(uv) uv.replaceWith(el) }
 LIKE.addEventListener('change',()=>placeBice($('#bice')));
 /* Tonight: everything from 6 to 10 PM rolled into one (tomorrow's evening from 9 PM on) */
 function evening(j,C,dayStr){
