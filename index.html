@@ -1154,8 +1154,8 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 /* v2.130: iPad landscape: Amankenzie Station + Updated sit to the right of the "10-day forecast" title; the Rain box fills the freed space */
 @media (min-width:901px) and (min-height:600px) and (orientation:landscape){
   html:not(.mac) #daily .ph{justify-content:flex-start}
-  html:not(.mac) #daily .ph .upd{flex:none;margin:0 0 0 26px;padding:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;font-size:17px;line-height:1.15;color:#fff;font-weight:600;text-shadow:var(--ol)}
-  html:not(.mac) #daily .ph .upd .evt{display:flex;align-items:center;justify-content:flex-start;font-size:1.05em;line-height:1.15;min-height:0}
+  html:not(.mac) #daily .ph .upd{flex:none;margin:0 0 0 26px;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:17px;line-height:1.15;color:#fff;font-weight:600;text-shadow:var(--ol)}
+  html:not(.mac) #daily .ph .upd .evt{display:flex;align-items:center;justify-content:center;font-size:1.05em;line-height:1.15;min-height:0}
   html:not(.mac) #daily .ph .upd .evt.lcl{order:-1;font-size:1.1em;font-weight:800}
   html:not(.mac) #daily .ph .upd .evt.ghost{display:none}
   html:not(.mac) #daily .ph .upd .evu{line-height:1.15}
@@ -1308,7 +1308,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.130 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.131 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1339,7 +1339,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.130';
+const VER='2.131';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
