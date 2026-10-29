@@ -115,7 +115,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .r.feel{height:clamp(18px,2.6vh,24px)} .r.feel .c{color:var(--mute);font-size:12px}
 .r.heat{flex:1 1 0;min-height:27px;max-height:46px}
 .hc{width:calc(100% - 4px);height:calc(100% - 4px);margin:2px;border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:13px;font-variant-numeric:tabular-nums;line-height:1}
-.tpb{font-size:.72em;font-weight:700;opacity:.9;margin-left:2px;white-space:nowrap}
+.tpb{font-size:.42em;font-weight:800;color:#f4b942;margin-left:.2em;white-space:nowrap;letter-spacing:0}   /* v2.126 (temporary): Tempest values in the (or not) yellow */
+.tpy{color:#f4b942}
+.bigt .tpb{color:#fff}
 .bigt .tpb{font-size:.3em;font-weight:700;margin-left:.15em;vertical-align:.55em}   /* v2.125 (temporary) */   /* v2.124 (temporary) */
 .hc.none{background:transparent!important;color:rgba(255,255,255,.85)!important;font-weight:600}
 .r.uv{height:clamp(24px,3.4vh,30px)}
@@ -1272,7 +1274,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.125 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.126 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1303,7 +1305,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.123';
+const VER='2.126';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1956,7 +1958,7 @@ function render(){
 
   const w=wx(V.weather_code,V.is_day,V.precipitation);
   $('#nowIcon').innerHTML=icoA(w.i);
-  $('#bigT').innerHTML=fT(V.temperature_2m)+((V._live&&!phoneMQ.matches&&matchMedia('(hover:none) and (pointer:coarse)').matches&&j.current.temperature_2m!=null)?`<small class="tpb">(${fT(j.current.temperature_2m)})</small>`:'');   // v2.125 (temporary): iPad landscape: the forecast provider's current temp in brackets beside the station's
+  $('#bigT').innerHTML=(V._live&&!phoneMQ.matches&&matchMedia('(hover:none) and (pointer:coarse)').matches?`<span class="tpy">${fT(V.temperature_2m)}</span>`:fT(V.temperature_2m))+((V._live&&!phoneMQ.matches&&matchMedia('(hover:none) and (pointer:coarse)').matches&&j.current.temperature_2m!=null)?`<small class="tpb">(${fT(j.current.temperature_2m)})</small>`:'');   // v2.125 (temporary): iPad landscape: the forecast provider's current temp in brackets beside the station's
   const hiT=fT(E?E.hi:D.temperature_2m_max[dd]), loT=fT(E?E.lo:D.temperature_2m_min[dd]);
   $('#hilo').innerHTML=`High <b>${hiT}</b>&nbsp; · &nbsp;Low <b>${loT}</b>`;
 
@@ -2188,7 +2190,7 @@ function renderStrip(j,C){
     const arrow=wdir==null?'':`<svg viewBox="0 0 14 14" style="transform:rotate(${(wdir+180)%360}deg)"><path d="M7 12V2M3 6l4-4 4 4"/></svg>`;
     out+=`<div class="scol${c0?' cur':''}${night?' nt':''}">${tm}
       <div>${ico(wx(code,isDay,mm).i)}</div>
-      <div class="tp">${fT(temp)}</div>
+      <div class="tp">${fT(temp)}${tpB(t)}</div>
       <div class="fl">Feels<b>${fT(feel)}</b></div>
       <div class="rc"><span class="p${pv>0?'':' z'}">${DROP}${p==null?'–':p+'%'}</span>${chart}
         <span class="mm${mmS>0?'':' z'}">${met()?(mmS>0?(mmS<10?mmS.toFixed(1):Math.round(mmS)):'0'):(mmS/25.4).toFixed(2)}<small>${met()?'mm':'in'}</small></span>
@@ -2222,7 +2224,7 @@ function renderHourly(j){
   const overlay=`<div class="cv"><svg viewBox="0 0 ${N} 100" preserveAspectRatio="none">
       <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".30"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
       <path d="${area}" fill="url(#ag)"/><path d="${path}" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>`
-    +ys.map((y,i)=>`<span class="dot" style="left:${((i+.5)/N*100).toFixed(3)}%;top:${y.toFixed(2)}%"></span><span class="tl" style="left:${((i+.5)/N*100).toFixed(3)}%;top:${y.toFixed(2)}%">${fT(H.temperature_2m[a+i])}${tpB(H.time[a+i])}</span>`).join('')+`</div>`;
+    +ys.map((y,i)=>`<span class="dot" style="left:${((i+.5)/N*100).toFixed(3)}%;top:${y.toFixed(2)}%"></span><span class="tl" style="left:${((i+.5)/N*100).toFixed(3)}%;top:${y.toFixed(2)}%">${fT(H.temperature_2m[a+i])}</span>`).join('')+`</div>`;
   rows.push(row('curve','Temp','',cells(()=>''),overlay));
 
   rows.push(row('feel','Feels like','',cells(k=>fT(H.apparent_temperature[k]))));
