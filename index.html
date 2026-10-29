@@ -977,6 +977,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 /* v2.104: live readings from the home Tempest station (Home location only) */
 .st.wind{position:relative}
 .wdial{position:absolute;top:5px;right:7px;width:44px;height:44px;overflow:visible;pointer-events:none}
+.wdial .wbg{fill:none}
 .wdial .wr{fill:none;stroke:rgba(255,255,255,.42);stroke-width:2.4}
 .wdial .wt{fill:none;stroke:rgba(255,255,255,.2);stroke-width:6}
 .wdial .wa{fill:none;stroke:#8fdcf8;stroke-width:6;stroke-linecap:round}
@@ -1026,6 +1027,59 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
   .curk.mode button{font-size:13.5px;padding:7px 8px}
   .nowtop .ic{font-size:min(80px,20vw);margin:-8px -20px -4px -10px}
   .bigt{font-size:min(112px,27vw)}
+}
+
+/* v2.110: iPad landscape gets the same Current layout: Wind (big dial) under the condition; High/Low box + Updated in the side column */
+@media (min-width:901px) and (min-height:600px) and (orientation:landscape){
+  html:not(.mac) #hilo{display:none}
+  html:not(.mac) #nowWind:empty{display:none}
+  html:not(.mac) #nowWind{margin-top:8px;width:0;min-width:100%}
+  html:not(.mac) .cond{margin-top:4px}
+  html:not(.mac) #nowWind .st.wind{display:flex;flex-direction:column;justify-content:center;height:104px;overflow:hidden;padding:5px 14px 6px;box-sizing:border-box;position:relative}
+  html:not(.mac) #nowWind .st.wind .k{font-size:13px}
+  html:not(.mac) #nowWind .st.wind .v{font-size:36px;line-height:1.05}
+  html:not(.mac) #nowWind .st.wind .v small{font-size:16px;margin-left:4px}
+  html:not(.mac) #nowWind .st.wind .w{font-size:21px;font-weight:800;line-height:1.08;margin-top:1px;white-space:normal}
+  html:not(.mac) #nowWind .st.wind.hasd{padding-left:104px}
+  html:not(.mac) #nowWind .st.wind.hasd .v{font-size:32px}
+  html:not(.mac) #nowWind .st.wind.hasd .v small{font-size:13.5px;margin-left:3px}
+  html:not(.mac) #nowWind .st.wind.hasd .w{font-size:18px}
+  html:not(.mac) #nowWind .st.wind .wdial{left:10px;right:auto;top:50%;width:86px;height:86px;margin-top:-43px}
+  html:not(.mac) .wdial .wbg{fill:rgba(0,10,32,.55)}
+  html:not(.mac) .wdial .wr{stroke:rgba(255,255,255,.7)}
+  html:not(.mac) .wdial .wt{stroke:rgba(255,255,255,.3)}
+  html:not(.mac) .wdial .wk{stroke:rgba(255,255,255,.8)}
+  html:not(.mac) .st.hlb{display:grid;grid-template-columns:1fr 1fr;column-gap:8px;padding:4px 14px 5px}
+  html:not(.mac) .st.hlb .hlc{display:flex;flex-direction:column;min-width:0}
+  html:not(.mac) .st.hlb .k{font-size:12px;letter-spacing:.7px;line-height:1.15}
+  html:not(.mac) .st.hlb .v{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.05}
+  html:not(.mac) #nowSide>.st:nth-child(2){padding:4px 14px 4px}
+  html:not(.mac) #nowSide>.st:nth-child(2) .gr{font-size:27px}
+  html:not(.mac) #nowSide>.st:nth-child(2) .gr svg{width:27px;height:27px}
+  html:not(.mac) .nowside .upd{font-size:15px;line-height:1.15;margin-top:-1px;padding:0 3px}
+  html:not(.mac) .nowside .upd .evt{font-size:1.07em;line-height:1.1;min-height:18px;display:flex;align-items:center}
+  html:not(.mac) .nowside .upd .evt.lcl{font-size:.82em;font-weight:700;min-height:18px}
+  html:not(.mac) .nowside .upd .evu{line-height:1.15}
+  html:not(.mac) .curk.mode{padding:2px;margin-bottom:2px}
+  html:not(.mac) .curk.mode button{font-size:11.5px;padding:5px 9px}
+  html:not(.mac) .nowmain{margin-top:2px}
+  html:not(.mac) .bigt{font-size:min(148px,10.9vw)} html:not(.mac) .nowtop .ic{font-size:min(116px,8.6vw)}
+}
+@media (min-width:901px) and (min-height:600px) and (orientation:landscape) and (max-height:900px){
+  html:not(.mac) #nowWind .st.wind{height:82px;padding:4px 12px 5px}
+  html:not(.mac) #nowWind{margin-top:5px}
+  html:not(.mac) #nowWind .st.wind .k{font-size:11.5px}
+  html:not(.mac) #nowWind .st.wind .v{font-size:31px}
+  html:not(.mac) #nowWind .st.wind .w{font-size:18px}
+  html:not(.mac) #nowWind .st.wind.hasd{padding-left:78px}
+  html:not(.mac) #nowWind .st.wind.hasd .v{font-size:25px}
+  html:not(.mac) #nowWind .st.wind.hasd .w{font-size:15px}
+  html:not(.mac) #nowWind .st.wind .wdial{width:66px;height:66px;margin-top:-33px;left:8px}
+  html:not(.mac) .st.hlb .v{font-size:30px}
+  html:not(.mac) #nowSide>.st:nth-child(2) .gr{font-size:23px}
+  html:not(.mac) #nowSide>.st:nth-child(2) .gr svg{width:23px;height:23px}
+  html:not(.mac) .nowside .upd{font-size:13.5px}
+  html:not(.mac) .bigt{font-size:min(106px,9vw)} html:not(.mac) .nowtop .ic{font-size:min(88px,7vw)}
 }
 .tpbox{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);border-radius:16px;padding:12px 14px;margin-bottom:8px;font-size:14px;font-weight:600;line-height:1.35}
 .tpbox p{margin:0 0 10px;color:#fff;opacity:.92}
@@ -1172,7 +1226,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.109 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.110 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1203,11 +1257,13 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.109';
+const VER='2.110';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
 const PH=matchMedia('(max-width:500px)');
+const IPLMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape)');
+const phl=()=>PH.matches||(IPLMQ.matches&&!document.documentElement.classList.contains('mac'));   // v2.110: the new Current layout is for iPhone portrait and iPad landscape
 let SC=1;
 function stage(){
   const on=MACMQ.matches; SC=on?Math.min(innerWidth/1600,innerHeight/900):1;
@@ -1909,15 +1965,18 @@ function render(){
 }
 /* v2.106: iPhone portrait only. Wind (bigger, with a bigger dial) takes the space under the condition; High/Low becomes a box where Wind was,
    with Updated (and "Local station") below it. Every other screen keeps the old arrangement. */
+let ARR=null;
 function arrangePhone(updEl,hiT,loT){
   const ns=$('#nowSide'), slot=$('#nowWind'); if(!ns||!slot||!updEl) return;
-  if(PH.matches){
+  ARR=phl();
+  if(ARR){
     const wt=ns.querySelector('.st.wind'); if(wt) slot.replaceChildren(wt);
     ns.insertAdjacentHTML('beforeend',`<div class="st hlb"><div class="hlc"><span class="k">High</span><span class="v">${hiT}</span></div><div class="hlc"><span class="k">Low</span><span class="v">${loT}</span></div></div>`);
     ns.appendChild(updEl);
   } else { slot.replaceChildren(); $('#hilo').after(updEl) }
 }
 PH.addEventListener('change',()=>{ if(S.data) render() });
+addEventListener('resize',()=>{ if(S.data&&ARR!==null&&phl()!==ARR) render() });
 /* v2.60: black ice sits under Wind where the side column shows, otherwise under the condition */
 function placeBice(el){ if(!el) return; if(LIKE.matches) $('#nowSide').appendChild(el); else $('#cond').after(el) }
 LIKE.addEventListener('change',()=>placeBice($('#bice')));
@@ -2402,7 +2461,7 @@ addEventListener('resize',()=>requestAnimationFrame(fitText));
 function reservePager(){
   const el=$('#pager'), lb=$('#locBtn'), cu=$('#mode'); if(!el||!lb||!cu||!cu.offsetParent) return;
   if(!el.textContent) el.textContent='1 of 1';
-  cu.style.marginTop=''; const need=el.offsetHeight+(phoneMQ.matches&&matchMedia('(max-width:500px)').matches?1:8), gap=(cu.getBoundingClientRect().top-lb.getBoundingClientRect().bottom)/SC;
+  cu.style.marginTop=''; const need=el.offsetHeight+(phl()?1:8), gap=(cu.getBoundingClientRect().top-lb.getBoundingClientRect().bottom)/SC;
   if(gap<need) cu.style.marginTop=Math.ceil(need-gap)+'px';
 }
 addEventListener('resize',()=>requestAnimationFrame(reservePager));
