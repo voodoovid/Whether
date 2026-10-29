@@ -1017,6 +1017,11 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
   .st.hlb .k{font-size:11px;letter-spacing:.7px;line-height:1.15}
   .st.hlb .v{font-size:31px;font-weight:700;letter-spacing:-.5px;line-height:1.05}
   .nowside .upd{font-size:14px;line-height:1.15;margin-top:-2px;padding:0 3px}
+  .nowside{align-self:stretch}
+  .nowside .upd{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center;margin-top:0}
+  .nowside .upd .evt.lcl{order:-1}
+  .nowside .upd .evt{justify-content:center}
+  .nowside .upd .evt+.evu,.nowside .upd .evu+.evt{margin-top:0}
   .nowside .upd .evt{font-size:1.07em;line-height:1.1;min-height:17px;display:flex;align-items:center}
   .nowside .upd .evt.lcl{font-size:1em;font-weight:700;min-height:19px}
   .nowside .upd .evu{line-height:1.15}
@@ -1069,7 +1074,9 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
   html:not(.mac) .nowside .upd .evt{font-size:1.07em;line-height:1.1;min-height:18px;display:flex;align-items:center}
   html:not(.mac) .nowside .upd .evt.lcl{font-size:1.12em;font-weight:700;min-height:20px}
   html:not(.mac) .nowside .upd .evu{line-height:1.15}
-  html:not(.mac) .nowside .upd{text-align:center}
+  html:not(.mac) .nowside{align-self:stretch}
+  html:not(.mac) .nowside .upd{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center;margin-top:0}
+  html:not(.mac) .nowside .upd .evt.lcl{order:-1}
   html:not(.mac) .nowside .upd .evt,html:not(.mac) .nowside .upd .evt.lcl{justify-content:center}
   html:not(.mac) .nowside>.bice{height:79px;padding:5px 14px 6px;row-gap:0;align-content:center;overflow:hidden}
   html:not(.mac) .nowside>.bice .bv{font-size:25px}
@@ -1243,7 +1250,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.117 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.118 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1274,7 +1281,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.117';
+const VER='2.118';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
