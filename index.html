@@ -115,6 +115,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .r.feel{height:clamp(18px,2.6vh,24px)} .r.feel .c{color:var(--mute);font-size:12px}
 .r.heat{flex:1 1 0;min-height:27px;max-height:46px}
 .hc{width:calc(100% - 4px);height:calc(100% - 4px);margin:2px;border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:13px;font-variant-numeric:tabular-nums;line-height:1}
+.tpb{font-size:.72em;font-weight:700;opacity:.9;margin-left:2px;white-space:nowrap}   /* v2.124 (temporary) */
 .hc.none{background:transparent!important;color:rgba(255,255,255,.85)!important;font-weight:600}
 .r.uv{height:clamp(24px,3.4vh,30px)}
 .uvc{min-width:23px;height:21px;padding:0 5px;border-radius:7px;display:inline-grid;place-items:center;font-size:12.5px;font-weight:800;color:#0b1220}
@@ -1270,7 +1271,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.123 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.124 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1887,6 +1888,7 @@ const TW=(()=>{
     try{
       const d=await getJSON('/better_forecast',{station_id:st.station.id,units_temp:'c',units_wind:'kph',units_pressure:'mb',units_precip:'mm',units_distance:'km'});
       const c=d.current_conditions||{};
+      try{ st.fc={}; for(const h of (d.forecast&&d.forecast.hourly)||[]) if(h.air_temperature!=null) st.fc[h.local_day+'-'+h.local_hour]=h.air_temperature }catch(e){ st.fc=null }   // v2.124 (temporary): Tempest's own hourly temperatures
       if(c.precip_accum_local_day==null) throw new Error('not provided');
       st.dayTotal=c.precip_accum_local_day; st.extra=0; st.seenT=Date.now()/1000;
       mark(3,'pass','Rain today: loaded');
@@ -1915,7 +1917,8 @@ const TW=(()=>{
   // iOS suspends sockets in the background: reconnect when back in view
   document.addEventListener('visibilitychange',()=>{ if(document.hidden) return; startDial();
     if(st.token&&st.station&&(!st.ws||st.ws.readyState>1||Date.now()-st.lastMsg>45000)){ stopWS(); connect() } });
-  return {overlay,mount,start,at:()=>st.obs?st.obs.t*1000:Date.now()};
+  const fcT=t=>{ if(!st.token||!isHome()||!st.fc) return null; const v=st.fc[(+t.slice(8,10))+'-'+(+t.slice(11,13))]; return v==null?null:v };   // v2.124 (temporary)
+  return {overlay,mount,start,fcT,at:()=>st.obs?st.obs.t*1000:Date.now()};
 })();
 function render(){
   const j=S.data; if(!j) return;
@@ -2198,6 +2201,8 @@ function renderStrip(j,C){
 }
 
 
+/* v2.124 (temporary): iPad landscape only, Today's hourly: Tempest's own hourly forecast in brackets beside the temperature (Home only) */
+const tpB=t=>{ if(phoneMQ.matches||!matchMedia('(hover:none) and (pointer:coarse)').matches||inDay()) return ''; const v=TW.fcT(t); return v==null?'':`<small class="tpb">(${fT(v)})</small>` };
 function renderHourly(j){
   const H=j.hourly, a=S.idx, N=Math.min(24,H.time.length-S.idx);
   const cells=(fn)=>{let s='';for(let i=0;i<N;i++){const k=a+i,t=H.time[k];const night=!H.is_day[k];const mid=i>0&&t.slice(11,13)==='00';
@@ -2216,7 +2221,7 @@ function renderHourly(j){
   const overlay=`<div class="cv"><svg viewBox="0 0 ${N} 100" preserveAspectRatio="none">
       <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".30"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
       <path d="${area}" fill="url(#ag)"/><path d="${path}" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>`
-    +ys.map((y,i)=>`<span class="dot" style="left:${((i+.5)/N*100).toFixed(3)}%;top:${y.toFixed(2)}%"></span><span class="tl" style="left:${((i+.5)/N*100).toFixed(3)}%;top:${y.toFixed(2)}%">${fT(H.temperature_2m[a+i])}</span>`).join('')+`</div>`;
+    +ys.map((y,i)=>`<span class="dot" style="left:${((i+.5)/N*100).toFixed(3)}%;top:${y.toFixed(2)}%"></span><span class="tl" style="left:${((i+.5)/N*100).toFixed(3)}%;top:${y.toFixed(2)}%">${fT(H.temperature_2m[a+i])}${tpB(H.time[a+i])}</span>`).join('')+`</div>`;
   rows.push(row('curve','Temp','',cells(()=>''),overlay));
 
   rows.push(row('feel','Feels like','',cells(k=>fT(H.apparent_temperature[k]))));
