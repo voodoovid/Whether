@@ -1250,7 +1250,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.119 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.120 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1281,7 +1281,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.119';
+const VER='2.120';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2572,7 +2572,7 @@ $('#btn10').onclick=()=>{
 function openDay(d){
   if(!S.data) return;
   if(d===0){                                 // today's row = the Today page itself; held while a single day is open it switches that off
-    if(S.day>0){ S.day=null; S.sel=0; S.mode='now'; S.exiting=false; render(); syncBtn(); if(phoneMQ.matches) set10(false) } else set10(false);
+    if(S.day>0&&!phoneMQ.matches){ S.day=null; S.sel=0; S.mode='now'; S.exiting=false; render(); syncBtn() } else set10(false);   // v2.120: iPad landscape only
     return }
   S.day=d; S.sel=0; S.exiting=false; S.mode='now';
   render();
