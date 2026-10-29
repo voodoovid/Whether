@@ -994,21 +994,24 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
   #hilo{display:none}
   #nowWind:empty{display:none}
   .cond{margin-top:3px}
-  #nowWind{margin-top:7px}
-  #nowWind .st.wind{display:flex;flex-direction:column;justify-content:center;min-height:94px;padding:6px 12px 7px;box-sizing:border-box;position:relative}
+  #nowWind{margin-top:7px;width:0;min-width:100%}
+  #nowWind .st.wind{display:flex;flex-direction:column;justify-content:center;height:94px;overflow:hidden;padding:5px 12px 6px;box-sizing:border-box;position:relative}
   #nowWind .st.wind .k{font-size:12.5px}
-  #nowWind .st.wind .v{font-size:34px;line-height:1.05}
+  #nowWind .st.wind .v{font-size:31px;line-height:1.05}
   #nowWind .st.wind .v small{font-size:15px;margin-left:4px}
-  #nowWind .st.wind .w{font-size:20px;font-weight:800;line-height:1.08;margin-top:1px}
-  #nowWind .st.wind.hasd{padding-left:98px}
-  #nowWind .st.wind.hasd .v{font-size:27px}
-  #nowWind .st.wind.hasd .v small{font-size:13px}
+  #nowWind .st.wind .w{font-size:18px;font-weight:800;line-height:1.08;margin-top:1px;white-space:normal}
+  #nowWind .st.wind.hasd{padding-left:88px}
+  #nowWind .st.wind.hasd .v{font-size:25px}
+  #nowWind .st.wind.hasd .v small{font-size:11.5px;margin-left:3px}
   #nowWind .st.wind.hasd .w{font-size:16.5px;white-space:normal}
-  #nowWind .st.wind .wdial{left:9px;right:auto;top:50%;width:80px;height:80px;margin-top:-40px}
+  #nowWind .st.wind .wdial{left:8px;right:auto;top:50%;width:74px;height:74px;margin-top:-37px}
+  #nowSide>.st:nth-child(2){padding:4px 12px 4px}
+  #nowSide>.st:nth-child(2) .gr{font-size:25px}
+  #nowSide>.st:nth-child(2) .gr svg{width:25px;height:25px}
   .st.hlb{display:grid;grid-template-columns:1fr 1fr;column-gap:6px;padding:3px 12px 4px}
   .st.hlb .hlc{display:flex;flex-direction:column;min-width:0}
-  .st.hlb .k{font-size:10px;letter-spacing:.7px;line-height:1.15}
-  .st.hlb .v{font-size:24px;font-weight:700;letter-spacing:-.5px;line-height:1.05}
+  .st.hlb .k{font-size:11px;letter-spacing:.7px;line-height:1.15}
+  .st.hlb .v{font-size:31px;font-weight:700;letter-spacing:-.5px;line-height:1.05}
   .nowside .upd{font-size:14px;line-height:1.15;margin-top:-2px;padding:0 3px}
   .nowside .upd .evt{font-size:1.07em;line-height:1.1;min-height:17px;display:flex;align-items:center}
   .nowside .upd .evt.lcl{font-size:.82em;font-weight:700;min-height:17px}
@@ -1164,7 +1167,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.107 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.108 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1195,7 +1198,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.107';
+const VER='2.108';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1669,23 +1672,21 @@ const TW=(()=>{
     if(!shown()) return;
     t.insertAdjacentHTML('beforeend',dialHTML()); t.classList.add('hasd');
     const w=windNow(); if(!dial.has){ dial.sS=w.kmh; dial.sD=w.dir; dial.has=true }
+    draw(performance.now(),0);   // v2.108: paint the new dial at once so it never flashes empty
     startDial();
   }
   function startDial(){ if(dial.run) return; dial.run=true; dial.last=performance.now(); requestAnimationFrame(frame) }
-  function frame(now){
-    const el=document.getElementById('wdial');
-    if(!el||document.hidden||!shown()){ dial.run=false; return }
-    const dt=Math.min(.1,(now-dial.last)/1000); dial.last=now;
+  function draw(now,dt){
     const w=windNow();
     dial.sS+=(w.kmh-dial.sS)*(1-Math.exp(-dt*4));
-    dial.sD=(dial.sD+angDiff(dial.sD,w.dir)*(1-Math.exp(-dt*3))+360)%360;
+    if(w.kmh>.3) dial.sD=(dial.sD+angDiff(dial.sD,w.dir)*(1-Math.exp(-dt*3))+360)%360;   // v2.108: in a calm the needle keeps its last direction instead of jumping
     const v=dial.sS;
     // wobble only while live wind readings keep arriving, so movement always means data is arriving
     const amp=(REDUCED||!rapidOk())?0:Math.min(6,Math.max(0,w.gust-v)*.3)*Math.min(1,v/5);
     const wob=amp*(Math.sin(now/430)+.6*Math.sin(now/197+1.3));
     const nd=document.getElementById('wdN'), arc=document.getElementById('wdA'), gt=document.getElementById('wdG');
     nd.setAttribute('transform',`rotate(${(dial.sD+wob).toFixed(2)} 50 50)`);
-    nd.setAttribute('opacity',v>.3?'1':'.25');
+    nd.setAttribute('opacity','1');   // v2.108: never dims (it used to fade in light wind, and flashed hidden for a frame after each redraw)
     const f=frac(v);
     arc.setAttribute('stroke-dasharray',`${(f*CIRC).toFixed(1)} ${CIRC.toFixed(1)}`);
     arc.setAttribute('stroke-opacity',f>.004?'1':'0');
@@ -1694,6 +1695,12 @@ const TW=(()=>{
       gt.setAttribute('x1',(50+21*Math.cos(a)).toFixed(2)); gt.setAttribute('y1',(50+21*Math.sin(a)).toFixed(2));
       gt.setAttribute('x2',(50+31*Math.cos(a)).toFixed(2)); gt.setAttribute('y2',(50+31*Math.sin(a)).toFixed(2));
       gt.setAttribute('opacity','1') } else gt.setAttribute('opacity','0');
+  }
+  function frame(now){
+    const el=document.getElementById('wdial');
+    if(!el||document.hidden||!shown()){ dial.run=false; return }
+    const dt=Math.min(.1,(now-dial.last)/1000); dial.last=now;
+    draw(now,dt);
     requestAnimationFrame(frame);
   }
   /* between full refreshes, keep the Wind tile's number and word in step with the live wind */
@@ -2339,7 +2346,8 @@ function cycleLoc(dir){
   const L=S.saved; if(!L||L.length<2){toast(L&&L.length?'Only one saved location — add more with the location button':'Save locations with the location button');return}
   if(cycling) return;
   let i=L.findIndex(s=>key(s)===key(S.loc)); if(i<0) i=dir>0?-1:0;
-  const n=i+dir;
+  let n=i+dir;
+  if(n>=L.length&&dir>0) n=0;   // v2.108: after the last saved location, roll round to the first (going back past Home still stops)
   if(n<0||n>=L.length){ endBump(dir); S.pg=n<0?`Home · 1 of ${L.length}`:`Last · ${L.length} of ${L.length}`; showPager(); return }   // v2.105: no wrap-around
   const l=L[n];
   S.loc={name:l.name,lat:l.lat,lon:l.lon}; LS.set('loc',S.loc);
