@@ -1141,6 +1141,11 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
   #nowWind .st.wind.hasd.d3 .v{font-size:21px}
   #nowWind .st.wind.hasd.d3 .v small{font-size:9.5px}
 }
+/* v2.128: UV box: each number centred under its title, titles evenly spaced */
+.st.uvb{column-gap:0}
+.st.uvb .hlc{align-items:center;justify-content:center;text-align:center}
+.st.uvb .k{width:100%;text-align:center;white-space:nowrap}
+.st.uvb .v{width:100%;text-align:center}
 </style>
 </head>
 <body>
@@ -1274,7 +1279,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.127 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.128 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1305,7 +1310,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.127';
+const VER='2.128';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
