@@ -684,7 +684,13 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 .v-row{display:flex;align-items:center;gap:9px}
 .v-pill,.v-badge,.v-loc,.v-seg,.v-circ{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.30);box-shadow:inset 0 1px 0 rgba(255,255,255,.18);color:#fff;white-space:nowrap}
 .v-pill{padding:7px 13px;border-radius:999px;font-size:14px;font-weight:800}
-.v-pill.v-stn{display:inline-flex;align-items:center;gap:7px;padding:6px 12px 6px 10px;font-size:13px;line-height:1.15;text-align:left;border-radius:20px;white-space:normal}
+.v-stn br{display:none}
+.v-stn>i{margin-right:6px}
+@media (min-width:901px) and (min-height:600px) and (orientation:landscape){
+  html:not(.mac) .v-pill.v-stn{display:inline-flex;align-items:center;gap:7px;padding:6px 12px 6px 10px;font-size:13px;line-height:1.15;text-align:left;border-radius:20px;white-space:normal}
+  html:not(.mac) .v-stn>i{margin-right:0}
+  html:not(.mac) .v-stn br{display:inline}
+}
 .v-seg{display:inline-flex;gap:2px;padding:3px;border-radius:999px}
 .v-seg span{padding:5px 8px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;color:#fff}
 .v-seg.u span{font-size:14px;text-transform:none;letter-spacing:0;padding:5px 13px}
@@ -1180,11 +1186,13 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
   html:not(.mac) #nowWind .st.wind>.w{grid-column:2;grid-row:3}
   html:not(.mac) #nowWind .st.wind>.wfrom{display:contents}
   html:not(.mac) .wfrom span{grid-column:1;grid-row:1;font-size:13px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;line-height:1.2;text-align:center;text-shadow:var(--ol)}
+  html:not(.mac) .wfrom span,html:not(.mac) .wfrom b{position:relative;left:-8px}
   html:not(.mac) .wfrom b{grid-column:1;grid-row:2;font-size:28px;font-weight:800;line-height:1.05;letter-spacing:-.3px;text-align:center;text-shadow:var(--ol)}
 }
 @media (min-width:901px) and (min-height:600px) and (orientation:landscape) and (max-height:900px){
   html:not(.mac) #nowWind .st.wind{column-gap:7px;padding-left:10px;padding-right:10px}
   html:not(.mac) #nowWind .st.wind.hasd{padding-left:78px}
+  html:not(.mac) .wfrom span,html:not(.mac) .wfrom b{left:-5px}
   html:not(.mac) .wfrom span{font-size:11.5px}
   html:not(.mac) .wfrom b{font-size:19px}
   html:not(.mac) #nowWind .st.wind.hasd .v{font-size:21px}
@@ -1328,7 +1336,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.134 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.135 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1346,7 +1354,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="gi"><div class="gv"><div class="v-loc"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>City</span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></div></div><div class="gx"><b>Location</b><span>Tap to search or pick a saved place. Searched places wait under Recent until you tap Save.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Location Lock</span><i class="tk"><b></b></i></div></div><div class="gx"><b>Location Lock</b><span>After 30 minutes away, Whether returns to Home. Press and hold the location name, or use the switch in the location menu, to stay where you are.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-title"><img src="icon-192.png" alt="" width="26" height="26"><div class="tt"><b>Whether</b><i>(or not)</i></div></div></div><div class="gx"><b>Go Home</b><span>Press and hold the Whether <em class="yor">(or not)</em> title to jump to your Home location, the first one in your saved list.</span></div></div>
-      <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill v-stn"><i class="ld" style="display:inline-block;flex:none;width:9px;height:9px;border-radius:50%;background:#5fd3a0"></i><span>Amankenzie<br>Station</span></span></div></div><div class="gx"><b>Amankenzie Station</b><span>At Home, with your Tempest connected, the temperature, Feels like, wind (with its live dial), rain and shoe conditions come from your own station. Everything else stays forecast.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill v-stn"><i class="ld" style="display:inline-block;flex:none;width:9px;height:9px;border-radius:50%;background:#5fd3a0"></i><span>Amankenzie <br>Station</span></span></div></div><div class="gx"><b>Amankenzie Station</b><span>At Home, with your Tempest connected, the temperature, Feels like, wind (with its live dial), rain and shoe conditions come from your own station. Everything else stays forecast.</span></div></div>
       <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Cycle Through Saved Locations</b><span>Swipe up or down on the main screen. Stops at Home and at the last place.</span></div></div>
       <div class="gi gh2"><div class="gv"><div class="v-hold" aria-hidden="true"><div class="hg"><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr pick"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div></div><div class="fg"></div><div class="hs"><div class="bd">SAT<i>×</i></div><div class="cols"><u style="--h:30%"></u><u style="--h:62%"></u><u style="--h:45%"></u><u style="--h:78%"></u></div></div></div></div><div class="gx"><b>Get Hourly for any day</b><span>In the 10-Day list, press and hold a day to open its hourly details. To go back:</span><div class="v-btns"><div class="v-badge s">Sat · Oct 31<i aria-hidden="true">✕</i></div><div class="v-or">or</div><div class="v-pill s">Back to 10-Day</div></div></div></div>
       <div class="gi"><div class="gv"><div class="v-seg u"><span class="on">°C</span><span>°F</span></div></div><div class="gx"><b>Units</b><span>Switch °C and °F.</span></div></div>
@@ -1359,7 +1367,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.134';
+const VER='2.135';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
