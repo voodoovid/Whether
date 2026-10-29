@@ -984,6 +984,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 .wdial .wg{stroke:#ffcf7a;stroke-width:4;stroke-linecap:round}
 .wdial .wk{stroke:rgba(255,255,255,.55);stroke-width:2.4;stroke-linecap:round}
 .wdial .wk.n{stroke:#fff;stroke-width:3.4}
+.wdial .wfl{stroke:#7fd4f5;stroke-width:1.7;stroke-linecap:round;stroke-dasharray:6 3.5;fill:none}   /* v2.123: flow lines, as in Sandbox */
 .wdial .wnd{fill:#7fd4f5;stroke:rgba(0,0,0,.7);stroke-width:2.2;paint-order:stroke;stroke-linejoin:round}
 .upd .evt.lcl{display:flex;align-items:center;gap:.38em;white-space:nowrap}
 .upd .ld{display:inline-block;flex:none;width:.46em;height:.46em;border-radius:50%;background:#5fd3a0;box-shadow:0 0 0 1.5px rgba(0,0,0,.55),0 0 8px #5fd3a0;animation:ldbeat 2s ease-in-out infinite}
@@ -1117,7 +1118,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 .tpr i.pass{background:#5fd3a0}.tpr i.fail{background:#ff5d6c}.tpr i.wait{background:#f2c14e}
 .tpr.fail span{color:#ffb3ba}
 .tpbox[hidden],.tpf[hidden],.tpx[hidden]{display:none}
-/* v2.121: wind always shows one decimal, so its numbers get a little narrower to stay inside their boxes */
+/* v2.123: wind always shows one decimal, so its numbers get a little narrower to stay inside their boxes */
 .dx.wnd b{zoom:.84}
 .wd .ws{zoom:.9}
 @media (max-width:500px){
@@ -1128,7 +1129,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
   #nowWind .st.wind.hasd.d3 .v{font-size:22px}
   #nowWind .st.wind.hasd.d3 .v small{font-size:9.5px}
 }
-/* v2.121: the wind box shows one decimal, so its number is a little narrower on the phone */
+/* v2.123: the wind box shows one decimal, so its number is a little narrower on the phone */
 @media (max-width:500px){
   #nowWind .st.wind.hasd{padding-left:88px;padding-right:6px}
   #nowWind .st.wind.hasd .v{font-size:26px}
@@ -1269,7 +1270,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.121 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.123 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1300,7 +1301,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.121';
+const VER='2.123';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1767,7 +1768,7 @@ const TW=(()=>{
     return `<svg class="wdial" id="wdial" viewBox="0 0 100 100" aria-hidden="true"><circle class="wbg" cx="50" cy="50" r="46"/><circle class="wr" cx="50" cy="50" r="44"/>${k}<circle class="wt" cx="50" cy="50" r="26"/>`+
       `<circle id="wdA" class="wa" cx="50" cy="50" r="26" transform="rotate(-90 50 50)" stroke-dasharray="0 400" stroke-opacity="0"/>`+
       `<line id="wdG" class="wg" x1="0" y1="0" x2="0" y2="0" opacity="0"/>`+
-      `<g id="wdN" opacity="0"><circle class="wnd" cx="50" cy="8" r="8"/><path class="wnd" d="M50 42 L39 21 L61 21 Z"/></g></svg>`;
+      `<g id="wdN" opacity="0"><g class="wfls"><line class="wfl" x1="30" y1="14" x2="30" y2="38"/><line class="wfl" x1="70" y1="14" x2="70" y2="38"/><line class="wfl" x1="38" y1="63" x2="38" y2="86"/><line class="wfl" x1="50" y1="61" x2="50" y2="90"/><line class="wfl" x1="62" y1="63" x2="62" y2="86"/></g><circle class="wnd" cx="50" cy="8" r="8"/><path class="wnd" d="M50 42 L39 21 L61 21 Z"/></g></svg>`;
   }
   function mount(){
     const t=document.querySelector('.now .st.wind'); if(!t) return;
@@ -1791,6 +1792,11 @@ const TW=(()=>{
     const nd=document.getElementById('wdN'), arc=document.getElementById('wdA'), gt=document.getElementById('wdG');
     nd.setAttribute('transform',`rotate(${(dial.sD+wob).toFixed(2)} 50 50)`);
     nd.setAttribute('opacity','1');   // v2.108: never dims (it used to fade in light wind, and flashed hidden for a frame after each redraw)
+    // dashed flow lines that run the way the wind blows, only while live readings keep arriving
+    const live=!(REDUCED||!rapidOk());
+    if(live) dial.ph=((dial.ph||0)+(5+v*1.7)*dt)%9.5;
+    const lo=live?Math.min(.75,.22+v/40):.14;
+    nd.querySelectorAll('.wfl').forEach((ln,i)=>{ ln.setAttribute('stroke-dashoffset',(-((dial.ph||0)+(i%3)*1.7)).toFixed(2)); ln.setAttribute('stroke-opacity',lo.toFixed(2)) });
     const f=frac(v);
     arc.setAttribute('stroke-dasharray',`${(f*CIRC).toFixed(1)} ${CIRC.toFixed(1)}`);
     arc.setAttribute('stroke-opacity',f>.004?'1':'0');
@@ -2099,7 +2105,7 @@ function windWord(ws,gust){
   return 'STAY INSIDE!';
 }
 const fW=k=>k==null?'–':Math.round(met()?k:k*0.621371);
-const fW1=k=>k==null?'–':(met()?k:k*0.621371).toFixed(1);   // v2.121: the wind box shows one decimal
+const fW1=k=>k==null?'–':(met()?k:k*0.621371).toFixed(1);   // v2.123: the wind box shows one decimal
 const wUnit=()=>met()?'km/h':'mph';
 /* what the ground is like right now, from recent rain/snow, snow cover and temperature */
 function ground(j,C,idx){
@@ -2592,7 +2598,7 @@ $('#btn10').onclick=()=>{
 function openDay(d){
   if(!S.data) return;
   if(d===0){                                 // today's row = the Today page itself; held while a single day is open it switches that off
-    if(S.day>0&&!phoneMQ.matches){ S.day=null; S.sel=0; S.mode='now'; S.exiting=false; render(); syncBtn() } else set10(false);   // v2.121: iPad landscape only
+    if(S.day>0&&!phoneMQ.matches){ S.day=null; S.sel=0; S.mode='now'; S.exiting=false; render(); syncBtn() } else set10(false);   // v2.123: iPad landscape only
     return }
   S.day=d; S.sel=0; S.exiting=false; S.mode='now';
   render();
