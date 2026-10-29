@@ -994,20 +994,21 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 @media (max-width:500px){
   #hilo{display:none}
   #nowWind:empty{display:none}
-  .cond{margin-top:3px}
-  #nowWind{margin-top:7px;width:0;min-width:100%}
-  #nowWind .st.wind{display:flex;flex-direction:column;justify-content:center;height:94px;overflow:hidden;padding:5px 12px 6px;box-sizing:border-box;position:relative}
+  .cond{margin-top:-6px}
+  #nowWind{margin-top:6px;width:0;min-width:100%}
+  #nowWind .st.wind{display:flex;flex-direction:column;justify-content:center;height:106px;overflow:hidden;padding:5px 12px 6px;box-sizing:border-box;position:relative}
   #nowWind .st.wind .k{font-size:12.5px}
   #nowWind .st.wind .v{font-size:31px;line-height:1.05}
   #nowWind .st.wind .v small{font-size:15px;margin-left:4px}
   #nowWind .st.wind .w{font-size:18px;font-weight:800;line-height:1.08;margin-top:1px;white-space:normal}
-  #nowWind .st.wind.hasd{padding-left:82px}
-  #nowWind .st.wind.hasd .v{font-size:35px;line-height:1}
-  #nowWind .st.wind.hasd.d3 .v{font-size:28px}
+  #nowWind .st.wind.hasd{padding-left:90px}
+  #nowWind .st.wind.hasd .v{font-size:34px;line-height:1}
+  #nowWind .st.wind.hasd.d3 .v{font-size:25px}
+  #nowWind .st.wind.hasd.d3 .v small{font-size:10.5px;margin-left:2px}
   #nowWind .st.wind.hasd .v small{font-size:12px;margin-left:3px}
   #nowWind .st.wind.hasd .w{font-size:15.5px;line-height:1.05;white-space:normal}
   #nowWind .st.wind.hasd .k{font-size:11.5px;line-height:1.1}
-  #nowWind .st.wind .wdial{left:7px;right:auto;top:50%;width:70px;height:70px;margin-top:-35px}
+  #nowWind .st.wind .wdial{left:7px;right:auto;top:50%;width:80px;height:80px;margin-top:-40px}
   #nowSide>.st:nth-child(2){padding:4px 12px 4px}
   #nowSide>.st:nth-child(2) .gr{font-size:25px}
   #nowSide>.st:nth-child(2) .gr svg{width:25px;height:25px}
@@ -1017,7 +1018,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
   .st.hlb .v{font-size:31px;font-weight:700;letter-spacing:-.5px;line-height:1.05}
   .nowside .upd{font-size:14px;line-height:1.15;margin-top:-2px;padding:0 3px}
   .nowside .upd .evt{font-size:1.07em;line-height:1.1;min-height:17px;display:flex;align-items:center}
-  .nowside .upd .evt.lcl{font-size:.82em;font-weight:700;min-height:17px}
+  .nowside .upd .evt.lcl{font-size:1em;font-weight:700;min-height:19px}
   .nowside .upd .evu{line-height:1.15}
   /* v2.109: darker dial background so it stands out */
   .wdial .wbg{fill:rgba(0,10,32,.55)}
@@ -1240,7 +1241,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.113 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.114 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1271,7 +1272,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.113';
+const VER='2.114';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
