@@ -1414,7 +1414,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.140';
+const VER='2.141';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1867,7 +1867,12 @@ const TW=(()=>{
   function overlay(C){
     if(!on()) return C;
     const o=st.obs, w=windNow();
-    return {...C,temperature_2m:o.temp,apparent_temperature:feels(o.temp,o.rh,w.kmh/3.6),wind_speed_10m:w.kmh,wind_gusts_10m:w.gust,wind_direction_10m:w.dir,
+    /* v2.141: the condition follows the station's rain sensor — no forecast drizzle/rain when it's dry here, and rain shown when it is */
+    const cut=Date.now()/1000-600, wet10=o.ptype>0||st.rainLog.some(r=>r.t>cut&&r.mm>0);
+    let code=C.weather_code, pr=C.precipitation;
+    if(!wet10&&WET(code)){ const cc=C.cloud_cover??90; code=cc>=85?3:cc>=50?2:1; pr=0 }
+    else if(wet10&&!WET(code)&&!SNOWY(code)){ const mmh=(o.rain||0)*60; code=mmh>=7.6?65:mmh>=2.5?63:61; pr=Math.max(pr||0,o.rain||0) }
+    return {...C,weather_code:code,precipitation:pr,temperature_2m:o.temp,apparent_temperature:feels(o.temp,o.rh,w.kmh/3.6),wind_speed_10m:w.kmh,wind_gusts_10m:w.gust,wind_direction_10m:w.dir,
       _live:1,_uv:o.uv,_rain1h:rain1h(),_raining:o.ptype>0,_today:rainToday(),_rmin:rainMinToday(),_t:o.t*1000};
   }
 
