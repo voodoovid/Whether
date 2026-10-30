@@ -1336,7 +1336,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.138 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.139 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1367,7 +1367,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.138';
+const VER='2.139';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1922,16 +1922,21 @@ const TW=(()=>{
     if(!st.station||!st.token) return;
     clearTimeout(st.timer); st.manual=false; mark(2,'wait','Live feed: connecting');
     let w; try{ w=new WebSocket(`${WSU}?token=${encodeURIComponent(st.token)}`) }catch(e){ mark(2,'fail','Live feed: could not open'); return }
-    st.ws=w;
-    w.onopen=()=>{ st.retry=0; st.lastMsg=Date.now();
+    st.ws=w; w._data=false; w._limit=false;
+    w.onopen=()=>{ st.lastMsg=Date.now();   // v2.139: the retry wait resets only when real data arrives (see onMsg)
       w.send(JSON.stringify({type:'listen_start',device_id:st.station.deviceId,id:'obs'}));
       w.send(JSON.stringify({type:'listen_rapid_start',device_id:st.station.deviceId,id:'wind'})) };
-    w.onmessage=ev=>{ st.lastMsg=Date.now(); let m; try{ m=JSON.parse(ev.data) }catch(e){ return } onMsg(m) };
-    w.onclose=()=>{ if(st.ws===w) st.ws=null; if(st.manual||!st.token) return;
-      mark(2,'fail','Live feed: reconnecting');
-      st.timer=setTimeout(connect,Math.min(30000,1000*Math.pow(2,st.retry++))) };
+    w.onmessage=ev=>{ st.lastMsg=Date.now(); let m; try{ m=JSON.parse(ev.data) }catch(e){ return }
+      const sm=m&&m.status&&m.status.status_message; if(sm&&/rate limit/i.test(sm)) w._limit=true;   // v2.139: Tempest's connection-limit message
+      if(m.type==='rapid_wind'||m.type==='obs_st'){ w._data=true; st.retry=0 }
+      onMsg(m) };
+    /* v2.139: a feed that was replaced or closed on purpose never starts another one; refusals back off 1, 2, 4 … 30 s */
+    w.onclose=()=>{ if(st.ws!==w||st.manual||!st.token) return; st.ws=null;
+      const d=Math.min(30000,1000*Math.pow(2,st.retry++)), s=Math.round(d/1000);
+      mark(2,'fail',(w._limit||(!w._data&&st.retry>=3))?`Live feed: Tempest refused, likely too many open at once. Close Whether/Sandbox on other devices. Retrying in ${s} s`:`Live feed: reconnecting in ${s} s`);
+      st.timer=setTimeout(()=>{ st.timer=null; connect() },d) };
   }
-  function stopWS(){ st.manual=true; clearTimeout(st.timer); if(st.ws){ try{ st.ws.close() }catch(e){} st.ws=null } }
+  function stopWS(){ st.manual=true; clearTimeout(st.timer); st.timer=null; if(st.ws){ try{ st.ws.close() }catch(e){} st.ws=null } }
   function onMsg(m){
     if(m.type==='connection_opened'){ mark(2,'pass','Live feed: connected'); return }
     if(m.type==='rapid_wind'&&m.ob){ st.rapid={ms:m.ob[1],dir:m.ob[2]}; st.rapidAt=Date.now(); mark(2,'pass','Live feed: receiving'); paintWind(); return }
@@ -1980,12 +1985,16 @@ const TW=(()=>{
   // notice when the station goes quiet (or comes back) and redraw with the forecast or the live readings
   setInterval(()=>{ const n=on(); if(n!==st.wasOn){ st.wasOn=n; if(S.data) render() } },20000);
   setInterval(()=>{ if(st.token&&st.station&&document.visibilityState==='visible') loadSeed(true) },300000);
-  // v2.138: watchdog: Tempest sends wind every 3 s; if nothing has arrived for 10 s the feed is stale, so reconnect straight away
-  setInterval(()=>{ if(!st.token||!st.station||document.hidden||st.manual) return;
-    if(!st.ws||st.ws.readyState>1||Date.now()-st.lastMsg>10000){ stopWS(); connect() } },4000);
-  // iOS suspends sockets in the background: reconnect when back in view
-  document.addEventListener('visibilitychange',()=>{ if(document.hidden) return; startDial();
+  /* v2.139: gentle watchdog: Tempest sends wind every 3 s; an open feed silent for 30 s is replaced.
+     It never acts while a retry wait is running, so a refused feed keeps backing off instead of retrying every few seconds. */
+  setInterval(()=>{ if(!st.token||!st.station||document.hidden||st.manual||st.timer) return;
+    if(st.ws&&st.ws.readyState===1&&Date.now()-st.lastMsg>30000){ stopWS(); connect() } },4000);
+  /* v2.139: close the feed while hidden, so iOS never leaves a frozen one counting against Tempest's limit
+     (about 10 open at once per account, shared by every token); open a fresh one when back in view */
+  const hideFeed=()=>{ if(st.ws||st.timer){ stopWS(); mark(2,'','Live feed: paused while the app is hidden') } };
+  document.addEventListener('visibilitychange',()=>{ if(document.hidden){ hideFeed(); return } startDial();
     if(st.token&&st.station&&(!st.ws||st.ws.readyState>1||Date.now()-st.lastMsg>45000)){ stopWS(); connect() } });
+  addEventListener('pagehide',hideFeed);
   const fcT=t=>{ if(!st.token||!isHome()||!st.fc) return null; const v=st.fc[(+t.slice(8,10))+'-'+(+t.slice(11,13))]; return v==null?null:v };   // v2.124 (temporary)
   return {overlay,mount,start,fcT,at:()=>st.obs?st.obs.t*1000:Date.now()};
 })();
