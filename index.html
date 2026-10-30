@@ -1203,6 +1203,9 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 .st.uvb .hlc{align-items:center;justify-content:center;text-align:center}
 .st.uvb .k{width:100%;text-align:center;white-space:nowrap}
 .st.uvb .v{width:100%;text-align:center}
+/* v2.143: iPad landscape: dim Flow Field behind the Current Wind box */
+@media (min-width:901px) and (min-height:600px) and (orientation:landscape){html:not(.mac) .st.wind{isolation:isolate}}
+.st.wind canvas.wxbg{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;border-radius:inherit}
 /* v2.140: iPad landscape: press and hold the Wind box for the Wind Studio pop-up (six live views) */
 #wx{position:fixed;inset:0;z-index:56;display:flex;align-items:center;justify-content:center;background:rgba(2,6,14,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
   padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 14px)}
@@ -1414,7 +1417,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.142';
+const VER='2.143';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2879,128 +2882,116 @@ const WX=(()=>{
   function txt(c,s,x,y,size,weight,align,col,base){ c.font=`${weight||700} ${size}px ${FONT}`; c.textAlign=align||'left'; c.textBaseline=base||'alphabetic'; c.fillStyle=col||'#fff'; c.fillText(s,x,y) }
   const hourLbl=t=>{ const h=+t.slice(11,13); return (h%12||12)+(h<12?'a':'p') };
 
-  /* 01 · Brief: what the wind is doing now, then the next 12 hours left → right (v2.142: every part labelled) */
-  const brief={ name:'Brief', draw(c,w,h,T,W){
+  /* ---- v2.143: wind memory. Live buffer (last hour, in memory) feeds the stats; a daily log of station readings (Home, live only) builds the week/year prevailing wind ---- */
+  const BUF=[]; setInterval(()=>{ const s=src(); BUF.push({t:Date.now(),k:s.kmh,g:Math.max(s.gust,s.kmh),live:s.live}); while(BUF.length>720) BUF.shift() },5000);
+  const LOGK='whether.windlog.v1', dk=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const bin16=d=>Math.round((((+d||0)%360)+360)%360/22.5)%16;
+  let LOG={}; try{ LOG=JSON.parse(localStorage.getItem(LOGK))||{} }catch(e){ LOG={} }
+  function logTick(){ const L=TW.wind&&TW.wind(); if(!L||L.kmh==null) return;
+    const k=dk(new Date()), e=LOG[k]||(LOG[k]={b:Array(16).fill(0),s:0,n:0,m:0});
+    if(L.kmh>=1) e.b[bin16(L.dir)]++; e.s+=+L.kmh||0; e.n++; e.m=Math.max(e.m,+L.gust||0,+L.kmh||0);
+    const ks=Object.keys(LOG).sort(); while(ks.length>400) delete LOG[ks.shift()];
+    try{ localStorage.setItem(LOGK,JSON.stringify(LOG)) }catch(e){} }
+  setInterval(logTick,60000); setTimeout(logTick,8000);
+  function agg(days){ const b=Array(16).fill(0); let n=0,dd=0; const d=new Date();
+    for(let i=0;i<days;i++){ const e=LOG[dk(d)]; if(e&&e.n){ dd++; n+=e.n; e.b.forEach((v,j)=>b[j]+=v) } d.setDate(d.getDate()-1) } return {b,n,dd} }
+  const HRS=(from,count)=>{ const H=S.data&&S.data.hourly, o=[]; if(!H||!H.wind_speed_10m) return o;
+    for(let i=0;i<count;i++){ const k=from+i; if(k<0||k>=H.time.length) continue; o.push({t:H.time[k],k:+H.wind_speed_10m[k]||0,g:Math.max(+(H.wind_gusts_10m&&H.wind_gusts_10m[k])||0,+H.wind_speed_10m[k]||0),d:+(H.wind_direction_10m&&H.wind_direction_10m[k])||0}) } return o };
+  const CN=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+  const box=(c,x,y,w,h,r)=>{ c.fillStyle='rgba(255,255,255,.07)'; c.beginPath(); c.roundRect(x,y,w,h,r||10); c.fill() };
+  const tfit=(c,s,max,size,wt)=>{ let f=size; c.font=`${wt} ${f}px ${FONT}`; while(f>9&&c.measureText(s).width>max){ f-=1; c.font=`${wt} ${f}px ${FONT}` } return f };
+  const hl=t=>{ const h=+t.slice(11,13); return (h%12||12)+(h<12?' AM':' PM') };
+
+  /* 01 · Brief: next 24 hours as coloured bars (colour = Beaufort force), gust ticks, and direction arrows, with peak / calmest / average up top */
+  const brief={ name:'Next 24 Hours', draw(c,w,h,T,W){
     const g=c.createLinearGradient(0,0,0,h); g.addColorStop(0,'#0f1d36'); g.addColorStop(1,'#0a1426'); c.fillStyle=g; c.fillRect(0,0,w,h);
-    const pad=14, top=40, kh=58, kw=(w-pad*2-16)/3;
-    const K=[['WIND NOW',fW1(W.kmh),wUnit(),'#7fd4f5'],['GUSTS TO',fW1(W.gust),wUnit(),'#f4b942'],['COMING FROM',compass(W.dir),Math.round(W.dir)+'°','#5fd3a0']];
-    K.forEach((k,i)=>{ const x=pad+i*(kw+8);
-      c.fillStyle='rgba(255,255,255,.07)'; c.beginPath(); c.roundRect(x,top,kw,kh,11); c.fill();
-      c.fillStyle=k[3]; c.fillRect(x,top+10,3,kh-20);
-      txt(c,k[0],x+12,top+18,10.5,800,'left','#fff');
-      c.font=`700 11px ${FONT}`; const uw=c.measureText(k[2]).width; let fs=Math.min(26,kw*.27); c.font=`800 ${fs}px ${FONT}`;
-      while(fs>12&&c.measureText(k[1]).width+uw+30>kw){ fs-=1; c.font=`800 ${fs}px ${FONT}` }
-      txt(c,k[1],x+12,top+46,fs,800,'left','#fff');
-      const nw=c.measureText(k[1]).width; txt(c,k[2],x+16+nw,top+46,11,700,'left','#fff') });
-    const j=S.data, H=j&&j.hourly; const cx0=pad+30, cx1=w-pad-6, cy0=top+kh+40, cy1=h-56;
-    if(!H||!H.wind_speed_10m){ txt(c,'No hourly data',w/2,(cy0+cy1)/2,14,700,'center'); return }
-    const i0=S.idx||0, n=13, sp=[],gu=[],tm=[],dr=[];
-    for(let i=0;i<n;i++){ const k=i0+i; if(k>=H.time.length) break; sp.push(+H.wind_speed_10m[k]||0); gu.push(Math.max(+(H.wind_gusts_10m&&H.wind_gusts_10m[k])||0,+H.wind_speed_10m[k]||0)); tm.push(H.time[k]); dr.push(+(H.wind_direction_10m&&H.wind_direction_10m[k])||0) }
-    if(sp.length<2) return;
-    sp[0]=W.kmh; gu[0]=Math.max(gu[0],W.gust); dr[0]=W.dir;
-    // chart heading + legend
-    txt(c,'NEXT 12 HOURS · '+wUnit(),pad,cy0-22,11,800,'left','#fff');
-    const lx=cx1; txt(c,'Gusts',lx,cy0-22,11,800,'right'); c.font=`800 11px ${FONT}`; const gw=c.measureText('Gusts').width;
-    c.setLineDash([4,3]); c.strokeStyle='#f4b942'; c.lineWidth=2; c.beginPath(); c.moveTo(lx-gw-22,cy0-26); c.lineTo(lx-gw-6,cy0-26); c.stroke(); c.setLineDash([]);
-    const sx=lx-gw-34; txt(c,'Wind',sx,cy0-22,11,800,'right'); const ww=c.measureText('Wind').width; c.fillStyle='#7fd4f5'; c.fillRect(sx-ww-22,cy0-27,16,3);
-    const top0=Math.max(20,...gu.map(U))*1.12, step=top0>60?20:top0>30?10:5, ymax=Math.ceil(top0/step)*step;
-    const X=i=>cx0+(cx1-cx0)*i/(sp.length-1), Y=v=>cy1-(cy1-cy0)*U(v)/ymax;
+    const D=HRS(S.idx||0,24); if(D.length<2){ txt(c,'No hourly data',w/2,h/2,14,700,'center'); return }
+    D[0].k=W.kmh; D[0].g=Math.max(D[0].g,W.gust); D[0].d=W.dir;
+    const pad=14, top=42, kh=50, kw=(w-pad*2-16)/3;
+    let pk=D[0],cm=D[0],sum=0; D.forEach(q=>{ if(q.k>pk.k) pk=q; if(q.k<cm.k) cm=q; sum+=q.k });
+    [['PEAK',fW1(pk.k),pk===D[0]?'Now':hl(pk.t),'#ff9f2e'],['CALMEST',fW1(cm.k),cm===D[0]?'Now':hl(cm.t),'#7fd4f5'],['AVERAGE',fW1(sum/D.length),'24 h','#5fd3a0']].forEach((k,i)=>{ const x=pad+i*(kw+8);
+      box(c,x,top,kw,kh); c.fillStyle=k[3]; c.fillRect(x,top+9,3,kh-18);
+      txt(c,k[0],x+11,top+15,10,800,'left','#fff'); txt(c,k[2],x+kw-8,top+15,10,800,'right',k[3]);
+      const f=tfit(c,k[1]+' '+wUnit(),kw-22,20,800); txt(c,k[1],x+11,top+40,f,800,'left','#fff'); const nw=c.measureText(k[1]).width; txt(c,wUnit(),x+15+nw,top+40,10,700,'left','#fff') });
+    const cx0=pad+26, cx1=w-pad, cy0=top+kh+34, cy1=h-44;
+    { const s='Bars = wind · ticks = gusts · arrows = blowing toward · '+wUnit(); txt(c,s,pad,cy0-14,tfit(c,s,w-pad*2,10.5,800),800,'left','#fff') }
+    const top0=Math.max(20,...D.map(q=>U(q.g)))*1.1, step=top0>60?20:top0>30?10:5, ymax=Math.ceil(top0/step)*step, Y=v=>cy1-(cy1-cy0)*U(v)/ymax;
     c.lineWidth=1; c.strokeStyle='rgba(255,255,255,.10)';
-    for(let v=0;v<=ymax;v+=step){ const y=cy1-(cy1-cy0)*v/ymax; c.beginPath(); c.moveTo(cx0,y); c.lineTo(cx1,y); c.stroke(); txt(c,String(v),cx0-7,y+4,11,700,'right','#fff') }
-    // hours along the bottom, with a small arrow under each showing which way the wind is blowing
-    tm.forEach((t,i)=>{ if(i%2) return; const x=X(i);
-      txt(c,i===0?'Now':hourLbl(t),x,cy1+15,11.5,800,'center','#fff');
-      const a=(dr[i]+180)*Math.PI/180; c.save(); c.translate(x,cy1+30); c.rotate(a);
-      c.beginPath(); c.moveTo(0,-7); c.lineTo(5,3); c.lineTo(0,0.5); c.lineTo(-5,3); c.closePath(); c.fillStyle='#5fd3a0'; c.fill(); c.restore() });
-    txt(c,'Arrows show which way the wind is blowing',w/2,h-6,10,800,'center','#5fd3a0');
-    const rev=Math.min(1,(T-(brief.t0||T))/900); if(!brief.t0) brief.t0=T;
-    c.save(); c.beginPath(); c.rect(cx0-2,0,(cx1-cx0+4)*rev+2,h); c.clip();
-    const ag=c.createLinearGradient(0,cy0,0,cy1); ag.addColorStop(0,'rgba(77,150,240,.55)'); ag.addColorStop(1,'rgba(77,150,240,.03)');
-    c.beginPath(); c.moveTo(X(0),cy1); sp.forEach((v,i)=>c.lineTo(X(i),Y(v))); c.lineTo(X(sp.length-1),cy1); c.closePath(); c.fillStyle=ag; c.fill();
-    c.beginPath(); sp.forEach((v,i)=>i?c.lineTo(X(i),Y(v)):c.moveTo(X(i),Y(v))); c.strokeStyle='#7fd4f5'; c.lineWidth=2.5; c.lineJoin='round'; c.stroke();
-    c.setLineDash([5,4]); c.beginPath(); gu.forEach((v,i)=>i?c.lineTo(X(i),Y(v)):c.moveTo(X(i),Y(v))); c.strokeStyle='#f4b942'; c.lineWidth=1.8; c.stroke(); c.setLineDash([]);
-    c.restore();
-    const pr=(T%1600)/1600; c.beginPath(); c.arc(X(0),Y(W.kmh),5+pr*12,0,TAU); c.fillStyle=`rgba(127,212,245,${.45*(1-pr)})`; c.fill();
-    c.beginPath(); c.arc(X(0),Y(W.kmh),5,0,TAU); c.fillStyle='#fff'; c.fill();
+    for(let v=0;v<=ymax;v+=step){ const y=cy1-(cy1-cy0)*v/ymax; c.beginPath(); c.moveTo(cx0,y); c.lineTo(cx1,y); c.stroke(); txt(c,String(v),cx0-6,y+4,10.5,700,'right','#fff') }
+    const bw=(cx1-cx0)/D.length, gr=Math.min(1,(T-(brief.t0||T))/700); if(!brief.t0) brief.t0=T;
+    D.forEach((q,i)=>{ const x=cx0+i*bw+1, bh=(cy1-Y(q.k))*gr, b=bft(q.k);
+      c.fillStyle=BCOL[b]; c.globalAlpha=i?.85:1; c.beginPath(); c.roundRect(x,cy1-bh,bw-2,Math.max(1,bh),[3,3,0,0]); c.fill(); c.globalAlpha=1;
+      const gy=cy1-(cy1-Y(q.g))*gr; c.strokeStyle='#fff'; c.lineWidth=2; c.beginPath(); c.moveTo(x,gy); c.lineTo(x+bw-2,gy); c.stroke();
+      if(i%2===0){ const a=(q.d+180)*Math.PI/180; c.save(); c.translate(x+bw/2-1,cy1+11); c.rotate(a); c.beginPath(); c.moveTo(0,-6); c.lineTo(4.5,3); c.lineTo(0,.5); c.lineTo(-4.5,3); c.closePath(); c.fillStyle='#fff'; c.fill(); c.restore() }
+      if(i%6===0) txt(c,i?hourLbl(q.t):'Now',x+bw/2-1,cy1+32,11,800,'center','#fff') });
+    c.strokeStyle='#fff'; c.lineWidth=1.5; c.strokeRect(cx0+1,Y(D[0].k)*gr+cy1*(1-gr),bw-2,cy1-(Y(D[0].k)*gr+cy1*(1-gr)));
   }};
 
-  /* 02 · Windsock: an airfield sock seen from the south; each of the 5 stripes fills at about 5.6 km/h (3 knots), fully out at 28 km/h */
-  const sock={ name:'Windsock', e:0, draw(c,w,h,T,W,dt){
-    const t=T/1000, g=c.createLinearGradient(0,0,0,h); g.addColorStop(0,'#1d3a63'); g.addColorStop(.62,'#3d5f86'); g.addColorStop(.63,'#1c3324'); g.addColorStop(1,'#0e1c14'); c.fillStyle=g; c.fillRect(0,0,w,h);
-    const gy=h*.63, to=(W.dir+180)*Math.PI/180, hx=Math.sin(to), hz=Math.cos(to);
-    const tgt=clamp(W.kmh/28,0,1); this.e+=(tgt-this.e)*(1-Math.exp(-dt*2.5));
-    const gust=clamp((W.gust-W.kmh)/12,0,1.5);
-    // runway markings for depth
-    c.strokeStyle='rgba(255,255,255,.18)'; c.lineWidth=2; c.setLineDash([14,12]); c.beginPath(); c.moveTo(w*.1,h*.86); c.lineTo(w*.9,h*.86); c.stroke(); c.setLineDash([]);
-    // grass bending downwind
-    c.strokeStyle='rgba(120,190,110,.55)'; c.lineWidth=1.4;
-    for(let i=0;i<46;i++){ const x=(i*97.3%w), y=gy+6+(i*37%Math.max(1,h-gy-10)), L=6+i%5*2, b=(this.e*.9+.08)*hx*L+Math.sin(t*3+i)*gust*2;
-      c.beginPath(); c.moveTo(x,y); c.quadraticCurveTo(x+b*.4,y-L*.6,x+b,y-L+Math.abs(b)*.3); c.stroke() }
-    // pole
-    const px=w*.5-hx*w*.16, py=h*.26, L=Math.min(w*.62,h*.95)*.7, r0=Math.min(14,h*.06);
-    c.fillStyle='#c9d3df'; c.fillRect(px-2.5,py-6,5,gy+18-py); c.beginPath(); c.arc(px,py-7,4,0,TAU); c.fill();
-    // centreline: 5 segments, each fills in turn, unfilled ones hang
-    const pts=[[px,py,0]]; let x=px,y=py; const seg=L/5;
-    for(let i=0;i<5;i++){ const fill=clamp(this.e*5-i,0,1), fl=Math.sin(t*(5+gust*6)+i*1.3)*(.05+gust*.12)*fill;
-      const droop=(1-fill)*1.25+.06+fl, cosd=Math.cos(droop), sind=Math.sin(droop);
-      x+=seg*cosd*(hx*(1-.25*Math.abs(hz))); y+=seg*sind-seg*cosd*hz*.22; pts.push([x,y,fill]) }
-    for(let i=0;i<5;i++){ const [x0,y0]=pts[i], [x1,y1,f1]=pts[i+1], dx=x1-x0, dy=y1-y0, d=Math.hypot(dx,dy)||1, nx=-dy/d, ny=dx/d;
-      const rA=r0*(1-i*.09)*(i?(.45+.55*pts[i][2]):1), rB=r0*(1-(i+1)*.09)*(.45+.55*f1);
-      c.beginPath(); c.moveTo(x0+nx*rA,y0+ny*rA); c.lineTo(x1+nx*rB,y1+ny*rB); c.lineTo(x1-nx*rB,y1-ny*rB); c.lineTo(x0-nx*rA,y0-ny*rA); c.closePath();
-      const sg=c.createLinearGradient(x0+nx*rA,y0+ny*rA,x0-nx*rA,y0-ny*rA), col=i%2?'#f1efe9':'#ff6a2b', dk=i%2?'#a9a49a':'#b33d12';
-      sg.addColorStop(0,col); sg.addColorStop(.55,col); sg.addColorStop(1,dk); c.fillStyle=sg; c.fill() }
-    // mouth ring
-    c.beginPath(); c.ellipse(px,py,Math.max(2,r0*Math.abs(hz)*.9+1.5),r0,0,0,TAU); c.strokeStyle='#e8eef8'; c.lineWidth=2.5; c.stroke();
-    const n=Math.min(5,Math.floor(W.kmh/5.6)), pill=(s,x,y,al,col)=>{ c.font=`800 13px ${FONT}`; const tw=c.measureText(s).width, bx=al==='right'?x-tw-12:x;
-      c.fillStyle='rgba(7,16,30,.72)'; c.beginPath(); c.roundRect(bx,y-18,tw+12,25,8); c.fill(); txt(c,s,bx+6,y,13,800,'left',col||'#fff') };
-    pill(`Blowing toward ${compass((W.dir+180)%360)}`,10,h-10,'left','#7fd4f5');
-    pill(`${n} of 5 stripes · ${fW1(W.kmh)} ${wUnit()}`,w-10,h-10,'right');
+  /* 02 · Wind Stats: nine numbers worth knowing */
+  const stats={ name:'Wind Stats', draw(c,w,h,T,W){
+    c.fillStyle='#0b1528'; c.fillRect(0,0,w,h);
+    const H=S.data&&S.data.hourly, i0=S.idx||0, day=H?H.time[i0].slice(0,10):'', T24=HRS(i0,24);
+    const today=[]; if(H) H.time.forEach((t,k)=>{ if(t.slice(0,10)===day) today.push({t,k:+H.wind_speed_10m[k]||0,g:Math.max(+(H.wind_gusts_10m&&H.wind_gusts_10m[k])||0,+H.wind_speed_10m[k]||0)}) });
+    const now=Date.now(), b10=BUF.filter(q=>now-q.t<=600000), avg10=b10.length>1?b10.reduce((a,q)=>a+q.k,0)/b10.length:null;
+    const tAvg=today.length?today.reduce((a,q)=>a+q.k,0)/today.length:null;
+    let mg=today.reduce((m,q)=>q.g>m.g?q:m,{g:0,t:''}); const bm=BUF.reduce((m,q)=>Math.max(m,q.g),0);
+    const gf=W.gust/Math.max(W.kmh,1), pk=T24.reduce((m,q)=>q.k>m.k?q:m,{k:-1,t:''}), calm=T24.filter(q=>q.k<6).length;
+    let vx=0,vy=0,vs=0; T24.forEach(q=>{ const a=q.d*Math.PI/180; vx+=Math.sin(a)*q.k; vy+=Math.cos(a)*q.k; vs+=q.k }); const st=vs?Math.hypot(vx,vy)/vs:0;
+    const bf=bft(W.kmh), live=W.live;
+    const C=[
+      ['NOW',fW1(W.kmh),wUnit(),BF[bf][1]],
+      ['10-MIN AVERAGE',avg10==null?'…':fW1(avg10),avg10==null?'':wUnit(),avg10==null?'Collecting':live?'Live station':'Forecast'],
+      ['GUST FACTOR',gf.toFixed(1)+'×','',gf<1.3?'Steady':gf<1.7?'Gusty':'Very gusty'],
+      ['TODAY AVERAGE',tAvg==null?'–':fW1(tAvg),tAvg==null?'':wUnit(),'Whole day'],
+      ['TODAY TOP GUST',fW1(Math.max(mg.g,bm)),wUnit(),bm>mg.g?'Measured':mg.t?'at '+hl(mg.t):''],
+      ['PEAK NEXT 24 H',pk.k<0?'–':fW1(pk.k),pk.k<0?'':wUnit(),pk.t?'at '+hl(pk.t):''],
+      ['CALM HOURS',String(calm),'of 24','Under '+(met()?'6 km/h':'4 mph')],
+      ['DIRECTION',Math.round(st*100)+'%','steady',st>.8?'Holds steady':st>.5?'Shifts some':'All over'],
+      ['BEAUFORT','F'+bf,'',BF[bf][1]]];
+    const pad=12, top=40, gp=7, cw=(w-pad*2-gp*2)/3, ch=(h-top-pad-gp*2)/3;
+    C.forEach((q,i)=>{ const x=pad+(i%3)*(cw+gp), y=top+Math.floor(i/3)*(ch+gp); box(c,x,y,cw,ch);
+      txt(c,q[0],x+9,y+15,tfit(c,q[0],cw-14,9.5,800),800,'left','#7fd4f5');
+      const vf=tfit(c,q[1]+(q[2]?' '+q[2]:''),cw-18,Math.min(24,ch*.36),800); txt(c,q[1],x+9,y+ch*.62,vf,800,'left','#fff');
+      if(q[2]){ const nw=c.measureText(q[1]).width; txt(c,q[2],x+13+nw,y+ch*.62,10,700,'left','#fff') }
+      txt(c,q[3],x+9,y+ch-9,tfit(c,q[3],cw-14,10.5,700),700,'left','#f4d442') });
   }};
 
-  /* 03 · Wind Vane, Monet × Picasso: Monet's brush dabs keep building and lean with the wind; cubist planes and a faceted vane on top point to where the wind comes from */
-  const vane={ name:'Vane · Monet × Picasso', a:null, av:0, draw(c,w,h,T,W,dt){
-    const cv=c.canvas, dpr=cv.width/w;
-    if(!this.bg||this.bg.width!==cv.width||this.bg.height!==cv.height){ this.bg=document.createElement('canvas'); this.bg.width=cv.width; this.bg.height=cv.height;
-      const b=this.bg.getContext('2d'); b.setTransform(dpr,0,0,dpr,0,0); const g=b.createLinearGradient(0,0,0,h); g.addColorStop(0,'#9db8d6'); g.addColorStop(.5,'#b9b3d6'); g.addColorStop(1,'#5f8f86'); b.fillStyle=g; b.fillRect(0,0,w,h) }
-    const b=this.bg.getContext('2d'); b.setTransform(dpr,0,0,dpr,0,0);
+  /* 03 · Wind Vane: a brushed-steel compass dial with a machined vane that swings to the wind (points to where it comes FROM) */
+  const vane={ name:'Wind Vane', a:null, av:0, draw(c,w,h,T,W,dt){
+    const bg=c.createLinearGradient(0,0,0,h); bg.addColorStop(0,'#1a2233'); bg.addColorStop(1,'#0b0f18'); c.fillStyle=bg; c.fillRect(0,0,w,h);
     if(this.a==null) this.a=W.dir;
     this.av+=(angDiff(this.a,W.dir)*30-this.av*7)*dt; this.a=(this.a+this.av*dt+360)%360;
-    const to=(this.a+180)*Math.PI/180, ang=Math.atan2(-Math.cos(to),Math.sin(to)), len=6+U(W.kmh)*.45, t=T/1000;
-    // Monet's garden palette: sky blues and lilacs above, lily-pond greens below, the odd rose and sun-gold
-    const P=[['#a7c4e2','#c9d6ec','#b7a9d8','#e6c9d8','#f3e1b0'],['#9fb7d9','#b6a3cf','#d7b7cf','#8fb2c9','#e9d7a8'],['#5f9a8a','#7fae7c','#3f6f7a','#a9c98a','#d98fa8']];
-    for(let i=0;i<70;i++){ const x=Math.random()*w, y=Math.random()*h, band=y<h*.38?0:y<h*.66?1:2, row=P[band], col=row[Math.floor(Math.random()*row.length)];
-      const a=ang+(Math.random()-.5)*(.5+(W.gust-W.kmh)*.03), l=len*(.6+Math.random()*.8);
-      b.globalAlpha=.28+Math.random()*.25; b.strokeStyle=col; b.lineWidth=2.5+Math.random()*3.5; b.lineCap='round';
-      b.beginPath(); b.moveTo(x,y); b.quadraticCurveTo(x+Math.cos(a)*l*.5+Math.sin(t+x)*2,y+Math.sin(a)*l*.5,x+Math.cos(a)*l,y+Math.sin(a)*l); b.stroke() }
-    // sun dabs, Impression-style
-    b.globalAlpha=.18; b.fillStyle='#f6a04d'; for(let i=0;i<3;i++){ b.beginPath(); b.arc(w*.82+(Math.random()-.5)*14,h*.2+(Math.random()-.5)*10,3+Math.random()*4,0,TAU); b.fill() }
-    b.globalAlpha=1;
-    c.setTransform(1,0,0,1,0,0); c.drawImage(this.bg,0,0); c.setTransform(dpr,0,0,dpr,0,0);
-    const cx=w/2, cy=h*.52, R=Math.min(w*.3,h*.3);
-    // Picasso over Monet: flat cubist planes cut across the soft painting, shifting a little with the vane
+    const cx=w/2, cy=h*.53, R=Math.min(w*.38,h*.36);
+    // bezel
+    c.save(); c.shadowColor='rgba(0,0,0,.6)'; c.shadowBlur=18; c.shadowOffsetY=6;
+    const bz=c.createLinearGradient(cx-R,cy-R,cx+R,cy+R); bz.addColorStop(0,'#e9edf2'); bz.addColorStop(.45,'#7c8696'); bz.addColorStop(.55,'#5d6574'); bz.addColorStop(1,'#cfd6df');
+    c.beginPath(); c.arc(cx,cy,R*1.1,0,TAU); c.fillStyle=bz; c.fill(); c.restore();
+    // dial face: brushed metal
+    let face; if(c.createConicGradient){ face=c.createConicGradient(0,cx,cy); [['#2a3242',0],['#3a4356',.125],['#262d3b',.25],['#394254',.375],['#2a3242',.5],['#3a4356',.625],['#262d3b',.75],['#394254',.875],['#2a3242',1]].forEach(([col,s])=>face.addColorStop(s,col)) } else face='#2e3646';
+    c.beginPath(); c.arc(cx,cy,R,0,TAU); c.fillStyle=face; c.fill();
+    const iv=c.createRadialGradient(cx,cy,R*.2,cx,cy,R); iv.addColorStop(0,'rgba(0,0,0,0)'); iv.addColorStop(1,'rgba(0,0,0,.45)'); c.fillStyle=iv; c.fill();
+    // ticks
+    for(let i=0;i<72;i++){ const a=i*5*Math.PI/180-Math.PI/2, maj=i%18===0, mid=i%9===0, r1=R*(maj?.8:mid?.85:.9);
+      c.beginPath(); c.moveTo(cx+Math.cos(a)*r1,cy+Math.sin(a)*r1); c.lineTo(cx+Math.cos(a)*R*.95,cy+Math.sin(a)*R*.95); c.strokeStyle=maj?'#fff':'rgba(255,255,255,.7)'; c.lineWidth=maj?2.4:mid?1.6:.9; c.stroke() }
+    ['N','NE','E','SE','S','SW','W','NW'].forEach((s,i)=>{ const a=i*Math.PI/4-Math.PI/2, big=i%2===0, r=R*(big?.66:.7);
+      txt(c,s,cx+Math.cos(a)*r,cy+Math.sin(a)*r+1,big?Math.max(13,R*.15):Math.max(9,R*.085),big?800:700,'center',s==='N'?'#ff5a3c':'#fff','middle') });
+    // vane: two-tone facets read as a machined ridge; drop shadow lifts it off the dial
     const r=this.a*Math.PI/180;
-    if(!this.sh){ this.sh=Array.from({length:7},(_,i)=>({a:i/7*TAU+Math.random()*.5,d:.75+Math.random()*.45,s:.22+Math.random()*.18,col:['#d9a441','#3b5b8c','#b8463f','#e8dcc0','#5c7a4a','#7b4f86','#2f3a52'][i]})) }
-    this.sh.forEach((q,i)=>{ const a=q.a+r*.15, x=cx+Math.cos(a)*R*q.d, y=cy+Math.sin(a)*R*q.d, k=R*q.s;
-      c.beginPath(); c.moveTo(x+Math.cos(a)*k,y+Math.sin(a)*k*.6); c.lineTo(x+Math.cos(a+2.1)*k*.8,y+Math.sin(a+2.1)*k); c.lineTo(x+Math.cos(a+3.9)*k*.9,y+Math.sin(a+3.9)*k*.7); c.closePath();
-      c.globalAlpha=.34; c.fillStyle=q.col; c.fill(); c.globalAlpha=.7; c.strokeStyle='#1b1b24'; c.lineWidth=2; c.stroke(); c.globalAlpha=1 });
-    // compass ring: Monet's soft dabs, broken into Picasso's hard arcs
-    for(let s2=0;s2<8;s2++){ const a0=s2/8*TAU+.06, a1=a0+TAU/8-.12, rr=R*(s2%2?1:.94);
-      c.beginPath(); c.arc(cx+(s2%3-1)*2,cy,rr,a0,a1); c.strokeStyle=s2%2?'#1b1b24':'#3b3f74'; c.lineWidth=s2%2?3:4; c.stroke() }
-    // letters: each in its own face and tilt
-    [['N',"italic 800","Georgia,serif",-.12,'#ffe2a8',1.25],['E',"900",FONT,.18,'#fff',1],['S',"italic 700","Georgia,serif",.1,'#fff',.95],['W',"800",FONT,-.2,'#fff',1.1]].forEach(([s2,wt,ff,tl,col,sz],i)=>{
-      const a=i*Math.PI/2-Math.PI/2, x=cx+R*1.22*Math.cos(a), y=cy+R*1.22*Math.sin(a);
-      c.save(); c.translate(x,y); c.rotate(tl); c.font=`${wt} ${Math.max(14,R*.2*sz)}px ${ff}`; c.textAlign='center'; c.textBaseline='middle';
-      c.lineWidth=3.5; c.strokeStyle='#1b1b24'; c.strokeText(s2,0,0); c.fillStyle=col; c.fillText(s2,0,0); c.restore() });
-    // the vane as cubist facets: each part split into two flat planes, light and dark, with hard black outlines
-    const P2=(u,v)=>[cx+u*Math.cos(r)-v*Math.sin(r),cy+u*Math.sin(r)+v*Math.cos(r)];
-    const poly=(pts,col)=>{ c.beginPath(); pts.forEach((p,i)=>{ const q=P2(p[0]*R,p[1]*R); i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1]) }); c.closePath(); c.fillStyle=col; c.fill(); c.strokeStyle='#1b1b24'; c.lineWidth=2.2; c.lineJoin='miter'; c.stroke() };
-    poly([[-.035,.62],[0,.62],[0,-.52],[-.035,-.5]],'#2b2a5c'); poly([[0,.62],[.04,.6],[.035,-.5],[0,-.52]],'#5a5aa0');
-    poly([[0,-.82],[-.15,-.5],[0,-.56]],'#c8456b'); poly([[0,-.82],[.14,-.48],[0,-.56]],'#f08a5d');
-    poly([[-.01,.34],[-.24,.7],[-.02,.6]],'#6aa7d8'); poly([[.01,.34],[.22,.66],[.02,.58]],'#d9a441');
-    c.beginPath(); c.arc(cx,cy,R*.07,0,TAU); c.fillStyle='#f3e1b0'; c.fill(); c.strokeStyle='#1b1b24'; c.lineWidth=2; c.stroke();
-    const s=`From ${compass(W.dir)} · ${Math.round(W.dir)}°`; c.font=`italic 700 15px Georgia,serif`; const tw=c.measureText(s).width;
-    c.fillStyle='rgba(30,32,70,.72)'; c.beginPath(); c.roundRect(w-tw-24,h-34,tw+14,26,8); c.fill();
-    c.fillStyle='#fff'; c.textAlign='left'; c.textBaseline='alphabetic'; c.fillText(s,w-tw-17,h-15);
+    const vanePath=(ox,oy,shade)=>{ c.save(); c.translate(cx+ox,cy+oy); c.rotate(r);
+      const L=R*.86, half=(side)=>{ c.beginPath(); c.moveTo(0,-L); c.lineTo(side*R*.075,-L+R*.2); c.lineTo(side*R*.022,-L+R*.2); c.lineTo(side*R*.022,L*.5); c.lineTo(side*R*.17,L*.86); c.lineTo(0,L*.72); c.closePath() };
+      if(shade){ half(-1); c.fillStyle='rgba(0,0,0,.45)'; c.fill(); half(1); c.fill() }
+      else{ const g1=c.createLinearGradient(-R*.1,0,0,0); g1.addColorStop(0,'#f6f8fb'); g1.addColorStop(1,'#c3cad4'); half(-1); c.fillStyle=g1; c.fill();
+        const g2=c.createLinearGradient(0,0,R*.1,0); g2.addColorStop(0,'#8a94a3'); g2.addColorStop(1,'#5e6878'); half(1); c.fillStyle=g2; c.fill();
+        c.beginPath(); c.moveTo(0,-L); c.lineTo(-R*.075,-L+R*.2); c.lineTo(0,-L+R*.16); c.closePath(); c.fillStyle='#ff6a4a'; c.fill();
+        c.beginPath(); c.moveTo(0,-L); c.lineTo(R*.075,-L+R*.2); c.lineTo(0,-L+R*.16); c.closePath(); c.fillStyle='#c23a22'; c.fill() }
+      c.restore() };
+    vanePath(4,6,true); vanePath(0,0,false);
+    const hub=c.createRadialGradient(cx-R*.03,cy-R*.03,1,cx,cy,R*.09); hub.addColorStop(0,'#ffffff'); hub.addColorStop(.6,'#9aa4b2'); hub.addColorStop(1,'#4b5361');
+    c.beginPath(); c.arc(cx,cy,R*.085,0,TAU); c.fillStyle=hub; c.fill();
+    // glass
+    const gl=c.createLinearGradient(cx,cy-R,cx,cy); gl.addColorStop(0,'rgba(255,255,255,.16)'); gl.addColorStop(1,'rgba(255,255,255,0)');
+    c.beginPath(); c.ellipse(cx,cy-R*.45,R*.82,R*.5,0,Math.PI,TAU); c.fillStyle=gl; c.fill();
+    txt(c,`From ${compass(W.dir)} · ${Math.round(W.dir)}°`,w/2,h-10,14,800,'center','#fff');
   }};
 
   /* 04 · Flow: a particle field drifting with the wind, curling more as the gusts rise; compass points on the edges */
@@ -3024,70 +3015,87 @@ const WX=(()=>{
     txt(c,`${fW1(W.kmh)} ${wUnit()} · ${compass(W.dir)}`,w-92,h-19,13,800,'center','#fff');
   }};
 
-  /* 05 · Beaufort Tree: what the Beaufort scale says you'd see — the tree bends and sheds leaves to match the force */
-  const BLAND=['Smoke rises straight up','Smoke drifts','Leaves rustle','Leaves & twigs move','Small branches move','Small trees sway','Big branches move','Whole trees sway','Twigs snap off','Slight damage','Trees uprooted','Widespread damage','Devastation'];
-  const tree={ name:'Beaufort Tree', lv:[], f:0, draw(c,w,h,T,W,dt){
-    const t=T/1000, g=c.createLinearGradient(0,0,0,h); g.addColorStop(0,'#21406b'); g.addColorStop(.78,'#4b6d8e'); g.addColorStop(.79,'#24391f'); g.addColorStop(1,'#14220f'); c.fillStyle=g; c.fillRect(0,0,w,h);
-    const gy=h*.79, bf=bft(W.kmh); this.f+=(W.kmh-this.f)*(1-Math.exp(-dt*2));
-    const to=(W.dir+180)*Math.PI/180, sx=Math.sin(to), dirS=sx>=0?1:-1, side=.35+.65*Math.abs(sx);
-    const force=clamp(this.f/90,0,1)*side, gust=clamp((W.gust-W.kmh)/14,0,1.4);
-    const sway=dirS*(force*.55+Math.sin(t*(1.2+force*3))*(.015+force*.06+gust*.04));
-    const tips=[];
-    const br=(x,y,a,l,wd,d)=>{ const bend=sway*(1.1-d*.12)+Math.sin(t*(2+d)+x*.05)*(.01+force*.05)*d*.4;
-      const a2=a+bend, x2=x+Math.sin(a2)*l, y2=y-Math.cos(a2)*l;
-      c.strokeStyle='#3a2a1e'; c.lineWidth=wd; c.lineCap='round'; c.beginPath(); c.moveTo(x,y); c.lineTo(x2,y2); c.stroke();
-      if(d>=6){ tips.push([x2,y2]); return }
-      br(x2,y2,a2-.42,l*.74,wd*.68,d+1); br(x2,y2,a2+.38,l*.72,wd*.68,d+1) };
-    const tx=w*.42, L=Math.min(h*.2,w*.16); br(tx,gy,0,L,Math.max(5,L*.13),1);
-    const pal=['#e0892f','#f2b33d','#c9532c','#8fa33a','#e6c35a'];
-    tips.forEach((p,i)=>{ c.globalAlpha=.85; c.fillStyle=pal[i%pal.length]; c.beginPath(); c.arc(p[0],p[1],Math.max(3,L*.09)*(1-force*.35),0,TAU); c.fill() }); c.globalAlpha=1;
-    // grass
-    c.strokeStyle='rgba(130,180,90,.6)'; c.lineWidth=1.3;
-    for(let i=0;i<50;i++){ const x=i*w/50+3, Lg=5+i%4*2, bb=dirS*(force*1.2+.05)*Lg+Math.sin(t*4+i)*force*2; c.beginPath(); c.moveTo(x,gy+2); c.quadraticCurveTo(x+bb*.4,gy-Lg*.6,x+bb,gy-Lg+Math.abs(bb)*.3); c.stroke() }
-    // loose leaves: none in calm, a storm of them in a gale
-    const want=Math.round(clamp((this.f-8)/60,0,1)*60);
-    while(this.lv.length<want){ const p=tips[Math.floor(Math.random()*tips.length)]||[tx,gy-L*2]; this.lv.push({x:p[0],y:p[1],vx:0,vy:0,r:Math.random()*TAU,c:pal[Math.floor(Math.random()*pal.length)]}) }
-    if(this.lv.length>want) this.lv.length=want;
-    const ws=(20+U(this.f)*3)*dirS*side;
-    this.lv.forEach(q=>{ q.vx+=(ws-q.vx)*dt*1.5; q.vy+=(14+Math.sin(t*3+q.r)*20)*dt; q.vy*=.98; q.x+=q.vx*dt; q.y+=q.vy*dt; q.r+=dt*(3+force*8);
-      if(q.x<-10||q.x>w+10||q.y>gy+4){ const p=tips[Math.floor(Math.random()*tips.length)]||[tx,gy-L*2]; q.x=p[0]; q.y=p[1]; q.vx=0; q.vy=0 }
-      c.save(); c.translate(q.x,q.y); c.rotate(q.r); c.fillStyle=q.c; c.beginPath(); c.ellipse(0,0,4,2,0,0,TAU); c.fill(); c.restore() });
-    const s1=`Force ${bf} · ${BF[bf][1]}`, s2=BLAND[bf];
-    c.fillStyle='rgba(7,16,30,.74)'; c.beginPath(); c.roundRect(10,h-50,w-20,42,9); c.fill();
-    txt(c,s1,20,h-32,13.5,800,'left',BCOL[bf]); txt(c,s2,20,h-14,13,700,'left','#fff');
-    txt(c,`${fW1(W.kmh)} ${wUnit()}`,w-20,h-32,13,800,'right','#fff');
+  /* 05 · Prevailing Wind: the direction it mostly comes from over the last day, week and year */
+  const prev={ name:'Prevailing Wind', draw(c,w,h,T,W){
+    c.fillStyle='#0b1528'; c.fillRect(0,0,w,h);
+    const H=S.data&&S.data.hourly, i0=S.idx||0, day=Array(16).fill(0);
+    HRS(i0-24,24).forEach(q=>{ if(q.k>=1) day[bin16(q.d)]++ });
+    const wk=agg(7), yr=agg(366);
+    const P=[['LAST DAY',day,day.some(v=>v)?'Hourly model, 24 h':'No data'],['LAST WEEK',wk.b,wk.dd?`${wk.dd} day${wk.dd>1?'s':''} logged`:'Building…'],['LAST YEAR',yr.b,yr.dd?`${yr.dd} day${yr.dd>1?'s':''} logged`:'Building…']];
+    txt(c,'Where the wind mostly comes from',w/2,48,12,800,'center','#fff');
+    const cw=(w-24)/3, r=Math.min(cw*.3,h*.19), cy=h*.42;
+    P.forEach(([lab,b,note],i)=>{ const cx=12+cw*(i+.5), tot=b.reduce((a,v)=>a+v,0), mx=Math.max(1,...b), top=b.indexOf(mx);
+      c.beginPath(); c.arc(cx,cy,r,0,TAU); c.fillStyle='rgba(255,255,255,.05)'; c.fill(); c.strokeStyle='rgba(255,255,255,.25)'; c.lineWidth=1; if(!tot) c.setLineDash([3,4]); c.stroke(); c.setLineDash([]);
+      ['N','E','S','W'].forEach((s,k)=>{ const a=k*Math.PI/2-Math.PI/2; txt(c,s,cx+Math.cos(a)*(r+9),cy+Math.sin(a)*(r+9)+1,9.5,800,'center',s==='N'?'#ff5a3c':'#fff','middle') });
+      if(tot){ b.forEach((v,k)=>{ if(!v) return; const a=k*22.5*Math.PI/180-Math.PI/2, L=r*.18+r*.78*v/mx;
+          c.beginPath(); c.moveTo(cx,cy); c.arc(cx,cy,L,a-.17,a+.17); c.closePath(); c.fillStyle=k===top?'#f4d442':'rgba(127,212,245,.45)'; c.fill() });
+        const a=top*22.5*Math.PI/180-Math.PI/2; c.save(); c.translate(cx,cy); c.rotate(a+Math.PI/2);
+        c.beginPath(); c.moveTo(0,-r*.05); c.lineTo(-5,-r*.3); c.lineTo(5,-r*.3); c.closePath(); c.fillStyle='#fff'; c.fill(); c.restore() }
+      const y=cy+r+30;
+      txt(c,lab,cx,y,10.5,800,'center','#7fd4f5');
+      txt(c,tot?CN[top]:'–',cx,y+26,24,800,'center','#fff');
+      txt(c,tot?`${Math.round(mx/tot*100)}% of the time`:'',cx,y+44,10.5,700,'center','#f4d442');
+      txt(c,note,cx,y+60,tfit(c,note,cw-8,9.5,700),700,'center','#fff') });
+    txt(c,'Week & year build from the Amankenzie Station while the app is open',w/2,h-8,tfit(c,'Week & year build from the Amankenzie Station while the app is open',w-20,9.5,700),700,'center','rgba(255,255,255,.75)');
   }};
 
-  /* 06 · Wind Rose: where the wind will come from over the next 24 hours; petal length = hours from that direction, colour = strength */
+  /* 06 · Wind Rose: the next 24 hours sorted by where the wind comes from; the longest petal is the main direction */
   const RCOL=['#7fd4f5','#5fd3a0','#f4d442','#ff7a2e'];
-  const rose={ name:'Wind Rose · 24 h', g:0, draw(c,w,h,T,W,dt){
-    const bg=c.createRadialGradient(w/2,h*.48,10,w/2,h*.48,Math.max(w,h)*.7); bg.addColorStop(0,'#13233f'); bg.addColorStop(1,'#08111f'); c.fillStyle=bg; c.fillRect(0,0,w,h);
-    const H=S.data&&S.data.hourly; if(!H||!H.wind_direction_10m){ txt(c,'No hourly data',w/2,h/2,14,700,'center'); return }
-    const i0=S.idx||0, bins=Array.from({length:16},()=>[0,0,0,0]); let tot=0;
-    for(let i=0;i<24;i++){ const k=i0+i; if(k>=H.time.length) break; const sp=+H.wind_speed_10m[k]||0, d=+H.wind_direction_10m[k]||0;
-      const b=Math.round((((d%360)+360)%360)/22.5)%16, cl=sp<10?0:sp<20?1:sp<30?2:3; bins[b][cl]++; tot++ }
-    const mx=Math.max(1,...bins.map(b=>b[0]+b[1]+b[2]+b[3]));
+  const rose={ name:'Wind Rose · Next 24 H', g:0, draw(c,w,h,T,W,dt){
+    const bg=c.createRadialGradient(w*.38,h*.5,10,w*.38,h*.5,Math.max(w,h)*.7); bg.addColorStop(0,'#13233f'); bg.addColorStop(1,'#08111f'); c.fillStyle=bg; c.fillRect(0,0,w,h);
+    const D=HRS(S.idx||0,24); if(!D.length){ txt(c,'No hourly data',w/2,h/2,14,700,'center'); return }
+    const bins=Array.from({length:16},()=>[0,0,0,0]);
+    D.forEach(q=>{ const cl=q.k<10?0:q.k<20?1:q.k<30?2:3; bins[bin16(q.d)][cl]++ });
+    const sums=bins.map(b=>b[0]+b[1]+b[2]+b[3]), mx=Math.max(1,...sums), top=sums.indexOf(mx);
     this.g=Math.min(1,this.g+dt*1.4); const gr=1-Math.pow(1-this.g,3);
-    const cx=w/2, cy=h*.5, R=Math.min(w*.28,h*.25), r0=R*.12;
-    c.strokeStyle='rgba(255,255,255,.12)'; c.lineWidth=1; [.33,.66,1].forEach(f=>{ c.beginPath(); c.arc(cx,cy,r0+(R-r0)*f,0,TAU); c.stroke() });
+    const cx=w*.33, cy=h*.52, R=Math.min(w*.2,h*.3), r0=R*.1, rs=v=>r0+(R-r0)*v/mx;
+    // hour rings, labelled
+    const st=mx>8?4:mx>4?2:1;
+    for(let v=st;v<=mx;v+=st){ c.beginPath(); c.arc(cx,cy,rs(v),0,TAU); c.strokeStyle='rgba(255,255,255,.14)'; c.lineWidth=1; c.stroke(); }
     bins.forEach((b,i)=>{ const a=i*22.5*Math.PI/180-Math.PI/2, hw=.17; let acc=0;
-      for(let cl=0;cl<4;cl++){ if(!b[cl]) continue; const ra=r0+(R-r0)*acc/mx*gr, rb=r0+(R-r0)*(acc+b[cl])/mx*gr; acc+=b[cl];
-        c.beginPath(); c.arc(cx,cy,rb,a-hw,a+hw); c.arc(cx,cy,ra,a+hw,a-hw,true); c.closePath(); c.fillStyle=RCOL[cl]; c.globalAlpha=.9; c.fill(); c.globalAlpha=1 } });
-    // right now: a marker on the rim where the wind is coming from
-    const na=W.dir*Math.PI/180-Math.PI/2, pr=(T%1600)/1600, mxp=cx+Math.cos(na)*(R+12), myp=cy+Math.sin(na)*(R+12);
+      for(let cl=0;cl<4;cl++){ if(!b[cl]) continue; const ra=rs(acc)*gr, rb=rs(acc+b[cl])*gr; acc+=b[cl];
+        c.beginPath(); c.arc(cx,cy,Math.max(r0,rb),a-hw,a+hw); c.arc(cx,cy,Math.max(r0*.99,ra),a+hw,a-hw,true); c.closePath(); c.fillStyle=RCOL[cl]; c.globalAlpha=.92; c.fill(); c.globalAlpha=1 } });
+    for(let v=st;v<=mx;v+=st){ const lx=cx+rs(v)*.71+2, ly=cy-rs(v)*.71-2; c.fillStyle='rgba(8,17,31,.8)'; c.beginPath(); c.roundRect(lx-2,ly-10,26,13,4); c.fill(); txt(c,v+' h',lx,ly,9.5,800,'left','#fff') }
+    const na=W.dir*Math.PI/180-Math.PI/2, pr=(T%1600)/1600, mxp=cx+Math.cos(na)*(R+10), myp=cy+Math.sin(na)*(R+10);
     c.beginPath(); c.arc(mxp,myp,5+pr*8,0,TAU); c.fillStyle=`rgba(255,255,255,${.4*(1-pr)})`; c.fill();
     c.beginPath(); c.arc(mxp,myp,5,0,TAU); c.fillStyle='#fff'; c.fill();
     c.beginPath(); c.arc(cx,cy,r0,0,TAU); c.fillStyle='#0b1528'; c.fill();
-    ['N','E','S','W'].forEach((s,i)=>{ const a=i*Math.PI/2-Math.PI/2; txt(c,s,cx+(R+28)*Math.cos(a),cy+(R+28)*Math.sin(a),13,800,'center',s==='N'?'#ff5a3c':'#fff','middle') });
+    ['N','E','S','W'].forEach((s,i)=>{ const a=i*Math.PI/2-Math.PI/2; txt(c,s,cx+(R+18)*Math.cos(a),cy+(R+18)*Math.sin(a)+1,12,800,'center',s==='N'?'#ff5a3c':'#fff','middle') });
+    // the explanation, in the right-hand column
+    const x=w*.64, cwid=w-x-10; let y=58;
+    const line=(s,size,wt,col,gap)=>{ txt(c,s,x,y,tfit(c,s,cwid,size,wt),wt,'left',col); y+=gap };
+    line('MAINLY FROM',10,800,'#7fd4f5',28); line(CN[top],26,800,'#fff',20); line(`${mx} of next 24 h`,11,700,'#f4d442',22);
+    line('HOW TO READ',10,800,'#7fd4f5',16); line('Petals point where',10.5,700,'#fff',14); line('the wind comes from.',10.5,700,'#fff',14);
+    line('Longer = more hours.',10.5,700,'#fff',14); line('Colour = speed.',10.5,700,'#fff',14); line('● = right now',10.5,700,'#fff',14);
     const L=met()?['<10','10–20','20–30','30+']:['<6','6–12','12–19','19+'];
-    c.font=`800 11px ${FONT}`; let lw=0; L.forEach(s=>lw+=c.measureText(s).width+24); lw+=c.measureText(wUnit()).width;
-    let x=(w-lw)/2; const y=h-12;
-    L.forEach((s,i)=>{ c.fillStyle=RCOL[i]; c.beginPath(); c.roundRect(x,y-9,12,10,3); c.fill(); txt(c,s,x+15,y,11,800,'left','#fff'); x+=c.measureText(s).width+24 });
-    txt(c,wUnit(),x,y,11,800,'left','#fff');
-    txt(c,'Petal = hours the wind comes from there · ● = now',w/2,h-30,10.5,800,'center','#fff');
+    y=Math.max(y+6,h-82); txt(c,'SPEED · '+wUnit(),x,y,10,800,'left','#7fd4f5'); y+=16;
+    L.forEach((s,i)=>{ c.fillStyle=RCOL[i]; c.beginPath(); c.roundRect(x,y-9,12,10,3); c.fill(); txt(c,s,x+17,y,10.5,800,'left','#fff'); y+=15 });
   }};
 
-  const VIEWS=[brief,sock,vane,flow,tree,rose];
+  const VIEWS=[brief,stats,vane,flow,prev,rose];
+  /* v2.143: iPad landscape only — a dim, label-free Flow Field drifting behind the Current Wind box */
+  (()=>{ const F={p:[],w:0,h:0,last:0,k:0,g:0,d:0,ok:false};
+    function loop(now){ requestAnimationFrame(loop); if(document.hidden||now-F.last<33) return;
+      const dt=Math.min(.08,(now-F.last)/1000)||.033; F.last=now;
+      if(!ipadL()){ document.querySelectorAll('canvas.wxbg').forEach(x=>x.remove()); return }
+      const el=[...document.querySelectorAll('.now .st.wind')].find(e=>e.offsetWidth>0); if(!el) return;
+      let cv=el.querySelector('canvas.wxbg'); if(!cv){ cv=document.createElement('canvas'); cv.className='wxbg'; cv.setAttribute('aria-hidden','true'); el.prepend(cv); F.p=[] }
+      const dpr=Math.min(devicePixelRatio||1,2), w=el.clientWidth, h=el.clientHeight; if(!w||!h) return;
+      if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){ cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr); F.p=[] }
+      const c=cv.getContext('2d'); c.setTransform(dpr,0,0,dpr,0,0);
+      if(!F.p.length){ F.p=Array.from({length:Math.round(w*h/220)},()=>({x:Math.random()*w,y:Math.random()*h,a:Math.random()*80})); c.clearRect(0,0,w,h) }
+      const s=src(), q=1-Math.exp(-dt*3); if(!F.ok){ F.k=s.kmh; F.g=s.gust; F.d=s.dir; F.ok=true }
+      F.k+=(s.kmh-F.k)*q; F.g+=(Math.max(s.gust,s.kmh)-F.g)*q; if(s.kmh>.3) F.d=(F.d+angDiff(F.d,s.dir)*q+360)%360;
+      c.globalCompositeOperation='destination-out'; c.fillStyle='rgba(0,0,0,.14)'; c.fillRect(0,0,w,h); c.globalCompositeOperation='source-over';
+      const to=(F.d+180)*Math.PI/180, base=Math.atan2(-Math.cos(to),Math.sin(to)), sp=10+U(F.k)*2.6, turb=.6+clamp((F.g-F.k)/12,0,1.8), t=now/1000;
+      c.lineWidth=1.2; c.lineCap='round'; c.strokeStyle='rgba(150,205,255,.30)'; c.beginPath();
+      for(const p of F.p){ const n=Math.sin(p.x*.02+t*.7)*Math.cos(p.y*.022-t*.5)+Math.sin((p.x+p.y)*.01+t*.3)*.6;
+        const a=base+n*turb*.9, v=sp*(.75+.5*Math.abs(n)), nx=p.x+Math.cos(a)*v*dt, ny=p.y+Math.sin(a)*v*dt;
+        c.moveTo(p.x,p.y); c.lineTo(nx,ny); p.x=nx; p.y=ny; p.a-=dt*6;
+        if(p.a<0||p.x<-4||p.x>w+4||p.y<-4||p.y>h+4){ p.x=Math.random()*w; p.y=Math.random()*h; p.a=40+Math.random()*60 } }
+      c.stroke() }
+    requestAnimationFrame(loop) })();
+
   const grid=$('#wxGrid');
   grid.innerHTML=VIEWS.map((v,i)=>`<div class="wxp"><canvas></canvas><div class="wxl"><b>0${i+1}</b><span>${v.name}</span></div></div>`).join('');
   const cvs=[...grid.querySelectorAll('canvas')];
@@ -3110,7 +3118,7 @@ const WX=(()=>{
   }
   function show(){
     if(!ipadL()||!S.data) return;
-    open=true; ov.hidden=false; sm.ok=false; brief.t0=0; sock.e=0; vane.a=null; vane.bg=null; vane.sh=null; tree.lv=[]; tree.f=0; rose.g=0;
+    open=true; ov.hidden=false; sm.ok=false; brief.t0=0; vane.a=null; rose.g=0;
     head(); requestAnimationFrame(()=>{ fit(); cvs.forEach(cv=>{ const c=cv.getContext('2d'); c.fillStyle='#0b1528'; c.fillRect(0,0,cv._w,cv._h) });
       if(!run){ run=true; last=performance.now(); requestAnimationFrame(frame) } });
   }
