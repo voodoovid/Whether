@@ -1336,7 +1336,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.137 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.138 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1367,7 +1367,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.137';
+const VER='2.138';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1851,8 +1851,8 @@ const TW=(()=>{
   function startDial(){ if(dial.run) return; dial.run=true; dial.last=performance.now(); requestAnimationFrame(frame) }
   function draw(now,dt){
     const w=windNow();
-    dial.sS+=(w.kmh-dial.sS)*(1-Math.exp(-dt*4));
-    if(w.kmh>.3) dial.sD=(dial.sD+angDiff(dial.sD,w.dir)*(1-Math.exp(-dt*3))+360)%360;   // v2.108: in a calm the needle keeps its last direction instead of jumping
+    dial.sS+=(w.kmh-dial.sS)*(1-Math.exp(-dt*9));   // v2.138: follows each 3-second reading about twice as fast
+    if(w.kmh>.3) dial.sD=(dial.sD+angDiff(dial.sD,w.dir)*(1-Math.exp(-dt*8))+360)%360;   // v2.108: in a calm the needle keeps its last direction instead of jumping
     const v=dial.sS;
     /* v2.137: like the Sandbox, the Wind tile's number, word and direction glide with the dial every frame, instead of stepping only when a reading arrives */
     { let t=dial.t; if(!t||!t.isConnected) t=dial.t=document.querySelector('.now .st.wind');
@@ -1980,6 +1980,9 @@ const TW=(()=>{
   // notice when the station goes quiet (or comes back) and redraw with the forecast or the live readings
   setInterval(()=>{ const n=on(); if(n!==st.wasOn){ st.wasOn=n; if(S.data) render() } },20000);
   setInterval(()=>{ if(st.token&&st.station&&document.visibilityState==='visible') loadSeed(true) },300000);
+  // v2.138: watchdog: Tempest sends wind every 3 s; if nothing has arrived for 10 s the feed is stale, so reconnect straight away
+  setInterval(()=>{ if(!st.token||!st.station||document.hidden||st.manual) return;
+    if(!st.ws||st.ws.readyState>1||Date.now()-st.lastMsg>10000){ stopWS(); connect() } },4000);
   // iOS suspends sockets in the background: reconnect when back in view
   document.addEventListener('visibilitychange',()=>{ if(document.hidden) return; startDial();
     if(st.token&&st.station&&(!st.ws||st.ws.readyState>1||Date.now()-st.lastMsg>45000)){ stopWS(); connect() } });
