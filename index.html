@@ -1414,7 +1414,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.141';
+const VER='2.142';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2879,32 +2879,40 @@ const WX=(()=>{
   function txt(c,s,x,y,size,weight,align,col,base){ c.font=`${weight||700} ${size}px ${FONT}`; c.textAlign=align||'left'; c.textBaseline=base||'alphabetic'; c.fillStyle=col||'#fff'; c.fillText(s,x,y) }
   const hourLbl=t=>{ const h=+t.slice(11,13); return (h%12||12)+(h<12?'a':'p') };
 
-  /* 01 · Brief: boardroom KPIs + the next 12 hours */
+  /* 01 · Brief: what the wind is doing now, then the next 12 hours left → right (v2.142: every part labelled) */
   const brief={ name:'Brief', draw(c,w,h,T,W){
     const g=c.createLinearGradient(0,0,0,h); g.addColorStop(0,'#0f1d36'); g.addColorStop(1,'#0a1426'); c.fillStyle=g; c.fillRect(0,0,w,h);
     const pad=14, top=40, kh=58, kw=(w-pad*2-16)/3;
-    const K=[['NOW',fW1(W.kmh),wUnit(),'#7fd4f5'],['GUST',fW1(W.gust),wUnit(),'#f4b942'],['FROM',compass(W.dir),Math.round(W.dir)+'°','#5fd3a0']];
+    const K=[['WIND NOW',fW1(W.kmh),wUnit(),'#7fd4f5'],['GUSTS TO',fW1(W.gust),wUnit(),'#f4b942'],['COMING FROM',compass(W.dir),Math.round(W.dir)+'°','#5fd3a0']];
     K.forEach((k,i)=>{ const x=pad+i*(kw+8);
       c.fillStyle='rgba(255,255,255,.07)'; c.beginPath(); c.roundRect(x,top,kw,kh,11); c.fill();
       c.fillStyle=k[3]; c.fillRect(x,top+10,3,kh-20);
-      txt(c,k[0],x+12,top+18,11,800,'left','#fff');
+      txt(c,k[0],x+12,top+18,10.5,800,'left','#fff');
       c.font=`700 11px ${FONT}`; const uw=c.measureText(k[2]).width; let fs=Math.min(26,kw*.27); c.font=`800 ${fs}px ${FONT}`;
       while(fs>12&&c.measureText(k[1]).width+uw+30>kw){ fs-=1; c.font=`800 ${fs}px ${FONT}` }
       txt(c,k[1],x+12,top+46,fs,800,'left','#fff');
       const nw=c.measureText(k[1]).width; txt(c,k[2],x+16+nw,top+46,11,700,'left','#fff') });
-    // chart
-    const j=S.data, H=j&&j.hourly; const cx0=pad+30, cx1=w-pad-6, cy0=top+kh+24, cy1=h-26;
+    const j=S.data, H=j&&j.hourly; const cx0=pad+30, cx1=w-pad-6, cy0=top+kh+40, cy1=h-56;
     if(!H||!H.wind_speed_10m){ txt(c,'No hourly data',w/2,(cy0+cy1)/2,14,700,'center'); return }
-    const i0=S.idx||0, n=13, sp=[],gu=[],tm=[];
-    for(let i=0;i<n;i++){ const k=i0+i; if(k>=H.time.length) break; sp.push(+H.wind_speed_10m[k]||0); gu.push(Math.max(+(H.wind_gusts_10m&&H.wind_gusts_10m[k])||0,+H.wind_speed_10m[k]||0)); tm.push(H.time[k]) }
+    const i0=S.idx||0, n=13, sp=[],gu=[],tm=[],dr=[];
+    for(let i=0;i<n;i++){ const k=i0+i; if(k>=H.time.length) break; sp.push(+H.wind_speed_10m[k]||0); gu.push(Math.max(+(H.wind_gusts_10m&&H.wind_gusts_10m[k])||0,+H.wind_speed_10m[k]||0)); tm.push(H.time[k]); dr.push(+(H.wind_direction_10m&&H.wind_direction_10m[k])||0) }
     if(sp.length<2) return;
-    sp[0]=W.kmh; gu[0]=Math.max(gu[0],W.gust);
+    sp[0]=W.kmh; gu[0]=Math.max(gu[0],W.gust); dr[0]=W.dir;
+    // chart heading + legend
+    txt(c,'NEXT 12 HOURS · '+wUnit(),pad,cy0-22,11,800,'left','#fff');
+    const lx=cx1; txt(c,'Gusts',lx,cy0-22,11,800,'right'); c.font=`800 11px ${FONT}`; const gw=c.measureText('Gusts').width;
+    c.setLineDash([4,3]); c.strokeStyle='#f4b942'; c.lineWidth=2; c.beginPath(); c.moveTo(lx-gw-22,cy0-26); c.lineTo(lx-gw-6,cy0-26); c.stroke(); c.setLineDash([]);
+    const sx=lx-gw-34; txt(c,'Wind',sx,cy0-22,11,800,'right'); const ww=c.measureText('Wind').width; c.fillStyle='#7fd4f5'; c.fillRect(sx-ww-22,cy0-27,16,3);
     const top0=Math.max(20,...gu.map(U))*1.12, step=top0>60?20:top0>30?10:5, ymax=Math.ceil(top0/step)*step;
     const X=i=>cx0+(cx1-cx0)*i/(sp.length-1), Y=v=>cy1-(cy1-cy0)*U(v)/ymax;
     c.lineWidth=1; c.strokeStyle='rgba(255,255,255,.10)';
     for(let v=0;v<=ymax;v+=step){ const y=cy1-(cy1-cy0)*v/ymax; c.beginPath(); c.moveTo(cx0,y); c.lineTo(cx1,y); c.stroke(); txt(c,String(v),cx0-7,y+4,11,700,'right','#fff') }
-    tm.forEach((t,i)=>{ if(i%3===0) txt(c,i===0?'Now':hourLbl(t),X(i),cy1+17,11.5,800,'center','#fff') });
-    // speed area (draws in from the left once)
+    // hours along the bottom, with a small arrow under each showing which way the wind is blowing
+    tm.forEach((t,i)=>{ if(i%2) return; const x=X(i);
+      txt(c,i===0?'Now':hourLbl(t),x,cy1+15,11.5,800,'center','#fff');
+      const a=(dr[i]+180)*Math.PI/180; c.save(); c.translate(x,cy1+30); c.rotate(a);
+      c.beginPath(); c.moveTo(0,-7); c.lineTo(5,3); c.lineTo(0,0.5); c.lineTo(-5,3); c.closePath(); c.fillStyle='#5fd3a0'; c.fill(); c.restore() });
+    txt(c,'Arrows show which way the wind is blowing',w/2,h-6,10,800,'center','#5fd3a0');
     const rev=Math.min(1,(T-(brief.t0||T))/900); if(!brief.t0) brief.t0=T;
     c.save(); c.beginPath(); c.rect(cx0-2,0,(cx1-cx0+4)*rev+2,h); c.clip();
     const ag=c.createLinearGradient(0,cy0,0,cy1); ag.addColorStop(0,'rgba(77,150,240,.55)'); ag.addColorStop(1,'rgba(77,150,240,.03)');
@@ -2912,78 +2920,90 @@ const WX=(()=>{
     c.beginPath(); sp.forEach((v,i)=>i?c.lineTo(X(i),Y(v)):c.moveTo(X(i),Y(v))); c.strokeStyle='#7fd4f5'; c.lineWidth=2.5; c.lineJoin='round'; c.stroke();
     c.setLineDash([5,4]); c.beginPath(); gu.forEach((v,i)=>i?c.lineTo(X(i),Y(v)):c.moveTo(X(i),Y(v))); c.strokeStyle='#f4b942'; c.lineWidth=1.8; c.stroke(); c.setLineDash([]);
     c.restore();
-    // live point
     const pr=(T%1600)/1600; c.beginPath(); c.arc(X(0),Y(W.kmh),5+pr*12,0,TAU); c.fillStyle=`rgba(127,212,245,${.45*(1-pr)})`; c.fill();
     c.beginPath(); c.arc(X(0),Y(W.kmh),5,0,TAU); c.fillStyle='#fff'; c.fill();
-    // legend
-    const ly=cy0-10; c.fillStyle='#7fd4f5'; c.fillRect(cx1-148,ly-4,14,3); txt(c,'Speed',cx1-130,ly,11,800);
-    c.setLineDash([4,3]); c.strokeStyle='#f4b942'; c.lineWidth=2; c.beginPath(); c.moveTo(cx1-74,ly-3); c.lineTo(cx1-60,ly-3); c.stroke(); c.setLineDash([]); txt(c,'Gusts',cx1-55,ly,11,800);
   }};
 
-  /* 02 · Gauge: a sprung needle over the Beaufort bands */
-  const gauge={ name:'Anemometer', n:0, v:0, draw(c,w,h,T,W,dt){
-    const g=c.createRadialGradient(w/2,h*.58,10,w/2,h*.58,Math.max(w,h)*.7); g.addColorStop(0,'#13233f'); g.addColorStop(1,'#08111f'); c.fillStyle=g; c.fillRect(0,0,w,h);
-    const cx=w/2, cy=h*.58, R=Math.min(w*.4,h*.42), a0=Math.PI*.75, sw=Math.PI*1.5, MAX=met()?100:60, mx=met()?MAX:MAX/0.621371;
-    const A=k=>a0+sw*clamp(k/mx,0,1);
-    // Beaufort bands
-    const edges=[0,...BF.slice(0,11).map(b=>b[0])];
-    for(let i=0;i<edges.length;i++){ const e0=edges[i], e1=i+1<edges.length?edges[i+1]:mx; if(e0>=mx) break;
-      c.beginPath(); c.arc(cx,cy,R,A(e0)+.01,A(Math.min(e1,mx))-.01); c.strokeStyle=BCOL[i]; c.globalAlpha=.85; c.lineWidth=R*.07; c.stroke(); c.globalAlpha=1 }
-    // ticks + numbers
-    const step=met()?10:5;
-    for(let v=0;v<=MAX;v+=step/2){ const k=met()?v:v/0.621371, a=A(k), big=v%step===0, r1=R*(big?.80:.85), r2=R*.9;
-      c.beginPath(); c.moveTo(cx+r1*Math.cos(a),cy+r1*Math.sin(a)); c.lineTo(cx+r2*Math.cos(a),cy+r2*Math.sin(a)); c.strokeStyle='#fff'; c.lineWidth=big?2:1; c.stroke();
-      if(big) txt(c,String(v),cx+R*.68*Math.cos(a),cy+R*.68*Math.sin(a),Math.max(10,R*.1),800,'center','#fff','middle') }
-    // gust marker
-    const ga=A(W.gust); c.save(); c.translate(cx+R*1.08*Math.cos(ga),cy+R*1.08*Math.sin(ga)); c.rotate(ga+Math.PI/2);
-    c.beginPath(); c.moveTo(0,R*.06); c.lineTo(-R*.045,-R*.03); c.lineTo(R*.045,-R*.03); c.closePath(); c.fillStyle='#f4b942'; c.fill(); c.restore();
-    // spring needle (a real needle overshoots a little, then settles)
-    const tgt=W.kmh, k=60, d=11; this.v+=((tgt-this.n)*k-this.v*d)*dt; this.n+=this.v*dt;
-    const na=A(Math.max(0,this.n));
-    c.save(); c.shadowColor='rgba(0,0,0,.5)'; c.shadowBlur=8;
-    c.beginPath(); c.moveTo(cx+R*.86*Math.cos(na),cy+R*.86*Math.sin(na)); c.lineTo(cx+R*.05*Math.cos(na+Math.PI/2),cy+R*.05*Math.sin(na+Math.PI/2)); c.lineTo(cx-R*.16*Math.cos(na),cy-R*.16*Math.sin(na)); c.lineTo(cx+R*.05*Math.cos(na-Math.PI/2),cy+R*.05*Math.sin(na-Math.PI/2)); c.closePath();
-    c.fillStyle='#ff5a3c'; c.fill(); c.restore();
-    c.beginPath(); c.arc(cx,cy,R*.09,0,TAU); c.fillStyle='#e8eef8'; c.fill(); c.beginPath(); c.arc(cx,cy,R*.04,0,TAU); c.fillStyle='#0b1528'; c.fill();
-    // readout
-    const b=bft(W.kmh);
-    txt(c,fW1(W.kmh),cx,cy+R*.5,Math.max(20,R*.3),800,'center','#fff');
-    txt(c,wUnit(),cx,cy+R*.68,Math.max(11,R*.11),800,'center','#fff');
-    txt(c,`Force ${b} · ${BF[b][1]}`,cx,h-12,Math.max(12,Math.min(16,w*.05)),800,'center',BCOL[b]);
+  /* 02 · Windsock: an airfield sock seen from the south; each of the 5 stripes fills at about 5.6 km/h (3 knots), fully out at 28 km/h */
+  const sock={ name:'Windsock', e:0, draw(c,w,h,T,W,dt){
+    const t=T/1000, g=c.createLinearGradient(0,0,0,h); g.addColorStop(0,'#1d3a63'); g.addColorStop(.62,'#3d5f86'); g.addColorStop(.63,'#1c3324'); g.addColorStop(1,'#0e1c14'); c.fillStyle=g; c.fillRect(0,0,w,h);
+    const gy=h*.63, to=(W.dir+180)*Math.PI/180, hx=Math.sin(to), hz=Math.cos(to);
+    const tgt=clamp(W.kmh/28,0,1); this.e+=(tgt-this.e)*(1-Math.exp(-dt*2.5));
+    const gust=clamp((W.gust-W.kmh)/12,0,1.5);
+    // runway markings for depth
+    c.strokeStyle='rgba(255,255,255,.18)'; c.lineWidth=2; c.setLineDash([14,12]); c.beginPath(); c.moveTo(w*.1,h*.86); c.lineTo(w*.9,h*.86); c.stroke(); c.setLineDash([]);
+    // grass bending downwind
+    c.strokeStyle='rgba(120,190,110,.55)'; c.lineWidth=1.4;
+    for(let i=0;i<46;i++){ const x=(i*97.3%w), y=gy+6+(i*37%Math.max(1,h-gy-10)), L=6+i%5*2, b=(this.e*.9+.08)*hx*L+Math.sin(t*3+i)*gust*2;
+      c.beginPath(); c.moveTo(x,y); c.quadraticCurveTo(x+b*.4,y-L*.6,x+b,y-L+Math.abs(b)*.3); c.stroke() }
+    // pole
+    const px=w*.5-hx*w*.16, py=h*.26, L=Math.min(w*.62,h*.95)*.7, r0=Math.min(14,h*.06);
+    c.fillStyle='#c9d3df'; c.fillRect(px-2.5,py-6,5,gy+18-py); c.beginPath(); c.arc(px,py-7,4,0,TAU); c.fill();
+    // centreline: 5 segments, each fills in turn, unfilled ones hang
+    const pts=[[px,py,0]]; let x=px,y=py; const seg=L/5;
+    for(let i=0;i<5;i++){ const fill=clamp(this.e*5-i,0,1), fl=Math.sin(t*(5+gust*6)+i*1.3)*(.05+gust*.12)*fill;
+      const droop=(1-fill)*1.25+.06+fl, cosd=Math.cos(droop), sind=Math.sin(droop);
+      x+=seg*cosd*(hx*(1-.25*Math.abs(hz))); y+=seg*sind-seg*cosd*hz*.22; pts.push([x,y,fill]) }
+    for(let i=0;i<5;i++){ const [x0,y0]=pts[i], [x1,y1,f1]=pts[i+1], dx=x1-x0, dy=y1-y0, d=Math.hypot(dx,dy)||1, nx=-dy/d, ny=dx/d;
+      const rA=r0*(1-i*.09)*(i?(.45+.55*pts[i][2]):1), rB=r0*(1-(i+1)*.09)*(.45+.55*f1);
+      c.beginPath(); c.moveTo(x0+nx*rA,y0+ny*rA); c.lineTo(x1+nx*rB,y1+ny*rB); c.lineTo(x1-nx*rB,y1-ny*rB); c.lineTo(x0-nx*rA,y0-ny*rA); c.closePath();
+      const sg=c.createLinearGradient(x0+nx*rA,y0+ny*rA,x0-nx*rA,y0-ny*rA), col=i%2?'#f1efe9':'#ff6a2b', dk=i%2?'#a9a49a':'#b33d12';
+      sg.addColorStop(0,col); sg.addColorStop(.55,col); sg.addColorStop(1,dk); c.fillStyle=sg; c.fill() }
+    // mouth ring
+    c.beginPath(); c.ellipse(px,py,Math.max(2,r0*Math.abs(hz)*.9+1.5),r0,0,0,TAU); c.strokeStyle='#e8eef8'; c.lineWidth=2.5; c.stroke();
+    const n=Math.min(5,Math.floor(W.kmh/5.6)), pill=(s,x,y,al,col)=>{ c.font=`800 13px ${FONT}`; const tw=c.measureText(s).width, bx=al==='right'?x-tw-12:x;
+      c.fillStyle='rgba(7,16,30,.72)'; c.beginPath(); c.roundRect(bx,y-18,tw+12,25,8); c.fill(); txt(c,s,bx+6,y,13,800,'left',col||'#fff') };
+    pill(`Blowing toward ${compass((W.dir+180)%360)}`,10,h-10,'left','#7fd4f5');
+    pill(`${n} of 5 stripes · ${fW1(W.kmh)} ${wUnit()}`,w-10,h-10,'right');
   }};
 
-  /* 03 · Vane: compass rose with a weathervane arrow, the airflow streaming across it */
-  const vane={ name:'Wind Vane', a:null, av:0, st:[], draw(c,w,h,T,W,dt){
-    c.fillStyle='#0a1426'; c.fillRect(0,0,w,h);
-    const cx=w/2, cy=h*.5, R=Math.min(w*.34,h*.32);
+  /* 03 · Wind Vane, Monet × Picasso: Monet's brush dabs keep building and lean with the wind; cubist planes and a faceted vane on top point to where the wind comes from */
+  const vane={ name:'Vane · Monet × Picasso', a:null, av:0, draw(c,w,h,T,W,dt){
+    const cv=c.canvas, dpr=cv.width/w;
+    if(!this.bg||this.bg.width!==cv.width||this.bg.height!==cv.height){ this.bg=document.createElement('canvas'); this.bg.width=cv.width; this.bg.height=cv.height;
+      const b=this.bg.getContext('2d'); b.setTransform(dpr,0,0,dpr,0,0); const g=b.createLinearGradient(0,0,0,h); g.addColorStop(0,'#9db8d6'); g.addColorStop(.5,'#b9b3d6'); g.addColorStop(1,'#5f8f86'); b.fillStyle=g; b.fillRect(0,0,w,h) }
+    const b=this.bg.getContext('2d'); b.setTransform(dpr,0,0,dpr,0,0);
     if(this.a==null) this.a=W.dir;
-    // damped vane: swings to the wind, a touch of overshoot
     this.av+=(angDiff(this.a,W.dir)*30-this.av*7)*dt; this.a=(this.a+this.av*dt+360)%360;
-    // airflow streaks inside the rose, moving the way the wind blows
-    const to=(this.a+180)*Math.PI/180, fx=Math.sin(to), fy=-Math.cos(to), spd=24+U(W.kmh)*4;
-    while(this.st.length<26) this.st.push({u:Math.random()*2-1,v:Math.random()*2-1,l:.15+Math.random()*.25});
-    c.save(); c.beginPath(); c.arc(cx,cy,R*.98,0,TAU); c.clip();
-    const rg=c.createRadialGradient(cx,cy,0,cx,cy,R); rg.addColorStop(0,'#16294a'); rg.addColorStop(1,'#0d1a31'); c.fillStyle=rg; c.fillRect(cx-R,cy-R,R*2,R*2);
-    c.lineCap='round';
-    this.st.forEach(p=>{ p.u+=fx*spd*dt/R; p.v+=fy*spd*dt/R; if(p.u*p.u+p.v*p.v>1.3){ p.u=-fx*1.1+(Math.random()*2-1)*fy; p.v=-fy*1.1-(Math.random()*2-1)*fx }
-      const x=cx+p.u*R, y=cy+p.v*R; c.beginPath(); c.moveTo(x,y); c.lineTo(x-fx*R*p.l,y-fy*R*p.l); c.strokeStyle='rgba(127,212,245,.32)'; c.lineWidth=2; c.stroke() });
-    c.restore();
-    // rose
-    c.beginPath(); c.arc(cx,cy,R,0,TAU); c.strokeStyle='rgba(255,255,255,.55)'; c.lineWidth=2; c.stroke();
-    for(let i=0;i<16;i++){ const a=i*TAU/16-Math.PI/2, big=i%4===0, r1=R*(big?.86:.92);
-      c.beginPath(); c.moveTo(cx+r1*Math.cos(a),cy+r1*Math.sin(a)); c.lineTo(cx+R*Math.cos(a),cy+R*Math.sin(a)); c.strokeStyle='#fff'; c.lineWidth=big?2.5:1.2; c.stroke() }
-    ['N','E','S','W'].forEach((s,i)=>{ const a=i*Math.PI/2-Math.PI/2; txt(c,s,cx+R*1.14*Math.cos(a),cy+R*1.14*Math.sin(a),Math.max(12,R*.15),800,'center',s==='N'?'#ff5a3c':'#fff','middle') });
-    // vane: arrowhead points to where the wind comes FROM, tail feathers downwind
-    c.save(); c.translate(cx,cy); c.rotate(this.a*Math.PI/180); c.shadowColor='rgba(0,0,0,.55)'; c.shadowBlur=10;
-    c.fillStyle='#e8eef8'; c.fillRect(-R*.02,-R*.62,R*.04,R*1.22);
-    c.beginPath(); c.moveTo(0,-R*.8); c.lineTo(-R*.11,-R*.56); c.lineTo(R*.11,-R*.56); c.closePath(); c.fillStyle='#ff5a3c'; c.fill();
-    c.beginPath(); c.moveTo(-R*.02,R*.36); c.lineTo(-R*.2,R*.66); c.lineTo(-R*.02,R*.6); c.closePath(); c.moveTo(R*.02,R*.36); c.lineTo(R*.2,R*.66); c.lineTo(R*.02,R*.6); c.closePath(); c.fillStyle='#7fd4f5'; c.fill();
-    c.restore();
-    c.beginPath(); c.arc(cx,cy,R*.06,0,TAU); c.fillStyle='#fff'; c.fill();
-    txt(c,`From ${compass(W.dir)} · ${Math.round(W.dir)}°`,w-12,h-12,Math.max(12,Math.min(16,w*.05)),800,'right','#fff');
-    txt(c,`Toward ${compass((W.dir+180)%360)}`,12,h-12,Math.max(11,Math.min(14,w*.045)),800,'left','#7fd4f5');
+    const to=(this.a+180)*Math.PI/180, ang=Math.atan2(-Math.cos(to),Math.sin(to)), len=6+U(W.kmh)*.45, t=T/1000;
+    // Monet's garden palette: sky blues and lilacs above, lily-pond greens below, the odd rose and sun-gold
+    const P=[['#a7c4e2','#c9d6ec','#b7a9d8','#e6c9d8','#f3e1b0'],['#9fb7d9','#b6a3cf','#d7b7cf','#8fb2c9','#e9d7a8'],['#5f9a8a','#7fae7c','#3f6f7a','#a9c98a','#d98fa8']];
+    for(let i=0;i<70;i++){ const x=Math.random()*w, y=Math.random()*h, band=y<h*.38?0:y<h*.66?1:2, row=P[band], col=row[Math.floor(Math.random()*row.length)];
+      const a=ang+(Math.random()-.5)*(.5+(W.gust-W.kmh)*.03), l=len*(.6+Math.random()*.8);
+      b.globalAlpha=.28+Math.random()*.25; b.strokeStyle=col; b.lineWidth=2.5+Math.random()*3.5; b.lineCap='round';
+      b.beginPath(); b.moveTo(x,y); b.quadraticCurveTo(x+Math.cos(a)*l*.5+Math.sin(t+x)*2,y+Math.sin(a)*l*.5,x+Math.cos(a)*l,y+Math.sin(a)*l); b.stroke() }
+    // sun dabs, Impression-style
+    b.globalAlpha=.18; b.fillStyle='#f6a04d'; for(let i=0;i<3;i++){ b.beginPath(); b.arc(w*.82+(Math.random()-.5)*14,h*.2+(Math.random()-.5)*10,3+Math.random()*4,0,TAU); b.fill() }
+    b.globalAlpha=1;
+    c.setTransform(1,0,0,1,0,0); c.drawImage(this.bg,0,0); c.setTransform(dpr,0,0,dpr,0,0);
+    const cx=w/2, cy=h*.52, R=Math.min(w*.3,h*.3);
+    // Picasso over Monet: flat cubist planes cut across the soft painting, shifting a little with the vane
+    const r=this.a*Math.PI/180;
+    if(!this.sh){ this.sh=Array.from({length:7},(_,i)=>({a:i/7*TAU+Math.random()*.5,d:.75+Math.random()*.45,s:.22+Math.random()*.18,col:['#d9a441','#3b5b8c','#b8463f','#e8dcc0','#5c7a4a','#7b4f86','#2f3a52'][i]})) }
+    this.sh.forEach((q,i)=>{ const a=q.a+r*.15, x=cx+Math.cos(a)*R*q.d, y=cy+Math.sin(a)*R*q.d, k=R*q.s;
+      c.beginPath(); c.moveTo(x+Math.cos(a)*k,y+Math.sin(a)*k*.6); c.lineTo(x+Math.cos(a+2.1)*k*.8,y+Math.sin(a+2.1)*k); c.lineTo(x+Math.cos(a+3.9)*k*.9,y+Math.sin(a+3.9)*k*.7); c.closePath();
+      c.globalAlpha=.34; c.fillStyle=q.col; c.fill(); c.globalAlpha=.7; c.strokeStyle='#1b1b24'; c.lineWidth=2; c.stroke(); c.globalAlpha=1 });
+    // compass ring: Monet's soft dabs, broken into Picasso's hard arcs
+    for(let s2=0;s2<8;s2++){ const a0=s2/8*TAU+.06, a1=a0+TAU/8-.12, rr=R*(s2%2?1:.94);
+      c.beginPath(); c.arc(cx+(s2%3-1)*2,cy,rr,a0,a1); c.strokeStyle=s2%2?'#1b1b24':'#3b3f74'; c.lineWidth=s2%2?3:4; c.stroke() }
+    // letters: each in its own face and tilt
+    [['N',"italic 800","Georgia,serif",-.12,'#ffe2a8',1.25],['E',"900",FONT,.18,'#fff',1],['S',"italic 700","Georgia,serif",.1,'#fff',.95],['W',"800",FONT,-.2,'#fff',1.1]].forEach(([s2,wt,ff,tl,col,sz],i)=>{
+      const a=i*Math.PI/2-Math.PI/2, x=cx+R*1.22*Math.cos(a), y=cy+R*1.22*Math.sin(a);
+      c.save(); c.translate(x,y); c.rotate(tl); c.font=`${wt} ${Math.max(14,R*.2*sz)}px ${ff}`; c.textAlign='center'; c.textBaseline='middle';
+      c.lineWidth=3.5; c.strokeStyle='#1b1b24'; c.strokeText(s2,0,0); c.fillStyle=col; c.fillText(s2,0,0); c.restore() });
+    // the vane as cubist facets: each part split into two flat planes, light and dark, with hard black outlines
+    const P2=(u,v)=>[cx+u*Math.cos(r)-v*Math.sin(r),cy+u*Math.sin(r)+v*Math.cos(r)];
+    const poly=(pts,col)=>{ c.beginPath(); pts.forEach((p,i)=>{ const q=P2(p[0]*R,p[1]*R); i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1]) }); c.closePath(); c.fillStyle=col; c.fill(); c.strokeStyle='#1b1b24'; c.lineWidth=2.2; c.lineJoin='miter'; c.stroke() };
+    poly([[-.035,.62],[0,.62],[0,-.52],[-.035,-.5]],'#2b2a5c'); poly([[0,.62],[.04,.6],[.035,-.5],[0,-.52]],'#5a5aa0');
+    poly([[0,-.82],[-.15,-.5],[0,-.56]],'#c8456b'); poly([[0,-.82],[.14,-.48],[0,-.56]],'#f08a5d');
+    poly([[-.01,.34],[-.24,.7],[-.02,.6]],'#6aa7d8'); poly([[.01,.34],[.22,.66],[.02,.58]],'#d9a441');
+    c.beginPath(); c.arc(cx,cy,R*.07,0,TAU); c.fillStyle='#f3e1b0'; c.fill(); c.strokeStyle='#1b1b24'; c.lineWidth=2; c.stroke();
+    const s=`From ${compass(W.dir)} · ${Math.round(W.dir)}°`; c.font=`italic 700 15px Georgia,serif`; const tw=c.measureText(s).width;
+    c.fillStyle='rgba(30,32,70,.72)'; c.beginPath(); c.roundRect(w-tw-24,h-34,tw+14,26,8); c.fill();
+    c.fillStyle='#fff'; c.textAlign='left'; c.textBaseline='alphabetic'; c.fillText(s,w-tw-17,h-15);
   }};
 
-  /* 04 · Flow: a particle field drifting with the wind, curling more as the gusts rise */
+  /* 04 · Flow: a particle field drifting with the wind, curling more as the gusts rise; compass points on the edges */
   const flow={ name:'Flow Field', p:[], draw(c,w,h,T,W,dt){
     if(!this.p.length||this.w!==w||this.h!==h){ this.w=w; this.h=h; this.p=Array.from({length:Math.round(w*h/260)},()=>({x:Math.random()*w,y:Math.random()*h,a:Math.random()*80})); c.fillStyle='#07101e'; c.fillRect(0,0,w,h) }
     c.fillStyle='rgba(7,16,30,.16)'; c.fillRect(0,0,w,h);
@@ -2998,57 +3018,76 @@ const WX=(()=>{
       c.beginPath(); c.moveTo(q.x,q.y); c.lineTo(nx,ny); c.stroke();
       q.x=nx; q.y=ny; q.a-=dt*6;
       if(q.a<0||q.x<-4||q.x>w+4||q.y<-4||q.y>h+4){ q.x=Math.random()*w; q.y=Math.random()*h; q.a=40+Math.random()*60 } }
-    c.fillStyle='rgba(7,16,30,.72)'; c.beginPath(); c.roundRect(w-128,h-38,116,28,9); c.fill();
-    txt(c,`${fW1(W.kmh)} ${wUnit()} · ${compass(W.dir)}`,w-70,h-19,13,800,'center','#fff');
+    const tag=(s,x,y,col)=>{ c.fillStyle='rgba(7,16,30,.78)'; c.beginPath(); c.arc(x,y,12,0,TAU); c.fill(); txt(c,s,x,y+1,14,800,'center',col||'#fff','middle') };
+    tag('N',w/2,16,'#ff5a3c'); tag('S',w/2,h-16); tag('W',16,h/2); tag('E',w-16,h/2);
+    c.fillStyle='rgba(7,16,30,.72)'; c.beginPath(); c.roundRect(w-150,h-38,116,28,9); c.fill();
+    txt(c,`${fW1(W.kmh)} ${wUnit()} · ${compass(W.dir)}`,w-92,h-19,13,800,'center','#fff');
   }};
 
-  /* 05 · Turbine: what a utility wind turbine on this spot would be doing */
-  const turb={ name:'Turbine', rot:0, w:0, draw(c,w,h,T,W,dt){
-    const g=c.createLinearGradient(0,0,0,h); g.addColorStop(0,'#173459'); g.addColorStop(.75,'#0e1f3a'); g.addColorStop(1,'#0a1526'); c.fillStyle=g; c.fillRect(0,0,w,h);
-    const gy=h-30; c.fillStyle='#0a1526'; c.beginPath(); c.moveTo(0,gy); c.quadraticCurveTo(w*.5,gy-14,w,gy-4); c.lineTo(w,h); c.lineTo(0,h); c.fill();
-    const k=W.kmh, ci=11, ra=45, co=90;
-    const pf=k<ci||k>=co?0:k>=ra?1:(k**3-ci**3)/(ra**3-ci**3);
-    const rpm=k>=co?0:k<ci?k*.25:lerp(6,15,clamp((k-ci)/(ra-ci),0,1));
-    this.w+=((rpm*TAU/60)-this.w)*(1-Math.exp(-dt*.9)); this.rot+=this.w*dt;
-    const hx=w*.42, hy=h*.36, L=Math.min(h*.3,w*.28);
-    c.fillStyle='#d7e1ee'; c.beginPath(); c.moveTo(hx-4,hy); c.lineTo(hx+4,hy); c.lineTo(hx+8,gy-8); c.lineTo(hx-8,gy-8); c.closePath(); c.fill();
-    c.fillStyle='#e8eef8'; c.beginPath(); c.roundRect(hx-6,hy-7,26,13,6); c.fill();
-    c.save(); c.translate(hx,hy); c.rotate(this.rot);
-    for(let i=0;i<3;i++){ c.rotate(TAU/3); c.beginPath(); c.moveTo(-3.5,0); c.quadraticCurveTo(-7,-L*.35,-1.2,-L); c.lineTo(1.2,-L); c.quadraticCurveTo(4,-L*.4,3.5,0); c.closePath(); c.fillStyle='#f4f7fb'; c.fill() }
-    c.restore(); c.beginPath(); c.arc(hx,hy,6,0,TAU); c.fillStyle='#fff'; c.fill();
-    // output meter
-    const mx=w*.72, mw=Math.min(22,w*.07), mt=46, mb=gy-14, mh=mb-mt;
-    c.fillStyle='rgba(255,255,255,.10)'; c.beginPath(); c.roundRect(mx,mt,mw,mh,mw/2); c.fill();
-    this.pf=(this.pf??pf)+(pf-(this.pf??pf))*(1-Math.exp(-dt*2));
-    const fh=mh*this.pf; const mg=c.createLinearGradient(0,mb,0,mt); mg.addColorStop(0,'#5fd3a0'); mg.addColorStop(1,'#f4d442');
-    if(fh>1){ c.fillStyle=mg; c.beginPath(); c.roundRect(mx,mb-fh,mw,fh,mw/2); c.fill() }
-    const label=k>=co?'Feathered':k<ci?'Below cut-in':Math.round(this.pf*100)+'%';
-    txt(c,'OUTPUT',mx+mw+10,mt+12,11,800); txt(c,label,mx+mw+10,mt+34,Math.max(14,Math.min(22,w*.06)),800);
-    txt(c,`${Math.round(rpm)} rpm`,mx+mw+10,mt+56,13,800,'left','#7fd4f5');
-    txt(c,'Typical 3 MW turbine',12,h-10,11.5,800);
+  /* 05 · Beaufort Tree: what the Beaufort scale says you'd see — the tree bends and sheds leaves to match the force */
+  const BLAND=['Smoke rises straight up','Smoke drifts','Leaves rustle','Leaves & twigs move','Small branches move','Small trees sway','Big branches move','Whole trees sway','Twigs snap off','Slight damage','Trees uprooted','Widespread damage','Devastation'];
+  const tree={ name:'Beaufort Tree', lv:[], f:0, draw(c,w,h,T,W,dt){
+    const t=T/1000, g=c.createLinearGradient(0,0,0,h); g.addColorStop(0,'#21406b'); g.addColorStop(.78,'#4b6d8e'); g.addColorStop(.79,'#24391f'); g.addColorStop(1,'#14220f'); c.fillStyle=g; c.fillRect(0,0,w,h);
+    const gy=h*.79, bf=bft(W.kmh); this.f+=(W.kmh-this.f)*(1-Math.exp(-dt*2));
+    const to=(W.dir+180)*Math.PI/180, sx=Math.sin(to), dirS=sx>=0?1:-1, side=.35+.65*Math.abs(sx);
+    const force=clamp(this.f/90,0,1)*side, gust=clamp((W.gust-W.kmh)/14,0,1.4);
+    const sway=dirS*(force*.55+Math.sin(t*(1.2+force*3))*(.015+force*.06+gust*.04));
+    const tips=[];
+    const br=(x,y,a,l,wd,d)=>{ const bend=sway*(1.1-d*.12)+Math.sin(t*(2+d)+x*.05)*(.01+force*.05)*d*.4;
+      const a2=a+bend, x2=x+Math.sin(a2)*l, y2=y-Math.cos(a2)*l;
+      c.strokeStyle='#3a2a1e'; c.lineWidth=wd; c.lineCap='round'; c.beginPath(); c.moveTo(x,y); c.lineTo(x2,y2); c.stroke();
+      if(d>=6){ tips.push([x2,y2]); return }
+      br(x2,y2,a2-.42,l*.74,wd*.68,d+1); br(x2,y2,a2+.38,l*.72,wd*.68,d+1) };
+    const tx=w*.42, L=Math.min(h*.2,w*.16); br(tx,gy,0,L,Math.max(5,L*.13),1);
+    const pal=['#e0892f','#f2b33d','#c9532c','#8fa33a','#e6c35a'];
+    tips.forEach((p,i)=>{ c.globalAlpha=.85; c.fillStyle=pal[i%pal.length]; c.beginPath(); c.arc(p[0],p[1],Math.max(3,L*.09)*(1-force*.35),0,TAU); c.fill() }); c.globalAlpha=1;
+    // grass
+    c.strokeStyle='rgba(130,180,90,.6)'; c.lineWidth=1.3;
+    for(let i=0;i<50;i++){ const x=i*w/50+3, Lg=5+i%4*2, bb=dirS*(force*1.2+.05)*Lg+Math.sin(t*4+i)*force*2; c.beginPath(); c.moveTo(x,gy+2); c.quadraticCurveTo(x+bb*.4,gy-Lg*.6,x+bb,gy-Lg+Math.abs(bb)*.3); c.stroke() }
+    // loose leaves: none in calm, a storm of them in a gale
+    const want=Math.round(clamp((this.f-8)/60,0,1)*60);
+    while(this.lv.length<want){ const p=tips[Math.floor(Math.random()*tips.length)]||[tx,gy-L*2]; this.lv.push({x:p[0],y:p[1],vx:0,vy:0,r:Math.random()*TAU,c:pal[Math.floor(Math.random()*pal.length)]}) }
+    if(this.lv.length>want) this.lv.length=want;
+    const ws=(20+U(this.f)*3)*dirS*side;
+    this.lv.forEach(q=>{ q.vx+=(ws-q.vx)*dt*1.5; q.vy+=(14+Math.sin(t*3+q.r)*20)*dt; q.vy*=.98; q.x+=q.vx*dt; q.y+=q.vy*dt; q.r+=dt*(3+force*8);
+      if(q.x<-10||q.x>w+10||q.y>gy+4){ const p=tips[Math.floor(Math.random()*tips.length)]||[tx,gy-L*2]; q.x=p[0]; q.y=p[1]; q.vx=0; q.vy=0 }
+      c.save(); c.translate(q.x,q.y); c.rotate(q.r); c.fillStyle=q.c; c.beginPath(); c.ellipse(0,0,4,2,0,0,TAU); c.fill(); c.restore() });
+    const s1=`Force ${bf} · ${BF[bf][1]}`, s2=BLAND[bf];
+    c.fillStyle='rgba(7,16,30,.74)'; c.beginPath(); c.roundRect(10,h-50,w-20,42,9); c.fill();
+    txt(c,s1,20,h-32,13.5,800,'left',BCOL[bf]); txt(c,s2,20,h-14,13,700,'left','#fff');
+    txt(c,`${fW1(W.kmh)} ${wUnit()}`,w-20,h-32,13,800,'right','#fff');
   }};
 
-  /* 06 · Spectrum: rings of light that spin with the wind and ripple with the gusts */
-  const vortex={ name:'Wind Spectrum', ph:0, draw(c,w,h,T,W,dt){
-    c.globalCompositeOperation='source-over'; c.fillStyle='rgba(6,8,22,.30)'; c.fillRect(0,0,w,h);
-    const cx=w/2, cy=h/2+8, R=Math.min(w,h)*.42, sp=.25+U(W.kmh)*.035, gust=clamp((W.gust-W.kmh)/15,0,1.4), t=T/1000;
-    this.ph+=sp*dt;
-    const to=(W.dir+180)*Math.PI/180, ox=Math.sin(to)*R*.12, oy=-Math.cos(to)*R*.12;
-    c.globalCompositeOperation='lighter'; c.lineWidth=1.4;
-    const N=14;
-    for(let i=0;i<N;i++){ const f=i/N, r=R*(.18+.82*f), hue=(200+f*140+t*18)%360;
-      c.beginPath();
-      for(let s=0;s<=96;s++){ const a=s/96*TAU, wob=Math.sin(a*(3+(i%4))+this.ph*(i%2?1.3:-1.1)+i)*(.05+gust*.07)+Math.sin(a*7-t*1.7+i)*.02*gust;
-        const rr=r*(1+wob), x=cx+ox*f+Math.cos(a+this.ph*(1-f*.6))*rr, y=cy+oy*f+Math.sin(a+this.ph*(1-f*.6))*rr*.92;
-        s?c.lineTo(x,y):c.moveTo(x,y) }
-      c.strokeStyle=`hsla(${hue},90%,64%,${.20+.25*(1-f)})`; c.stroke() }
-    c.globalCompositeOperation='source-over';
-    const b=bft(W.kmh);
-    txt(c,`Force ${b}`,w-12,h-12,Math.max(12,Math.min(16,w*.05)),800,'right','#fff');
-    txt(c,gust>.35?'Gusty':'Steady',12,h-12,Math.max(11,Math.min(14,w*.045)),800,'left','#fff');
+  /* 06 · Wind Rose: where the wind will come from over the next 24 hours; petal length = hours from that direction, colour = strength */
+  const RCOL=['#7fd4f5','#5fd3a0','#f4d442','#ff7a2e'];
+  const rose={ name:'Wind Rose · 24 h', g:0, draw(c,w,h,T,W,dt){
+    const bg=c.createRadialGradient(w/2,h*.48,10,w/2,h*.48,Math.max(w,h)*.7); bg.addColorStop(0,'#13233f'); bg.addColorStop(1,'#08111f'); c.fillStyle=bg; c.fillRect(0,0,w,h);
+    const H=S.data&&S.data.hourly; if(!H||!H.wind_direction_10m){ txt(c,'No hourly data',w/2,h/2,14,700,'center'); return }
+    const i0=S.idx||0, bins=Array.from({length:16},()=>[0,0,0,0]); let tot=0;
+    for(let i=0;i<24;i++){ const k=i0+i; if(k>=H.time.length) break; const sp=+H.wind_speed_10m[k]||0, d=+H.wind_direction_10m[k]||0;
+      const b=Math.round((((d%360)+360)%360)/22.5)%16, cl=sp<10?0:sp<20?1:sp<30?2:3; bins[b][cl]++; tot++ }
+    const mx=Math.max(1,...bins.map(b=>b[0]+b[1]+b[2]+b[3]));
+    this.g=Math.min(1,this.g+dt*1.4); const gr=1-Math.pow(1-this.g,3);
+    const cx=w/2, cy=h*.5, R=Math.min(w*.28,h*.25), r0=R*.12;
+    c.strokeStyle='rgba(255,255,255,.12)'; c.lineWidth=1; [.33,.66,1].forEach(f=>{ c.beginPath(); c.arc(cx,cy,r0+(R-r0)*f,0,TAU); c.stroke() });
+    bins.forEach((b,i)=>{ const a=i*22.5*Math.PI/180-Math.PI/2, hw=.17; let acc=0;
+      for(let cl=0;cl<4;cl++){ if(!b[cl]) continue; const ra=r0+(R-r0)*acc/mx*gr, rb=r0+(R-r0)*(acc+b[cl])/mx*gr; acc+=b[cl];
+        c.beginPath(); c.arc(cx,cy,rb,a-hw,a+hw); c.arc(cx,cy,ra,a+hw,a-hw,true); c.closePath(); c.fillStyle=RCOL[cl]; c.globalAlpha=.9; c.fill(); c.globalAlpha=1 } });
+    // right now: a marker on the rim where the wind is coming from
+    const na=W.dir*Math.PI/180-Math.PI/2, pr=(T%1600)/1600, mxp=cx+Math.cos(na)*(R+12), myp=cy+Math.sin(na)*(R+12);
+    c.beginPath(); c.arc(mxp,myp,5+pr*8,0,TAU); c.fillStyle=`rgba(255,255,255,${.4*(1-pr)})`; c.fill();
+    c.beginPath(); c.arc(mxp,myp,5,0,TAU); c.fillStyle='#fff'; c.fill();
+    c.beginPath(); c.arc(cx,cy,r0,0,TAU); c.fillStyle='#0b1528'; c.fill();
+    ['N','E','S','W'].forEach((s,i)=>{ const a=i*Math.PI/2-Math.PI/2; txt(c,s,cx+(R+28)*Math.cos(a),cy+(R+28)*Math.sin(a),13,800,'center',s==='N'?'#ff5a3c':'#fff','middle') });
+    const L=met()?['<10','10–20','20–30','30+']:['<6','6–12','12–19','19+'];
+    c.font=`800 11px ${FONT}`; let lw=0; L.forEach(s=>lw+=c.measureText(s).width+24); lw+=c.measureText(wUnit()).width;
+    let x=(w-lw)/2; const y=h-12;
+    L.forEach((s,i)=>{ c.fillStyle=RCOL[i]; c.beginPath(); c.roundRect(x,y-9,12,10,3); c.fill(); txt(c,s,x+15,y,11,800,'left','#fff'); x+=c.measureText(s).width+24 });
+    txt(c,wUnit(),x,y,11,800,'left','#fff');
+    txt(c,'Petal = hours the wind comes from there · ● = now',w/2,h-30,10.5,800,'center','#fff');
   }};
 
-  const VIEWS=[brief,gauge,vane,flow,turb,vortex];
+  const VIEWS=[brief,sock,vane,flow,tree,rose];
   const grid=$('#wxGrid');
   grid.innerHTML=VIEWS.map((v,i)=>`<div class="wxp"><canvas></canvas><div class="wxl"><b>0${i+1}</b><span>${v.name}</span></div></div>`).join('');
   const cvs=[...grid.querySelectorAll('canvas')];
@@ -3071,7 +3110,7 @@ const WX=(()=>{
   }
   function show(){
     if(!ipadL()||!S.data) return;
-    open=true; ov.hidden=false; sm.ok=false; brief.t0=0; gauge.n=0; gauge.v=0; vane.a=null; turb.rot=0; turb.w=0; turb.pf=null;
+    open=true; ov.hidden=false; sm.ok=false; brief.t0=0; sock.e=0; vane.a=null; vane.bg=null; vane.sh=null; tree.lv=[]; tree.f=0; rose.g=0;
     head(); requestAnimationFrame(()=>{ fit(); cvs.forEach(cv=>{ const c=cv.getContext('2d'); c.fillStyle='#0b1528'; c.fillRect(0,0,cv._w,cv._h) });
       if(!run){ run=true; last=performance.now(); requestAnimationFrame(frame) } });
   }
