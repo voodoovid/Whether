@@ -1375,7 +1375,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.139 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.144 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1417,7 +1417,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.143';
+const VER='2.144';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2107,14 +2107,14 @@ function render(){
   const uvSub=`Peak ${Math.round(uvPeak)} at ${hourLabel(H.time[pk])}`;
   const dl=D.daylight_duration[dd]/3600;
   const dlTxt=`${Math.floor(dl)}h ${String(Math.round((dl%1)*60)).padStart(2,'0')}m of daylight`;
-  const pv=fP((C._live&&!DV&&C._today!=null)?C._today:D.precipitation_sum[dd]).split(' ');
+  const pv=fP((C._live&&!DV&&C._today!=null)?C._today:DV?DV.sum:D.precipitation_sum[dd]).split(' ');
   const t12=s=>{const c=clock(s).split(' ');return `${c[0]}<small>${c[1]}</small>`};
 
   $('#tiles').innerHTML=
     tile('Feels like',fT(feel),feelSub)+
     tile('Humidity',`${Math.round(C.relative_humidity_2m)}<small>%</small>`,dp==null?'':`Dew point ${fT(dp)}`,`<div class="meter"><i style="width:${clamp(C.relative_humidity_2m,0,100)}%"></i></div>`)+
     tile('UV index',`${Math.round(uvBig)}<small>${ui.l}</small>`,uvSub,`<div class="meter uv"><b style="left:${clamp(uvBig/11*100,2,98)}%"></b></div>`)+
-    tile(DV?'Rain':'Rain today',`${pv[0]}<small>${pv[1]}</small>`,`${D.precipitation_probability_max[dd]??'–'}% chance`)+
+    tile(DV?'Rain':'Rain today',`${pv[0]}<small>${pv[1]}</small>`,`${(DV?DV.pp:D.precipitation_probability_max[dd])??'–'}% chance`)+
     tile('Sunrise',t12(D.sunrise[dd]),dlTxt)+
     tile('Sunset',t12(D.sunset[dd]),D.sunset[dd+1]?`${DV?dayName(D.time[dd+1]):'Tomorrow'} ${clock(D.sunset[dd+1])}`:'');
 
@@ -2222,9 +2222,9 @@ function dayView(j,d){
   if(!gd) gd={t:'–',c:'#fff'};
   const ws=D.wind_speed_10m_max?.[d]??mx('wind_speed_10m'), gu=D.wind_gusts_10m_max?.[d]??mx('wind_gusts_10m');
   const C={...j.current,time:date+'T12:00',temperature_2m:D.temperature_2m_max[d],apparent_temperature:D.apparent_temperature_max[d],
-    relative_humidity_2m:av('relative_humidity_2m')??j.current.relative_humidity_2m,weather_code:D.weather_code[d],is_day:1,cloud_cover:av('cloud_cover')??0,
+    relative_humidity_2m:av('relative_humidity_2m')??j.current.relative_humidity_2m,weather_code:day6(j,d).code,is_day:1,cloud_cover:av('cloud_cover')??0,
     precipitation:0,wind_speed_10m:ws,wind_gusts_10m:gu,wind_direction_10m:H.wind_direction_10m?.[start+15]??270};
-  return {start:start+6,date,C,gd,sum:D.precipitation_sum[d]??0};   // v2.41: the hourly view opens at 6 AM, not midnight
+  return {start:start+6,date,C,gd,sum:day6(j,d).sum,pp:day6(j,d).pp};   // v2.41: the hourly view opens at 6 AM, not midnight
 }
 const tile=(k,v,s,extra='')=>`<div class="tile glass"><div class="k">${k}</div><div class="v">${v}</div>${extra}<div class="s">${s}</div></div>`;
 
@@ -2235,6 +2235,22 @@ function trimPast(j){
 }
 const WET=c=>(c>=51&&c<=67)||(c>=80&&c<=82)||c>=95;
 const SNOWY=c=>(c>=71&&c<=77)||c===85||c===86;
+/* v2.144: the 10-day list and day pages only count rain from 6 AM on: rain before 6 AM is ignored for the day's condition, chance, amount and wording */
+function day6(j,d){
+  const H=j.hourly,D=j.daily,date=D.time[d], ix=[];
+  H.time.forEach((t,i)=>{ if(t.startsWith(date)&&+t.slice(11,13)>=6) ix.push(i) });
+  const fb={sum:D.precipitation_sum[d]??0,pp:D.precipitation_probability_max[d],code:D.weather_code[d],peak:null};
+  if(ix.length<18) return fb;   // hourly data missing for part of the day: keep the daily values
+  let sum=0,pp=null,peak=0,wet=false; const cnt={};
+  ix.forEach(i=>{ const mm=H.precipitation[i]??0, p=H.precipitation_probability?.[i], c=H.weather_code[i];
+    sum+=mm; if(mm>peak) peak=mm; if(p!=null&&(pp==null||p>pp)) pp=p;
+    if(WET(c)||SNOWY(c)||mm>0) wet=true; else if(+H.time[i].slice(11,13)<=20) cnt[c]=(cnt[c]||0)+1 });
+  let code=D.weather_code[d];
+  if(!wet&&(WET(code)||SNOWY(code))){   // the daily code is wet only because of rain before 6 AM: use the most common daytime sky instead
+    let best=null; for(const c in cnt) if(best==null||cnt[c]>cnt[best]||(cnt[c]===cnt[best]&&+c>+best)) best=c;
+    code=best==null?3:+best }
+  return {sum:Math.round(sum*10)/10,pp:pp??fb.pp,code,peak};
+}
 /* how much is coming down, in plain words (mm per hour) */
 function rainWord(mm){
   if(!(mm>0)) return {t:'Zip',c:'#fff'};
@@ -2417,13 +2433,14 @@ function renderDaily(j){
     const date=D.time[d];
     const ix=[];H.time.forEach((t,i)=>{if(t.startsWith(date))ix.push(i)});
     const max=a=>{let m=null;ix.forEach(i=>{const v=a?.[i];if(v!=null&&(m==null||v>m))m=v});return m};
-    const w=wx(D.weather_code[d],1,D.precipitation_sum[d],true);
+    const R6=day6(j,d);   // v2.144: rain from 6 AM on only
+    const w=wx(R6.code,1,R6.sum,true);
     // feels like: the day's warmest and coldest
     const fHi=D.apparent_temperature_max[d], fLo=D.apparent_temperature_min[d];
     // UV peak
     const uv=Math.max(0,D.uv_index_max[d]??max(H.uv_index)??0), ui=uvInfo(uv);
     // rain: chance, total, and how hard at its heaviest hour
-    const pp=D.precipitation_probability_max[d], sum=D.precipitation_sum[d]??0, rw=rainWord(max(H.precipitation)??0);
+    const pp=R6.pp, sum=R6.sum, rw=rainWord(R6.peak??max(H.precipitation)??0);
     // shoe: the worst it gets between 7 AM and 7 PM (today: from now on)
     const RANK={'Dry':0,'Frosty':1,'Damp':2,'Wet':3,'Puddles':4,'Slushy':5,'Snowy':6,'Icy':7};
     let gd=d===0?ground(j,C,S.nowIdx):null;
