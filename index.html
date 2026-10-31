@@ -1379,7 +1379,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.145 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.146 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1399,7 +1399,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="gi"><div class="gv"><div class="v-title"><img src="icon-192.png" alt="" width="26" height="26"><div class="tt"><b>Whether</b><i>(or not)</i></div></div></div><div class="gx"><b>Go Home</b><span>Press and hold the Whether <em class="yor">(or not)</em> title to jump to your Home location, the first one in your saved list.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill v-stn"><i class="ld" style="display:inline-block;flex:none;width:9px;height:9px;border-radius:50%;background:#5fd3a0"></i><span>Amankenzie <br>Station</span></span></div></div><div class="gx"><b>Amankenzie Station</b><span>At Home, with your Tempest connected, the temperature, Feels like, wind (with its live dial), rain and shoe conditions come from your own station. Everything else stays forecast.</span></div></div>
       <div class="gi gwx"><div class="gv"><svg class="v-wx" viewBox="0 0 58 58" aria-hidden="true"><circle class="o" cx="29" cy="29" r="26"/><circle class="r" cx="29" cy="29" r="20"/><path d="M29 12l-7 15h14z"/></svg></div><div class="gx"><b>Wind Studio</b><span>Press and hold the Wind box for six live views of the wind.</span></div></div>
-      <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Cycle Through Saved Locations</b><span>Swipe up or down on the main screen. Stops at Home and at the last place.</span></div></div>
+      <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Cycle Through Saved Locations</b><span>Swipe up or down on the main screen (or two fingers on an iPad keyboard trackpad). Rolls round from the last place to the first.</span></div></div>
       <div class="gi gh2"><div class="gv"><div class="v-hold" aria-hidden="true"><div class="hg"><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr pick"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div></div><div class="fg"></div><div class="hs"><div class="bd">SAT<i>×</i></div><div class="cols"><u style="--h:30%"></u><u style="--h:62%"></u><u style="--h:45%"></u><u style="--h:78%"></u></div></div></div></div><div class="gx"><b>Get Hourly for any day</b><span>In the 10-Day list, press and hold a day to open its hourly details. To go back:</span><div class="v-btns"><div class="v-badge s">Sat · Oct 31<i aria-hidden="true">✕</i></div><div class="v-or">or</div><div class="v-pill s">Back to 10-Day</div></div></div></div>
       <div class="gi"><div class="gv"><div class="v-seg u"><span class="on">°C</span><span>°F</span></div></div><div class="gx"><b>Units</b><span>Switch °C and °F.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-circ"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg></span><span class="v-circ q">?</span></div></div><div class="gx"><b>Refresh and Guide</b><span>Reload the forecast, or reopen this guide.</span></div></div>
@@ -1421,7 +1421,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.145';
+const VER='2.146';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2860,6 +2860,34 @@ $('#d10close').onclick=()=>set10(false);
   };
   addEventListener('touchend',end,{passive:true});
   addEventListener('touchcancel',end,{passive:true});
+})();
+/* ---- v2.146: iPad keyboard trackpad: two-finger swipe up/down changes saved location (like a finger swipe);
+   sideways switches Today / 10-day on iPhone-style layouts, and on iPad landscape moves through the hourly panel. Not on Mac. ---- */
+(function(){
+  const de=document.documentElement; let acc={x:0,y:0}, quiet=null, locked=false;
+  const blocked=t=>!$('#sheet').hidden||!$('#guide').hidden||!$('#wx').hidden||(t&&t.closest&&t.closest('input,textarea,#sheet,#guide,#wx'));
+  const canScroll=(t,ax,d)=>{ for(let el=t;el&&el!==document.body;el=el.parentElement){ const cs=getComputedStyle(el), o=ax==='y'?cs.overflowY:cs.overflowX;
+      if(!/(auto|scroll)/.test(o)) continue;
+      if(ax==='y'?el.scrollHeight>el.clientHeight+2:el.scrollWidth>el.clientWidth+2){ const pos=ax==='y'?el.scrollTop:el.scrollLeft, max=ax==='y'?el.scrollHeight-el.clientHeight:el.scrollWidth-el.clientWidth;
+        if(d>0?pos<max-1:pos>1) return el } }
+    return null };
+  addEventListener('wheel',e=>{
+    if(de.classList.contains('mac')||e.ctrlKey||blocked(e.target)) return;
+    const dx=e.deltaMode===1?e.deltaX*16:e.deltaX, dy=e.deltaMode===1?e.deltaY*16:e.deltaY, ax=Math.abs(dx)>Math.abs(dy)?'x':'y';
+    if(canScroll(e.target,ax,ax==='x'?dx:dy)) return;          // a list or the hourly panel that can still scroll that way scrolls natively
+    e.preventDefault();
+    clearTimeout(quiet); quiet=setTimeout(()=>{acc={x:0,y:0};locked=false},260);   // one gesture (incl. its glide) = one step
+    if(locked||cycling) return;
+    acc.x+=dx; acc.y+=dy;
+    if(Math.abs(acc.y)>60&&Math.abs(acc.y)>Math.abs(acc.x)*1.4){ locked=true; cycleLoc(acc.y>0?1:-1); return }
+    if(Math.abs(acc.x)>60&&Math.abs(acc.x)>Math.abs(acc.y)*1.4){
+      const fwd=acc.x>0;                                           // fingers moving left = forward
+      if(phoneMQ.matches){ locked=true; const on=document.body.classList.contains('d10'), dv=document.body.classList.contains('dayv');
+        if(dv){ if(!fwd) exitDay() } else if(fwd&&!on){ d10Side(1); set10(true) } else if(!fwd&&on) set10(false);
+        return }
+      const hs=$('#sscroll')||$('#hscroll'); if(hs){ hs.scrollBy({left:acc.x>0?hs.clientWidth*.8:-hs.clientWidth*.8,behavior:'smooth'}); locked=true }
+    }
+  },{passive:false});
 })();
 $('#locBtn').onclick=()=>{ const b=$('#locBtn'); if(b.dataset.held){ b.dataset.held=''; return } openSheet() }; $('#dlocBtn').onclick=openSheet;
 /* quick guide */
