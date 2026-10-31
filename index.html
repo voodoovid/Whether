@@ -240,8 +240,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   #strip .ph h2{font-size:20px}
   .hint{font-size:18px;font-weight:800;color:#fff;transition:opacity .3s}
   .hint.gone{opacity:0}
-  #scols,#hgrid{will-change:transform;-webkit-transform:translateZ(0);transform:translateZ(0)}   /* v2.150: hours slide as one smooth layer, no repaint tearing */
-  #sscroll{will-change:scroll-position;overscroll-behavior-x:none;flex:1;min-height:0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  #sscroll{overscroll-behavior-x:none;flex:1;min-height:0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   #sscroll::-webkit-scrollbar{display:none}
   #scols{display:grid;grid-auto-flow:column;grid-auto-columns:25%;height:100%}
   .scol{scroll-snap-align:start;margin:0 2px;border-radius:20px;background:rgba(255,255,255,.06);text-align:center;font-variant-numeric:tabular-nums;
@@ -1380,7 +1379,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.150 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.151 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1422,7 +1421,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.150';
+const VER='2.151';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2872,36 +2871,16 @@ $('#d10close').onclick=()=>set10(false);
       if(ax==='y'?el.scrollHeight>el.clientHeight+2:el.scrollWidth>el.clientWidth+2){ const pos=ax==='y'?el.scrollTop:el.scrollLeft, max=ax==='y'?el.scrollHeight-el.clientHeight:el.scrollWidth-el.clientWidth;
         if(d>0?pos<max-1:pos>1) return el } }
     return null };
-  const SPEED=.25, MAXSTEP=9;                                      // v2.150: slower again: about a quarter speed, never more than 9 px per frame
-  let G=null;
-  const cols=el=>[...el.querySelectorAll(el.id==='sscroll'?'#scols .scol':'#hgrid .r.time .c')];
-  const glide=(el,dx)=>{
-    const max=el.scrollWidth-el.clientWidth;
-    if(!G||G.el!==el){ if(G) cancelAnimationFrame(G.raf); G={el,target:el.scrollLeft,pos:el.scrollLeft,raf:0}; el.style.scrollSnapType='none' }
-    G.target=Math.max(0,Math.min(max,G.target+dx*SPEED)); G.last=performance.now(); G.snapped=false;
-    if(!G.raf) G.raf=requestAnimationFrame(tick);
-  };
-  const tick=()=>{
-    const g=G; if(!g) return; const el=g.el, max=el.scrollWidth-el.clientWidth;
-    if(!g.snapped&&performance.now()-g.last>140){             // fingers (and glide) done: ease onto the nearest hour
-      const c=cols(el); if(c.length){ const o=c[0].offsetLeft; let best=g.target, bd=1e9; c.forEach(x=>{const p=x.offsetLeft-o, d=Math.abs(p-g.target); if(d<bd){bd=d;best=p}}); g.target=Math.max(0,Math.min(max,best)) }
-      g.snapped=true }
-    const d=g.target-g.pos;
-    if(Math.abs(d)<.5){ g.pos=g.target; el.scrollLeft=Math.round(g.pos);
-      if(g.snapped){ G=null; el.style.scrollSnapType=''; return } }
-    else { g.pos+=Math.sign(d)*Math.min(MAXSTEP,Math.abs(d)*.14); el.scrollLeft=Math.round(g.pos) }
-    g.raf=requestAnimationFrame(tick);
-  };
   addEventListener('wheel',e=>{
     if(de.classList.contains('mac')||e.ctrlKey||blocked(e.target)) return;
     const dx=e.deltaMode===1?e.deltaX*16:e.deltaX, dy=e.deltaMode===1?e.deltaY*16:e.deltaY, ax=Math.abs(dx)>Math.abs(dy)?'x':'y';
-    const ipadX=ax==='x'&&!phoneMQ.matches;                     // v2.147: on iPad, sideways is always handled here, page by page, never past the last hour
-    if(!ipadX&&canScroll(e.target,ax,ax==='x'?dx:dy)) return;   // a list that can still scroll that way scrolls natively
+    const ipadX=ax==='x'&&!phoneMQ.matches;
+    if(ipadX){                                                  // v2.151: iPad sideways scrolls natively (same smooth engine as a finger swipe); only blocked at the first/last hour so it can't run past into blank space
+      const hs=['#sscroll','#hscroll'].map(q=>$(q)).find(el=>el&&el.offsetParent&&el.scrollWidth>el.clientWidth+2);
+      if(hs&&hs.contains(e.target)&&canScroll(e.target,'x',dx)) return;
+      e.preventDefault(); return }
+    if(canScroll(e.target,ax,ax==='x'?dx:dy)) return;           // a list that can still scroll that way scrolls natively
     e.preventDefault();
-    if(ipadX){ const r=document.scrollingElement; if(r&&r.scrollLeft) r.scrollLeft=0; const ap=$('#app'); if(ap&&ap.scrollLeft) ap.scrollLeft=0 }   // the page itself never slides sideways
-    if(ipadX){                                                  // v2.149: sideways glides at a calmer, controlled speed, one smooth update per frame, settling on an hour
-      const hs=['#sscroll','#hscroll'].map(q=>$(q)).find(el=>el&&el.offsetParent&&el.scrollWidth>el.clientWidth+2); if(!hs) return;
-      glide(hs,dx); return }
     clearTimeout(quiet); quiet=setTimeout(()=>{acc={x:0,y:0};locked=false},260);   // one gesture (incl. its glide) = one step
     if(locked||cycling) return;
     acc.x+=dx; acc.y+=dy;
