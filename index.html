@@ -1379,7 +1379,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.148 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.149 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1421,7 +1421,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.148';
+const VER='2.149';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2871,6 +2871,26 @@ $('#d10close').onclick=()=>set10(false);
       if(ax==='y'?el.scrollHeight>el.clientHeight+2:el.scrollWidth>el.clientWidth+2){ const pos=ax==='y'?el.scrollTop:el.scrollLeft, max=ax==='y'?el.scrollHeight-el.clientHeight:el.scrollWidth-el.clientWidth;
         if(d>0?pos<max-1:pos>1) return el } }
     return null };
+  const SPEED=.45, MAXSTEP=18;                                     // v2.149: half-speed, and never more than 18 px per frame
+  let G=null;
+  const cols=el=>[...el.querySelectorAll(el.id==='sscroll'?'#scols .scol':'#hgrid .r.time .c')];
+  const glide=(el,dx)=>{
+    const max=el.scrollWidth-el.clientWidth;
+    if(!G||G.el!==el){ if(G) cancelAnimationFrame(G.raf); G={el,target:el.scrollLeft,pos:el.scrollLeft,raf:0}; el.style.scrollSnapType='none' }
+    G.target=Math.max(0,Math.min(max,G.target+dx*SPEED)); G.last=performance.now(); G.snapped=false;
+    if(!G.raf) G.raf=requestAnimationFrame(tick);
+  };
+  const tick=()=>{
+    const g=G; if(!g) return; const el=g.el, max=el.scrollWidth-el.clientWidth;
+    if(!g.snapped&&performance.now()-g.last>140){             // fingers (and glide) done: ease onto the nearest hour
+      const c=cols(el); if(c.length){ const o=c[0].offsetLeft; let best=g.target, bd=1e9; c.forEach(x=>{const p=x.offsetLeft-o, d=Math.abs(p-g.target); if(d<bd){bd=d;best=p}}); g.target=Math.max(0,Math.min(max,best)) }
+      g.snapped=true }
+    const d=g.target-g.pos;
+    if(Math.abs(d)<.5){ g.pos=g.target; el.scrollLeft=Math.round(g.pos);
+      if(g.snapped){ G=null; el.style.scrollSnapType=''; return } }
+    else { g.pos+=Math.sign(d)*Math.min(MAXSTEP,Math.abs(d)*.2); el.scrollLeft=Math.round(g.pos) }
+    g.raf=requestAnimationFrame(tick);
+  };
   addEventListener('wheel',e=>{
     if(de.classList.contains('mac')||e.ctrlKey||blocked(e.target)) return;
     const dx=e.deltaMode===1?e.deltaX*16:e.deltaX, dy=e.deltaMode===1?e.deltaY*16:e.deltaY, ax=Math.abs(dx)>Math.abs(dy)?'x':'y';
@@ -2878,11 +2898,9 @@ $('#d10close').onclick=()=>set10(false);
     if(!ipadX&&canScroll(e.target,ax,ax==='x'?dx:dy)) return;   // a list that can still scroll that way scrolls natively
     e.preventDefault();
     if(ipadX){ const r=document.scrollingElement; if(r&&r.scrollLeft) r.scrollLeft=0; const ap=$('#app'); if(ap&&ap.scrollLeft) ap.scrollLeft=0 }   // the page itself never slides sideways
-    if(ipadX){                                                  // v2.148: free, smooth sideways scrolling (incl. its glide), clamped to the first and last hour
+    if(ipadX){                                                  // v2.149: sideways glides at a calmer, controlled speed, one smooth update per frame, settling on an hour
       const hs=['#sscroll','#hscroll'].map(q=>$(q)).find(el=>el&&el.offsetParent&&el.scrollWidth>el.clientWidth+2); if(!hs) return;
-      hs.style.scrollSnapType='none'; hs.scrollLeft=Math.max(0,Math.min(hs.scrollWidth-hs.clientWidth,hs.scrollLeft+dx));
-      clearTimeout(hs._wq); hs._wq=setTimeout(()=>{hs.style.scrollSnapType=''},500);
-      return }
+      glide(hs,dx); return }
     clearTimeout(quiet); quiet=setTimeout(()=>{acc={x:0,y:0};locked=false},260);   // one gesture (incl. its glide) = one step
     if(locked||cycling) return;
     acc.x+=dx; acc.y+=dy;
