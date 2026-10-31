@@ -93,7 +93,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 #readout .ro i{width:9px;height:9px;border-radius:3px}
 
 /* hourly */
-#hscroll{flex:1;min-height:0;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#hscroll{overscroll-behavior-x:none;flex:1;min-height:0;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 #hscroll::-webkit-scrollbar{display:none}
 #hgrid{display:flex;flex-direction:column;justify-content:space-between;height:100%;min-width:calc(var(--lab) + 24*var(--colmin))}
 .r{display:grid;grid-template-columns:var(--lab) repeat(24,minmax(0,1fr));flex:none;position:relative}
@@ -240,7 +240,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   #strip .ph h2{font-size:20px}
   .hint{font-size:18px;font-weight:800;color:#fff;transition:opacity .3s}
   .hint.gone{opacity:0}
-  #sscroll{flex:1;min-height:0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  #sscroll{overscroll-behavior-x:none;flex:1;min-height:0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   #sscroll::-webkit-scrollbar{display:none}
   #scols{display:grid;grid-auto-flow:column;grid-auto-columns:25%;height:100%}
   .scol{scroll-snap-align:start;margin:0 2px;border-radius:20px;background:rgba(255,255,255,.06);text-align:center;font-variant-numeric:tabular-nums;
@@ -1379,7 +1379,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.146 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.147 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1421,7 +1421,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.146';
+const VER='2.147';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2874,8 +2874,10 @@ $('#d10close').onclick=()=>set10(false);
   addEventListener('wheel',e=>{
     if(de.classList.contains('mac')||e.ctrlKey||blocked(e.target)) return;
     const dx=e.deltaMode===1?e.deltaX*16:e.deltaX, dy=e.deltaMode===1?e.deltaY*16:e.deltaY, ax=Math.abs(dx)>Math.abs(dy)?'x':'y';
-    if(canScroll(e.target,ax,ax==='x'?dx:dy)) return;          // a list or the hourly panel that can still scroll that way scrolls natively
+    const ipadX=ax==='x'&&!phoneMQ.matches;                     // v2.147: on iPad, sideways is always handled here, page by page, never past the last hour
+    if(!ipadX&&canScroll(e.target,ax,ax==='x'?dx:dy)) return;   // a list that can still scroll that way scrolls natively
     e.preventDefault();
+    if(ipadX){ const r=document.scrollingElement; if(r&&r.scrollLeft) r.scrollLeft=0; const ap=$('#app'); if(ap&&ap.scrollLeft) ap.scrollLeft=0 }   // the page itself never slides sideways
     clearTimeout(quiet); quiet=setTimeout(()=>{acc={x:0,y:0};locked=false},260);   // one gesture (incl. its glide) = one step
     if(locked||cycling) return;
     acc.x+=dx; acc.y+=dy;
@@ -2885,7 +2887,9 @@ $('#d10close').onclick=()=>set10(false);
       if(phoneMQ.matches){ locked=true; const on=document.body.classList.contains('d10'), dv=document.body.classList.contains('dayv');
         if(dv){ if(!fwd) exitDay() } else if(fwd&&!on){ d10Side(1); set10(true) } else if(!fwd&&on) set10(false);
         return }
-      const hs=$('#sscroll')||$('#hscroll'); if(hs){ hs.scrollBy({left:acc.x>0?hs.clientWidth*.8:-hs.clientWidth*.8,behavior:'smooth'}); locked=true }
+      const hs=['#sscroll','#hscroll'].map(q=>$(q)).find(el=>el&&el.offsetParent&&el.scrollWidth>el.clientWidth+2);
+      if(hs){ const max=hs.scrollWidth-hs.clientWidth, to=Math.max(0,Math.min(max,hs.scrollLeft+(fwd?1:-1)*hs.clientWidth)); hs.scrollTo({left:to,behavior:'smooth'}) }
+      locked=true
     }
   },{passive:false});
 })();
