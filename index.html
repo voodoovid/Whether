@@ -240,7 +240,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   #strip .ph h2{font-size:20px}
   .hint{font-size:18px;font-weight:800;color:#fff;transition:opacity .3s}
   .hint.gone{opacity:0}
-  #sscroll{overscroll-behavior-x:none;flex:1;min-height:0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  #scols,#hgrid{will-change:transform;-webkit-transform:translateZ(0);transform:translateZ(0)}   /* v2.150: hours slide as one smooth layer, no repaint tearing */
+  #sscroll{will-change:scroll-position;overscroll-behavior-x:none;flex:1;min-height:0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   #sscroll::-webkit-scrollbar{display:none}
   #scols{display:grid;grid-auto-flow:column;grid-auto-columns:25%;height:100%}
   .scol{scroll-snap-align:start;margin:0 2px;border-radius:20px;background:rgba(255,255,255,.06);text-align:center;font-variant-numeric:tabular-nums;
@@ -1379,7 +1380,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.149 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.150 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1421,7 +1422,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.149';
+const VER='2.150';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2871,7 +2872,7 @@ $('#d10close').onclick=()=>set10(false);
       if(ax==='y'?el.scrollHeight>el.clientHeight+2:el.scrollWidth>el.clientWidth+2){ const pos=ax==='y'?el.scrollTop:el.scrollLeft, max=ax==='y'?el.scrollHeight-el.clientHeight:el.scrollWidth-el.clientWidth;
         if(d>0?pos<max-1:pos>1) return el } }
     return null };
-  const SPEED=.45, MAXSTEP=18;                                     // v2.149: half-speed, and never more than 18 px per frame
+  const SPEED=.25, MAXSTEP=9;                                      // v2.150: slower again: about a quarter speed, never more than 9 px per frame
   let G=null;
   const cols=el=>[...el.querySelectorAll(el.id==='sscroll'?'#scols .scol':'#hgrid .r.time .c')];
   const glide=(el,dx)=>{
@@ -2888,7 +2889,7 @@ $('#d10close').onclick=()=>set10(false);
     const d=g.target-g.pos;
     if(Math.abs(d)<.5){ g.pos=g.target; el.scrollLeft=Math.round(g.pos);
       if(g.snapped){ G=null; el.style.scrollSnapType=''; return } }
-    else { g.pos+=Math.sign(d)*Math.min(MAXSTEP,Math.abs(d)*.2); el.scrollLeft=Math.round(g.pos) }
+    else { g.pos+=Math.sign(d)*Math.min(MAXSTEP,Math.abs(d)*.14); el.scrollLeft=Math.round(g.pos) }
     g.raf=requestAnimationFrame(tick);
   };
   addEventListener('wheel',e=>{
