@@ -880,6 +880,10 @@ body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shad
 }
 /* v2.75: every descriptor word starts with a capital (Flags Flap, A Smidge, Hat May Fly Off, Mostly Sunny) */
 .dx i,.dx i u,.wd .ww,.rc .aw,.st .w,.cond,.dw{text-transform:capitalize}
+/* v2.145: units stay lowercase (mm, not Mm); rain amount pill centred under the condition */
+.unit,.dx.rain i u:first-child,.rc .mm small,.ro{text-transform:none}
+.cond .cwrap{display:inline-flex;flex-direction:column;align-items:center;max-width:100%}
+.cond .cwrap .acc{display:block;margin-left:auto;margin-right:auto}
 /* v2.81: iPhone (touch, short screen) in landscape shows an "under construction" screen asking for portrait. iPad and desktop are never affected. */
 #rot{display:none}
 @media (orientation:landscape) and (max-height:500px) and (hover:none) and (pointer:coarse){
@@ -1375,7 +1379,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.144 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.145 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1417,7 +1421,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.144';
+const VER='2.145';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2138,7 +2142,9 @@ function render(){
   const falling=DV?(E?E.mm>0:DV.sum>0):(WET(V.weather_code)||SNOWY(V.weather_code)||(V.precipitation||0)>0||!!V._raining||(V._rain1h||0)>0), sf=(V._live&&V._today!=null)?V._today:sofar;
   const silkTxt=(/^rain/.test(w.i)||w.i==='thunder');
   const acc=DV?`${fP(E?E.mm:DV.sum)} expected`:E?(E.mm>0?fP(E.mm):`${Math.round(E.pop)}% chance`):(sf>0?fP(sf)+' today':'just started');
-  $('#cond').innerHTML=esc(w.t)+(silkTxt?' - <span class="silk">No Silk</span>':'')+(falling?` <span class="acc">${acc}</span>`:'');
+  /* v2.145: rain amount centred under the condition; units (mm/in) never capitalised */
+  const accH=acc.replace(/ (mm|in)\b/,' <span class="unit">$1</span>');
+  $('#cond').innerHTML=`<span class="cwrap"><span class="ct">${esc(w.t)}${silkTxt?' - <span class="silk">No Silk</span>':''}</span>${falling?`<span class="acc">${accH}</span>`:''}</span>`;
   /* v2.130: iPad landscape only: a Rain box fills the space the station/Updated lines left: rain so far today, and how long it has rained */
   if(phl()&&IPLMQ.matches){
     const wetMin=(day,h0,h1,upto)=>{ let n=0; H.time.forEach((t,i)=>{ if(!t.startsWith(day)) return; const h=+t.slice(11,13); if(h<h0||h>h1||(upto!=null&&i>upto)) return; if((H.precipitation[i]??0)>0) n++ }); return n*60 };
