@@ -1379,7 +1379,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.151 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.152 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1421,7 +1421,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.151';
+const VER='2.152';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2192,8 +2192,9 @@ PH.addEventListener('change',()=>{ if(S.data) render() });
 addEventListener('resize',()=>{ if(S.data&&ARR!==null&&phl()!==ARR) render() });
 /* v2.60: black ice sits under Wind where the side column shows, otherwise under the condition */
 function placeBice(el){ if(!el) return; if(LIKE.matches) $('#nowSide').appendChild(el); else $('#cond').after(el) }
-/* v2.113: in the phone/iPad-landscape layout a black ice warning takes the place of the Max UV box instead of adding a tall box below */
-function iceForUV(el){ if(!el||!phl()||el.hidden) return; const uv=$('#nowSide .st.uvt, #nowSide .st.uvb'); if(uv) uv.replaceWith(el) }
+/* v2.113: in the phone/iPad-landscape layout a black ice warning takes the place of a box instead of adding a tall box below (v2.152: the High/Low box) */
+/* v2.152: it now replaces the High/Low box instead, so the UV box always stays */
+function iceForUV(el){ if(!el||!phl()||el.hidden) return; const hl=$('#nowSide .st.hlb:not(.uvb):not(.rnb)'); if(hl) hl.replaceWith(el) }
 LIKE.addEventListener('change',()=>placeBice($('#bice')));
 /* Tonight: everything from 6 to 10 PM rolled into one (tomorrow's evening from 9 PM on) */
 function evening(j,C,dayStr){
