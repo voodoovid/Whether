@@ -1379,7 +1379,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.152 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.153 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1421,7 +1421,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.152';
+const VER='2.153';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1792,16 +1792,24 @@ function mergeModels(j){
   return j;
 }
 
+/* v2.153: BC no longer changes its clocks (UTC-7 all year), but Open-Meteo's time-zone data still falls back to PST in winter, which put every hour
+   (and "Now") one hour behind the real clock. For Pacific-BC places we ask for UTC-7 all year (America/Phoenix has no daylight saving). */
+const BCZ={};
+async function wxGet(l,get){
+  const k=key(l), mk=tz=>`https://api.open-meteo.com/v1/forecast?latitude=${l.lat}&longitude=${l.lon}&timezone=${tz}&forecast_days=10&past_days=1&current=${CURRENT}&hourly=${HOURLY}&daily=${DAILY}`;
+  const one=async tz=>{ const base=mk(tz); try{ return mergeModels(await get(base+'&models='+MODELS.join(','))) } catch(_){ return await get(base) } };
+  if(BCZ[k]) return one('America/Phoenix');
+  const j=await one('auto');
+  if(j&&j.timezone==='America/Vancouver'){ BCZ[k]=1; if(j.utc_offset_seconds!==-25200) return one('America/Phoenix') }
+  return j;
+}
 async function load(manual){
   const {lat,lon}=S.loc;
   $('#refresh').classList.add('spin');
-  const base=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&timezone=auto&forecast_days=10&past_days=1&current=${CURRENT}&hourly=${HOURLY}&daily=${DAILY}`;
   try{
     const get=async u=>{const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),15000);
       const r=await fetch(u,{signal:ctl.signal}); clearTimeout(to); if(!r.ok) throw new Error('http '+r.status); return r.json()};
-    let j;
-    try{ j=mergeModels(await get(base+'&models='+MODELS.join(','))) }
-    catch(_){ j=await get(base) }
+    let j=await wxGet(S.loc,get);
     if(!j.hourly||!j.daily||!j.current) throw new Error('bad data');
     trimPast(j);
     j._at=Date.now();
@@ -2625,10 +2633,9 @@ $('#gps').addEventListener('click',()=>{
 const MEM={};                     // in-memory forecast per location, for instant swipes
 /* v2.91: fetch every saved location's forecast in the background so swiping in EITHER direction slides in smoothly (before, places not yet visited had to wait for the network and jumped) */
 async function fetchWx(l){
-  const base=`https://api.open-meteo.com/v1/forecast?latitude=${l.lat}&longitude=${l.lon}&timezone=auto&forecast_days=10&past_days=1&current=${CURRENT}&hourly=${HOURLY}&daily=${DAILY}`;
   const get=async u=>{const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),15000);
     try{const r=await fetch(u,{signal:ctl.signal}); if(!r.ok) throw new Error('http '+r.status); return await r.json()} finally{clearTimeout(to)}};
-  let j; try{ j=mergeModels(await get(base+'&models='+MODELS.join(','))) } catch(_){ j=await get(base) }
+  const j=await wxGet(l,get);
   if(!j.hourly||!j.daily||!j.current) throw new Error('bad data');
   trimPast(j); j._at=Date.now(); return j;
 }
