@@ -117,6 +117,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .hc{width:calc(100% - 4px);height:calc(100% - 4px);margin:2px;border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:13px;font-variant-numeric:tabular-nums;line-height:1}
 .tpb{font-size:.42em;font-weight:800;color:#f4b942;margin-left:.2em;white-space:nowrap;letter-spacing:0}   /* v2.126 (temporary): Tempest values in the (or not) yellow */
 .tpy{color:#f4b942}
+.tpw{font-size:.36em;font-weight:700;color:#fff;margin-left:.2em;white-space:nowrap;letter-spacing:0}   /* v2.156 */
 .bigt .tpb{color:#fff}
 .bigt .tpb{font-size:.3em;font-weight:700;margin-left:.15em;vertical-align:.55em}   /* v2.125 (temporary) */   /* v2.124 (temporary) */
 .hc.none{background:transparent!important;color:rgba(255,255,255,.85)!important;font-weight:600}
@@ -1379,7 +1380,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.155 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.156 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1421,7 +1422,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.155';
+const VER='2.156';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2373,7 +2374,7 @@ function renderStrip(j,C){
     const arrow=wdir==null?'':`<svg viewBox="0 0 14 14" style="transform:rotate(${(wdir+180)%360}deg)"><path d="M7 12V2M3 6l4-4 4 4"/></svg>`;
     out+=`<div class="scol${c0?' cur':''}${night?' nt':''}">${tm}
       <div>${ico(wx(code,isDay,mm).i)}</div>
-      <div class="tp">${(c0&&C._live&&IPADL())?`<span class="tpy">${fT(temp)}</span>`:fT(temp)+tpB(t)}</div>
+      <div class="tp">${(c0&&C._live&&IPADL())?`<span class="tpy">${fT(temp)}</span>`:tpMain(t,temp)}</div>
       <div class="fl">Feels<b>${fT(feel)}</b></div>
       <div class="rc"><span class="p${pv>0?'':' z'}">${DROP}${p==null?'–':p+'%'}</span>${chart}
         <span class="mm${mmS>0?'':' z'}">${met()?(mmS>0?(mmS<10?mmS.toFixed(1):Math.round(mmS)):'0'):(mmS/25.4).toFixed(2)}<small>${met()?'mm':'in'}</small></span>
@@ -2388,6 +2389,8 @@ function renderStrip(j,C){
 
 
 /* v2.124 (temporary): iPad landscape only, Today's hourly: Tempest's own hourly forecast in brackets beside the temperature (Home only) */
+/* v2.156: iPad landscape: Tempest's own hourly temperature is the main (yellow) figure; the forecast provider's goes in smaller white brackets */
+const tpMain=(t,v)=>{ if(phoneMQ.matches||!matchMedia('(hover:none) and (pointer:coarse)').matches||inDay()) return fT(v); const f=TW.fcT(t); return f==null?fT(v):`<span class="tpy">${fT(f)}</span><small class="tpw">(${fT(v)})</small>` };
 const tpB=t=>{ if(phoneMQ.matches||!matchMedia('(hover:none) and (pointer:coarse)').matches||inDay()) return ''; const v=TW.fcT(t); return v==null?'':`<small class="tpb">(${fT(v)})</small>` };
 function renderHourly(j){
   const H=j.hourly, a=S.idx, N=Math.min(24,H.time.length-S.idx);
