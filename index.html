@@ -1379,7 +1379,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.153 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.154 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1421,7 +1421,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.153';
+const VER='2.154';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1856,6 +1856,8 @@ function rainPass(j){
 /* ---- v2.104: live readings from the home Tempest station.
    Home location only, and never in Tonight or on a day page. Anything missing or stale falls back to the forecast.
    The access token lives only in this browser (never in the code) and is sent only to Tempest. ---- */
+/* v2.154: iPad landscape only (touch device, not phone-width) */
+const IPADL=()=>!phoneMQ.matches&&matchMedia('(hover:none) and (pointer:coarse)').matches;
 const TW=(()=>{
   const REST='https://swd.weatherflow.com/swd/rest', WSU='wss://ws.weatherflow.com/swd/data', KEY='tempestToken';
   const st={token:'',station:null,ws:null,retry:0,timer:null,manual:false,lastMsg:0,obs:null,obsAt:0,rapid:null,rapidAt:0,dayTotal:null,extra:0,dayMin:null,extraMin:0,seenT:0,logT:0,rainLog:[],wasOn:false,lastWord:''};
@@ -1887,7 +1889,7 @@ const TW=(()=>{
     let code=C.weather_code, pr=C.precipitation;
     if(!wet10&&WET(code)){ const cc=C.cloud_cover??90; code=cc>=85?3:cc>=50?2:1; pr=0 }
     else if(wet10&&!WET(code)&&!SNOWY(code)){ const mmh=(o.rain||0)*60; code=mmh>=7.6?65:mmh>=2.5?63:61; pr=Math.max(pr||0,o.rain||0) }
-    return {...C,weather_code:code,precipitation:pr,temperature_2m:o.temp,apparent_temperature:feels(o.temp,o.rh,w.kmh/3.6),wind_speed_10m:w.kmh,wind_gusts_10m:w.gust,wind_direction_10m:w.dir,
+    return {...C,weather_code:code,precipitation:pr,temperature_2m:o.temp,apparent_temperature:feels(o.temp,o.rh,w.kmh/3.6),relative_humidity_2m:(IPADL()&&o.rh!=null)?o.rh:C.relative_humidity_2m,wind_speed_10m:w.kmh,wind_gusts_10m:w.gust,wind_direction_10m:w.dir,
       _live:1,_uv:o.uv,_rain1h:rain1h(),_raining:o.ptype>0,_today:rainToday(),_rmin:rainMinToday(),_t:o.t*1000};
   }
 
@@ -2364,14 +2366,14 @@ function renderStrip(j,C){
     const mmS=(c0&&C._rain1h!=null)?C._rain1h:mm, rw=rainWord(mmS);
     const gC=c0?C:{temperature_2m:temp,weather_code:code,precipitation:0,is_day:isDay,cloud_cover:H.cloud_cover[k],relative_humidity_2m:H.relative_humidity_2m[k]};
     const gd=ground(j,gC,k), bi=blackIce(j,k,c0?C:null);
-    const uv=Math.max(0,H.uv_index[k]??0), ui=uvInfo(uv);
+    const uv=Math.max(0,(c0&&C._live&&C._uv!=null&&IPADL())?C._uv:(H.uv_index[k]??0)), ui=uvInfo(uv);   // v2.154: iPad landscape: the Now column uses the station's UV
     const ws=c0?(C.wind_speed_10m??H.wind_speed_10m?.[k]):H.wind_speed_10m?.[k];
     const gu=c0?(C.wind_gusts_10m??H.wind_gusts_10m?.[k]):H.wind_gusts_10m?.[k];
     const wdir=c0?(C.wind_direction_10m??H.wind_direction_10m?.[k]):H.wind_direction_10m?.[k];
     const arrow=wdir==null?'':`<svg viewBox="0 0 14 14" style="transform:rotate(${(wdir+180)%360}deg)"><path d="M7 12V2M3 6l4-4 4 4"/></svg>`;
     out+=`<div class="scol${c0?' cur':''}${night?' nt':''}">${tm}
       <div>${ico(wx(code,isDay,mm).i)}</div>
-      <div class="tp">${fT(temp)}${tpB(t)}</div>
+      <div class="tp">${(c0&&C._live&&IPADL())?`<span class="tpy">${fT(temp)}</span>`:fT(temp)+tpB(t)}</div>
       <div class="fl">Feels<b>${fT(feel)}</b></div>
       <div class="rc"><span class="p${pv>0?'':' z'}">${DROP}${p==null?'–':p+'%'}</span>${chart}
         <span class="mm${mmS>0?'':' z'}">${met()?(mmS>0?(mmS<10?mmS.toFixed(1):Math.round(mmS)):'0'):(mmS/25.4).toFixed(2)}<small>${met()?'mm':'in'}</small></span>
