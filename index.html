@@ -120,6 +120,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .tpw{font-size:.36em;font-weight:700;color:#fff;margin-left:.2em;white-space:nowrap;letter-spacing:0}   /* v2.156 */
 .bigt .tpb{color:#fff}
 .bigt .tpb{font-size:.3em;font-weight:700;margin-left:.15em;vertical-align:.55em}   /* v2.125 (temporary) */   /* v2.124 (temporary) */
+.bigt .tpst{display:inline-flex;flex-direction:column;align-items:flex-start;vertical-align:.3em;margin-left:.15em;letter-spacing:0}   /* v2.157: white forecast bracket with Tempest's yellow forecast bracket under it (iPad landscape only) */
+.bigt .tpst .tpb{margin-left:0;vertical-align:baseline;line-height:1.1}
+.bigt .tpst .tpf{font-size:.3em;font-weight:700;color:#f4b942;white-space:nowrap;line-height:1.1;letter-spacing:0}
 .hc.none{background:transparent!important;color:rgba(255,255,255,.85)!important;font-weight:600}
 .r.uv{height:clamp(24px,3.4vh,30px)}
 .uvc{min-width:23px;height:21px;padding:0 5px;border-radius:7px;display:inline-grid;place-items:center;font-size:12.5px;font-weight:800;color:#0b1220}
@@ -1380,7 +1383,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.156 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.157 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1422,7 +1425,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.156';
+const VER='2.157';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2105,7 +2108,12 @@ function render(){
 
   const w=wx(V.weather_code,V.is_day,V.precipitation);
   $('#nowIcon').innerHTML=icoA(w.i);
-  $('#bigT').innerHTML=(V._live&&!phoneMQ.matches&&matchMedia('(hover:none) and (pointer:coarse)').matches?`<span class="tpy">${fT(V.temperature_2m)}</span>`:fT(V.temperature_2m))+((V._live&&!phoneMQ.matches&&matchMedia('(hover:none) and (pointer:coarse)').matches&&j.current.temperature_2m!=null)?`<small class="tpb">(${fT(j.current.temperature_2m)})</small>`:'');   // v2.125 (temporary): iPad landscape: the forecast provider's current temp in brackets beside the station's
+  { const ipadL=V._live&&!phoneMQ.matches&&matchMedia('(hover:none) and (pointer:coarse)').matches;
+    const tfc=(ipadL&&!E&&!DV)?TW.fcT(nowStr):null;   // v2.157: Tempest's own forecast for this hour (not the station reading)
+    const wb=(ipadL&&j.current.temperature_2m!=null)?`<small class="tpb">(${fT(j.current.temperature_2m)})</small>`:'';
+    const yb=(wb&&tfc!=null)?`<small class="tpf">(${fT(tfc)})</small>`:'';
+    $('#bigT').innerHTML=(ipadL?`<span class="tpy">${fT(V.temperature_2m)}</span>`:fT(V.temperature_2m))+(yb?`<span class="tpst">${wb}${yb}</span>`:wb);   // v2.125 (temporary): iPad landscape: the forecast provider's current temp in brackets beside the station's; v2.157: Tempest's forecast in yellow brackets under it
+  }
   const hiT=fT(E?E.hi:D.temperature_2m_max[dd]), loT=fT(E?E.lo:D.temperature_2m_min[dd]);
   $('#hilo').innerHTML=`High <b>${hiT}</b>&nbsp; · &nbsp;Low <b>${loT}</b>`;
 
