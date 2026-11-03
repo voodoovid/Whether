@@ -117,6 +117,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .hc{width:calc(100% - 4px);height:calc(100% - 4px);margin:2px;border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:13px;font-variant-numeric:tabular-nums;line-height:1}
 .tpb{font-size:.42em;font-weight:800;color:#f4b942;margin-left:.2em;white-space:nowrap;letter-spacing:0}   /* v2.126 (temporary): Tempest values in the (or not) yellow */
 .tpy{color:#f4b942}
+.scol .fl b.tpy{color:#f4b942}   /* v2.159 */
 .tpw{font-size:.36em;font-weight:700;color:#fff;margin-left:.2em;white-space:nowrap;letter-spacing:0}   /* v2.156 */
 .bigt .tpb{color:#fff}
 .bigt .tpb{font-size:.3em;font-weight:700;margin-left:.15em;vertical-align:.55em}   /* v2.125 (temporary) */   /* v2.124 (temporary) */
@@ -1383,7 +1384,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.158 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.159 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1425,7 +1426,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.158';
+const VER='2.159';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2116,7 +2117,7 @@ function render(){
     const tfc=(ipadL&&!E&&!DV)?(TW.fcNow()??TW.fcT(nowStr)):null;   // v2.158: Tempest's own forecast for right now (by clock time; falls back to this hour)
     const wb=(ipadL&&j.current.temperature_2m!=null)?`<small class="tpb">(${fT(j.current.temperature_2m)})</small>`:'';
     const yb=(wb&&!E&&!DV)?`<small class="tpf">(${tfc!=null?fT(tfc):'–'})</small>`:'';   // v2.158: always shown under the white bracket; a dash means Tempest's forecast hasn't loaded
-    $('#bigT').innerHTML=(ipadL?`<span class="tpy">${fT(V.temperature_2m)}</span>`:fT(V.temperature_2m))+(yb?`<span class="tpst">${wb}${yb}</span>`:wb);   // v2.125 (temporary): iPad landscape: the forecast provider's current temp in brackets beside the station's; v2.157: Tempest's forecast in yellow brackets under it
+    $('#bigT').innerHTML=(V._live?`<span class="tpy">${fT(V.temperature_2m)}</span>`:fT(V.temperature_2m))   /* v2.159: my yellow on every layout (iPhone portrait too) whenever the number is the station's */+(yb?`<span class="tpst">${wb}${yb}</span>`:wb);   // v2.125 (temporary): iPad landscape: the forecast provider's current temp in brackets beside the station's; v2.157: Tempest's forecast in yellow brackets under it
   }
   const hiT=fT(E?E.hi:D.temperature_2m_max[dd]), loT=fT(E?E.lo:D.temperature_2m_min[dd]);
   $('#hilo').innerHTML=`High <b>${hiT}</b>&nbsp; · &nbsp;Low <b>${loT}</b>`;
@@ -2125,6 +2126,8 @@ function render(){
   const dF=Math.round(nT(feel))-Math.round(nT(act));
   const feelSub=dF===0?'Same as actual':`${Math.abs(dF)}° ${dF<0?'colder':'warmer'} than actual`;
   const dp=dewPoint(act,C.relative_humidity_2m);
+  const stY=x=>(V._live&&!E&&!DV)?`<span class="tpy">${x}</span>`:x;   // v2.159: station-sourced temperatures in my yellow
+  const dpY=(C._live&&!E&&!DV&&IPADL())?`<span class="tpy">${dp==null?'':fT(dp)}</span>`:(dp==null?'':fT(dp));   // dew point: only the iPad uses the station's humidity, so only there is it purely station-derived
   // today's UV peak + hour
   const todayIx=[];H.time.forEach((t,i)=>{if(t.startsWith(D.time[dd]))todayIx.push(i)});
   let pk=todayIx[0]??0; todayIx.forEach(i=>{if((H.uv_index[i]??0)>(H.uv_index[pk]??0))pk=i});
@@ -2138,8 +2141,8 @@ function render(){
   const t12=s=>{const c=clock(s).split(' ');return `${c[0]}<small>${c[1]}</small>`};
 
   $('#tiles').innerHTML=
-    tile('Feels like',fT(feel),feelSub)+
-    tile('Humidity',`${Math.round(C.relative_humidity_2m)}<small>%</small>`,dp==null?'':`Dew point ${fT(dp)}`,`<div class="meter"><i style="width:${clamp(C.relative_humidity_2m,0,100)}%"></i></div>`)+
+    tile('Feels like',stY(fT(feel)),feelSub)+
+    tile('Humidity',`${Math.round(C.relative_humidity_2m)}<small>%</small>`,dp==null?'':`Dew point ${dpY}`,`<div class="meter"><i style="width:${clamp(C.relative_humidity_2m,0,100)}%"></i></div>`)+
     tile('UV index',`${Math.round(uvBig)}<small>${ui.l}</small>`,uvSub,`<div class="meter uv"><b style="left:${clamp(uvBig/11*100,2,98)}%"></b></div>`)+
     tile(DV?'Rain':'Rain today',`${pv[0]}<small>${pv[1]}</small>`,`${(DV?DV.pp:D.precipitation_probability_max[dd])??'–'}% chance`)+
     tile('Sunrise',t12(D.sunrise[dd]),dlTxt)+
@@ -2149,7 +2152,7 @@ function render(){
   const st=(k,v,cls='',w='')=>`<div class="st ${cls}"><div class="k">${k}</div><div class="v">${v}</div>${w?`<div class="w">${w}</div>`:''}</div>`;
   const biceEl=$('#bice'), updEl=$('#upd');   // v2.60: rescued before the side column is rebuilt, then placed under Wind (v2.106: #upd too)
   $('#nowSide').innerHTML=
-    st('Feels like',fT(feel),'big')+
+    st('Feels like',stY(fT(feel)),'big')+
     st('Shoe Conditions',`<span class="gr" style="--c:${gr.c}">${SHOE}<b>${gr.t}</b></span>`)+
     (phl()&&!E&&!DV
       ? (()=>{ /* v2.127: iPhone portrait + iPad landscape: UV box shows the current UV (station at Home, else forecast) and today's high */
@@ -2386,8 +2389,8 @@ function renderStrip(j,C){
     const arrow=wdir==null?'':`<svg viewBox="0 0 14 14" style="transform:rotate(${(wdir+180)%360}deg)"><path d="M7 12V2M3 6l4-4 4 4"/></svg>`;
     out+=`<div class="scol${c0?' cur':''}${night?' nt':''}">${tm}
       <div>${ico(wx(code,isDay,mm).i)}</div>
-      <div class="tp">${(c0&&C._live&&IPADL())?`<span class="tpy">${fT(temp)}</span>`:tpMain(t,temp)}</div>
-      <div class="fl">Feels<b>${fT(feel)}</b></div>
+      <div class="tp">${(c0&&C._live)?`<span class="tpy">${fT(temp)}</span>`:tpMain(t,temp)}</div>
+      <div class="fl">Feels<b${(c0&&C._live)?' class="tpy"':''}>${fT(feel)}</b></div>
       <div class="rc"><span class="p${pv>0?'':' z'}">${DROP}${p==null?'–':p+'%'}</span>${chart}
         <span class="mm${mmS>0?'':' z'}">${met()?(mmS>0?(mmS<10?mmS.toFixed(1):Math.round(mmS)):'0'):(mmS/25.4).toFixed(2)}<small>${met()?'mm':'in'}</small></span>
         ${bi.l>=BI_MIN?`<span class="bi${bi.l>=3?' hot':''}" style="--c:${bi.c}"><small>BLACK ICE</small><b>${bi.t}</b></span>`:`<span class="aw" style="color:${rw.c}">${rw.t}</span>`}</div>
