@@ -1384,7 +1384,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.162 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.163 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1426,7 +1426,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.162';
+const VER='2.163';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -3042,47 +3042,66 @@ const WX=(()=>{
       txt(c,q[3],x+9,y+ch-9,tfit(c,q[3],cw-14,10.5,700),700,'left','#f4d442') });
   }};
 
-  /* 03 · Wind Vane (v2.162 redesign): a flat dial in the same style as the other Wind Studio windows. The wind is shown as a LOCATION on the dial:
-     a lit sector and an inward-pointing marker sit at the bearing the wind comes FROM (nothing points the way it blows). The arc just inside the
-     ticks shows how far the wind veered in the last minute (colour = Beaufort force). The top 44px stay clear for the window title. */
-  const vane={ name:'Wind Vane', a:null, av:0, t:0, h:[], draw(c,w,h,T,W,dt){
+  /* 03 · Wind Vane (v2.163): a live wind-flow background with a bold compass dial in front. The streaks travel the way the wind is blowing, and get
+     faster, denser, longer and warmer in colour as it strengthens (colour = Beaufort force). On the dial the wind is a LOCATION: a lit sector and an
+     inward-pointing marker at the bearing it comes FROM. The arc inside the ticks is the last minute's veer; the ring in the centre fills with force. */
+  const vane={ name:'Wind Vane', a:null, av:0, t:0, h:[], p:[], bg:null, bw:0, bh:0, draw(c,w,h,T,W,dt){
     this.t+=dt;
     if(this.a==null){ this.a=W.dir; this.av=0; this.h=[] }
     this.av+=(angDiff(this.a,W.dir)*30-this.av*7)*dt; this.a=(this.a+this.av*dt+360)%360;
     if(W.kmh>.5) this.h.push({t:this.t,d:W.dir});
     while(this.h.length&&this.t-this.h[0].t>60) this.h.shift();
-    c.fillStyle='#0b1528'; c.fillRect(0,0,w,h);
-    const top=44, bot=44, side=Math.min(w-24,h-top-bot), R=Math.max(40,side/2/1.15), cx=w/2, cy=top+(h-top-bot)/2, A=k=>k*Math.PI/180-Math.PI/2;
-    const col=BCOL[bft(W.kmh)], lit=Math.round(this.a/22.5)%16;
-    // dial face and ring
-    c.beginPath(); c.arc(cx,cy,R,0,TAU); c.fillStyle='rgba(255,255,255,.05)'; c.fill(); c.strokeStyle='rgba(255,255,255,.30)'; c.lineWidth=1.5; c.stroke();
-    // faint 16-sector guides
-    c.strokeStyle='rgba(255,255,255,.08)'; c.lineWidth=1;
-    for(let k=0;k<16;k++){ const a=A(k*22.5+11.25); c.beginPath(); c.moveTo(cx+Math.cos(a)*R*.4,cy+Math.sin(a)*R*.4); c.lineTo(cx+Math.cos(a)*R*.8,cy+Math.sin(a)*R*.8); c.stroke() }
-    // lit sector: the part of the dial the wind comes from
-    c.beginPath(); c.arc(cx,cy,R*.8,A(this.a-11.25),A(this.a+11.25)); c.arc(cx,cy,R*.4,A(this.a+11.25),A(this.a-11.25),true); c.closePath();
-    c.fillStyle=col; c.globalAlpha=.30; c.fill(); c.globalAlpha=1; c.strokeStyle=col; c.lineWidth=1.5; c.stroke();
-    // ticks every 5 degrees, heavier every 30
-    for(let i=0;i<72;i++){ const a=A(i*5), maj=i%6===0, r1=R*(maj?.89:.93);
-      c.beginPath(); c.moveTo(cx+Math.cos(a)*r1,cy+Math.sin(a)*r1); c.lineTo(cx+Math.cos(a)*R*.98,cy+Math.sin(a)*R*.98);
-      c.strokeStyle=maj?'#fff':'rgba(255,255,255,.5)'; c.lineWidth=maj?2:1; c.stroke() }
-    // veer arc: the last minute's swing of the wind direction
+    const col=BCOL[bft(W.kmh)], str=clamp(W.kmh/60,0,1), A=k=>k*Math.PI/180-Math.PI/2;
+    // ---- flow background (persistent trails on an off-screen canvas) ----
+    if(!this.bg||this.bw!==w||this.bh!==h){ this.bg=document.createElement('canvas'); this.bg.width=Math.max(1,Math.round(w)); this.bg.height=Math.max(1,Math.round(h)); this.bw=w; this.bh=h;
+      this.p=Array.from({length:Math.round(w*h/420)},()=>({x:Math.random()*w,y:Math.random()*h,a:Math.random()*80,r:Math.random()})); const b=this.bg.getContext('2d'); b.fillStyle='#0b1528'; b.fillRect(0,0,w,h) }
+    const b=this.bg.getContext('2d');
+    b.globalCompositeOperation='source-over'; b.fillStyle=`rgba(11,21,40,${.10+.12*(1-str)})`; b.fillRect(0,0,w,h);
+    const to=(this.a+180)*Math.PI/180, bx=Math.sin(to), by=-Math.cos(to), base=Math.atan2(by,bx),
+          sp=16+W.kmh*4.2, turb=.35+clamp((W.gust-W.kmh)/14,0,1.6), live=Math.round(this.p.length*(.30+.70*Math.min(1,W.kmh/35))), t=this.t;
+    b.lineCap='round'; b.strokeStyle=col; b.lineWidth=1+str*1.6; b.globalAlpha=.45+.3*str;
+    b.beginPath();
+    for(let i=0;i<this.p.length;i++){ const q=this.p[i]; if(i>=live){ q.x=-50; continue }
+      const n=Math.sin(q.x*.011+t*.7)*Math.cos(q.y*.013-t*.5)+Math.sin((q.x+q.y)*.006+t*.3)*.6;
+      const an=base+n*turb*.8, v=sp*(.7+.6*q.r)*(.85+.3*Math.abs(n)), nx=q.x+Math.cos(an)*v*dt, ny=q.y+Math.sin(an)*v*dt;
+      b.moveTo(q.x,q.y); b.lineTo(nx,ny); q.x=nx; q.y=ny; q.a-=dt*6;
+      if(q.a<0||q.x<-6||q.x>w+6||q.y<-6||q.y>h+6){ // respawn upwind so the field keeps streaming across
+        q.a=40+Math.random()*60; q.r=Math.random();
+        if(Math.random()<.45){ q.x=Math.random()*w; q.y=Math.random()*h }
+        else if(Math.random()*(Math.abs(bx)+Math.abs(by))<Math.abs(bx)){ q.x=bx>0?-4:w+4; q.y=Math.random()*h }
+        else { q.y=by>0?-4:h+4; q.x=Math.random()*w } } }
+    b.stroke(); b.globalAlpha=1;
+    c.drawImage(this.bg,0,0,w,h);
+    // ---- dial ----
+    const top=42, bot=44, side=Math.min(w-20,h-top-bot), R=Math.max(40,side/2/1.12), cx=w/2, cy=top+(h-top-bot)/2, lit=Math.round(this.a/22.5)%16;
+    c.beginPath(); c.arc(cx,cy,R,0,TAU); c.fillStyle='rgba(8,15,30,.72)'; c.fill(); c.strokeStyle='rgba(255,255,255,.55)'; c.lineWidth=2.5; c.stroke();
+    // lit sector
+    c.beginPath(); c.arc(cx,cy,R*.82,A(this.a-11.25),A(this.a+11.25)); c.arc(cx,cy,R*.5,A(this.a+11.25),A(this.a-11.25),true); c.closePath();
+    c.fillStyle=col; c.globalAlpha=.34; c.fill(); c.globalAlpha=1; c.strokeStyle=col; c.lineWidth=1.8; c.stroke();
+    // ticks
+    for(let i=0;i<72;i++){ const a=A(i*5), maj=i%6===0, r1=R*(maj?.89:.935);
+      c.beginPath(); c.moveTo(cx+Math.cos(a)*r1,cy+Math.sin(a)*r1); c.lineTo(cx+Math.cos(a)*R*.985,cy+Math.sin(a)*R*.985);
+      c.strokeStyle=maj?'#fff':'rgba(255,255,255,.55)'; c.lineWidth=maj?2.4:1; c.stroke() }
+    // veer arc
     if(this.h.length>3){ let lo=0,hi=0; this.h.forEach(q=>{ const d=clamp(angDiff(this.a,q.d),-90,90); if(d<lo) lo=d; if(d>hi) hi=d });
-      hi=Math.max(hi,lo+4); c.save(); c.lineCap='round'; c.shadowColor=col; c.shadowBlur=10; c.beginPath(); c.arc(cx,cy,R*.845,A(this.a+lo),A(this.a+hi)); c.strokeStyle=col; c.lineWidth=Math.max(4,R*.045); c.stroke(); c.restore() }
-    // compass letters; the one the wind comes from lights up
-    [['N',0],['E',4],['S',8],['W',12]].forEach(([s,k])=>{ const a=A(k*22.5); txt(c,s,cx+Math.cos(a)*R*.62,cy+Math.sin(a)*R*.62,Math.max(14,R*.16),800,'center',k===lit?'#fff':s==='N'?'#ff5a3c':'rgba(255,255,255,.78)','middle') });
-    [['NE',2],['SE',6],['SW',10],['NW',14]].forEach(([s,k])=>{ const a=A(k*22.5); txt(c,s,cx+Math.cos(a)*R*.62,cy+Math.sin(a)*R*.62,Math.max(10,R*.085),800,'center',k===lit?'#fff':'rgba(255,255,255,.7)','middle') });
+      hi=Math.max(hi,lo+4); c.save(); c.lineCap='round'; c.shadowColor=col; c.shadowBlur=10; c.beginPath(); c.arc(cx,cy,R*.855,A(this.a+lo),A(this.a+hi)); c.strokeStyle=col; c.lineWidth=Math.max(4,R*.045); c.stroke(); c.restore() }
+    // compass letters
+    [['N',0],['E',4],['S',8],['W',12]].forEach(([s,k])=>{ const a=A(k*22.5); txt(c,s,cx+Math.cos(a)*R*.67,cy+Math.sin(a)*R*.67,Math.max(15,R*.19),800,'center',k===lit?'#fff':s==='N'?'#ff5a3c':'rgba(255,255,255,.85)','middle') });
+    [['NE',2],['SE',6],['SW',10],['NW',14]].forEach(([s,k])=>{ const a=A(k*22.5); txt(c,s,cx+Math.cos(a)*R*.67,cy+Math.sin(a)*R*.67,Math.max(10,R*.095),800,'center',k===lit?'#fff':'rgba(255,255,255,.75)','middle') });
+    // force ring in the centre: fills with wind strength
+    c.beginPath(); c.arc(cx,cy,R*.4,0,TAU); c.fillStyle='rgba(8,15,30,.88)'; c.fill();
+    c.beginPath(); c.arc(cx,cy,R*.4,0,TAU); c.strokeStyle='rgba(255,255,255,.14)'; c.lineWidth=Math.max(4,R*.05); c.stroke();
+    if(str>.005){ c.save(); c.lineCap='round'; c.shadowColor=col; c.shadowBlur=8; c.beginPath(); c.arc(cx,cy,R*.4,-Math.PI/2,-Math.PI/2+TAU*str); c.strokeStyle=col; c.lineWidth=Math.max(4,R*.05); c.stroke(); c.restore() }
     // marker outside the ring, pointing inward at the bearing the wind comes from
-    c.save(); c.translate(cx,cy); c.rotate(this.a*Math.PI/180); c.shadowColor=col; c.shadowBlur=12;
-    c.beginPath(); c.moveTo(0,-R*1.015); c.lineTo(R*.09,-R*1.18); c.lineTo(-R*.09,-R*1.18); c.closePath(); c.fillStyle=col; c.fill(); c.shadowBlur=0; c.strokeStyle='#fff'; c.lineWidth=1.5; c.stroke(); c.restore();
+    c.save(); c.translate(cx,cy); c.rotate(this.a*Math.PI/180); c.shadowColor=col; c.shadowBlur=14;
+    c.beginPath(); c.moveTo(0,-R*1.02); c.lineTo(R*.095,-R*1.19); c.lineTo(-R*.095,-R*1.19); c.closePath(); c.fillStyle=col; c.fill(); c.shadowBlur=0; c.strokeStyle='#fff'; c.lineWidth=1.5; c.stroke(); c.restore();
     // centre readout
-    const sp=fW1(W.kmh), nf=Math.max(18,R*.3); txt(c,sp,cx,cy-R*.03,nf,800,'center','#fff','middle');
-    txt(c,wUnit(),cx,cy+R*.17,Math.max(10,R*.085),800,'center','#7fd4f5','middle');
-    txt(c,BF[bft(W.kmh)][1],cx,cy+R*.29,tfit(c,BF[bft(W.kmh)][1],R*.7,Math.max(10,R*.085),800),800,'center','#fff','middle');
-    const line=`From ${compass(W.dir)} · ${Math.round(W.dir)}°`;
-    txt(c,line,w/2,h-24,tfit(c,line,w-20,15,800),800,'center','#fff');
-    const cap='Marker and lit sector show where the wind comes from';
-    txt(c,cap,w/2,h-9,tfit(c,cap,w-20,10,700),700,'center','rgba(255,255,255,.75)');
+    txt(c,fW1(W.kmh),cx,cy-R*.05,Math.max(16,R*.24),800,'center','#fff','middle');
+    txt(c,wUnit(),cx,cy+R*.15,Math.max(9,R*.075),800,'center','#7fd4f5','middle');
+    const line=`From ${compass(W.dir)} · ${Math.round(W.dir)}°  ·  ${BF[bft(W.kmh)][1]}`;
+    txt(c,line,w/2,h-26,tfit(c,line,w-20,15,800),800,'center','#fff');
+    const cap='Marker = where it comes from · streaks = where it is going, faster = stronger';
+    txt(c,cap,w/2,h-10,tfit(c,cap,w-20,10,700),700,'center','rgba(255,255,255,.8)');
   }};
 
   /* 04 · Flow: a particle field drifting with the wind, curling more as the gusts rise; compass points on the edges */
