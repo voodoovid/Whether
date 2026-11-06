@@ -1384,7 +1384,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.163 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.164 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1426,7 +1426,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.163';
+const VER='2.164';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2025,7 +2025,7 @@ const TW=(()=>{
     if(t>st.logT){ st.logT=t; st.rainLog.push({t,mm:rain||0}) }   // the last hour's rain, from the live readings
     refresh();
   }
-  let rt=0;
+  let rt=0, seedT=0;
   function refresh(){ st.wasOn=on(); if(!S.data) return; const n=Date.now(); if(n-rt<5000) return; rt=n; render() }
   async function loadSeed(quiet){
     if(!st.station) return;
@@ -2037,8 +2037,11 @@ const TW=(()=>{
       if(c.precip_accum_local_day==null) throw new Error('not provided');
       st.dayTotal=c.precip_accum_local_day; st.extra=0; st.dayMin=c.precip_minutes_local_day==null?null:c.precip_minutes_local_day; st.extraMin=0; st.seenT=Date.now()/1000;
       mark(3,'pass','Rain today: loaded');
-      if(S.data&&on()) refresh();
-    }catch(e){ if(!quiet) mark(3,'fail','Rain today: '+e.message) }
+      /* v2.164: draw straight away, not through refresh()'s 5-second limit, so the forecast's rain never stays up once Tempest's total is in */
+      clearTimeout(seedT); seedT=0; if(S.data&&on()){ rt=Date.now(); render() }
+    }catch(e){ if(!quiet||st.dayTotal==null) mark(3,'fail','Rain today: '+e.message);
+      /* v2.164: until Tempest's total has loaded, try again every 20 s instead of showing the forecast's rain for up to 5 minutes */
+      if(st.dayTotal==null&&!document.hidden){ clearTimeout(seedT); seedT=setTimeout(()=>{ seedT=0; loadSeed(true) },20000) } }
   }
   async function start(){
     ui(); if(!st.token) return;
@@ -2067,6 +2070,7 @@ const TW=(()=>{
      (about 10 open at once per account, shared by every token); open a fresh one when back in view */
   const hideFeed=()=>{ if(st.ws||st.timer){ stopWS(); mark(2,'','Live feed: paused while the app is hidden') } };
   document.addEventListener('visibilitychange',()=>{ if(document.hidden){ hideFeed(); return } startDial();
+    if(st.token&&st.station) loadSeed(true);   // v2.164: the live feed sleeps while hidden, so fetch Tempest's rain total again on return
     if(st.token&&st.station&&(!st.ws||st.ws.readyState>1||Date.now()-st.lastMsg>45000)){ stopWS(); connect() } });
   addEventListener('pagehide',hideFeed);
   const fcT=t=>{ if(!st.token||!isHome()||!st.fc) return null; const v=st.fc[(+t.slice(8,10))+'-'+(+t.slice(11,13))]; return v==null?null:v };   // v2.124 (temporary)
