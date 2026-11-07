@@ -1244,6 +1244,22 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
   html:not(.mac) .now .st.wind{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;transition:transform .5s ease}
   html:not(.mac) .now .st.wind.wxhold{transform:scale(.965)}
 }
+/* v2.166: iPhone portrait: the same Wind Studio, six live views stacked in one scrolling column */
+@media (max-width:500px) and (orientation:portrait){
+  #wx{padding:calc(env(safe-area-inset-top) + 12px) 8px calc(env(safe-area-inset-bottom) + 10px)}
+  .wxc{width:100%;height:100%;border-radius:22px}
+  .wxh{gap:10px;padding:10px 12px 10px 12px}
+  .wxh img{width:34px;height:34px;border-radius:9px}
+  .wxh h2{font-size:21px}
+  .wxsub{flex-wrap:wrap;gap:4px 8px;font-size:12.5px}
+  .wxsub .vt{font-size:11px}
+  #wxClose{font-size:15px;padding:7px 15px}
+  .wxg{display:flex;flex-direction:column;gap:10px;padding:10px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  .wxp{flex:none;width:100%;aspect-ratio:6/5;min-height:0}
+  html:not(.mac) .now .st.wind{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;transition:transform .5s ease}
+  html:not(.mac) .now .st.wind.wxhold{transform:scale(.965)}
+  html:not(.mac) .gwx{display:flex}
+}
 /* guide: the Wind Studio entry shows on iPad landscape only */
 .gwx{display:none}
 @media (min-width:901px) and (min-height:600px) and (orientation:landscape){ html:not(.mac) .gwx{display:flex} }
@@ -1384,7 +1400,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.165 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.166 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1426,7 +1442,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.165';
+const VER='2.166';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2951,6 +2967,8 @@ const WX=(()=>{
   const ov=$('#wx'); if(!ov) return {};
   const IPADL=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape)');
   const ipadL=()=>IPADL.matches&&!document.documentElement.classList.contains('mac');
+  const PHONEP=matchMedia('(max-width:500px) and (orientation:portrait)');   // v2.166: iPhone portrait
+  const wxOK=()=>ipadL()||PHONEP.matches;
   const TAU=Math.PI*2, clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), lerp=(a,b,t)=>a+(b-a)*t;
   const angDiff=(a,b)=>((b-a+540)%360)-180;
   const U=k=>met()?k:k*0.621371;                 // km/h → shown unit
@@ -3216,6 +3234,7 @@ const WX=(()=>{
   grid.innerHTML=VIEWS.map((v,i)=>`<div class="wxp"><canvas></canvas><div class="wxl"><b>0${i+1}</b><span>${v.name}</span></div></div>`).join('');
   const cvs=[...grid.querySelectorAll('canvas')];
   let run=false,last=0,open=false;
+  if('IntersectionObserver' in window){ const io=new IntersectionObserver(es=>es.forEach(en=>{ en.target._vis=en.isIntersecting }),{root:grid,threshold:0}); cvs.forEach(cv=>io.observe(cv)) }   // v2.166: panels scrolled out of view pause
   function fit(){ const dpr=Math.min(devicePixelRatio||1,2);
     cvs.forEach((cv,i)=>{ const r=cv.getBoundingClientRect(), W=Math.max(1,Math.round(r.width*dpr)), H=Math.max(1,Math.round(r.height*dpr));
       if(cv.width!==W||cv.height!==H){ cv.width=W; cv.height=H; VIEWS[i].p&&(VIEWS[i].p=[]) }
@@ -3228,13 +3247,13 @@ const WX=(()=>{
     if(document.hidden){ last=now; requestAnimationFrame(frame); return }
     const dt=Math.min(.05,(now-last)/1000)||.016; last=now;
     const W=smooth(dt);
-    cvs.forEach((cv,i)=>{ const c=cv.getContext('2d'); try{ VIEWS[i].draw(c,cv._w,cv._h,now,W,dt) }catch(e){} });
+    cvs.forEach((cv,i)=>{ if(cv._vis===false) return; const c=cv.getContext('2d'); try{ VIEWS[i].draw(c,cv._w,cv._h,now,W,dt) }catch(e){} });
     if(now-(head.t||0)>1000){ head.t=now; head() }
     requestAnimationFrame(frame);
   }
   function show(){
-    if(!ipadL()||!S.data) return;
-    open=true; ov.hidden=false; sm.ok=false; brief.t0=0; vane.a=null; rose.g=0;
+    if(!wxOK()||!S.data) return;
+    open=true; grid.scrollTop=0; ov.hidden=false; sm.ok=false; brief.t0=0; vane.a=null; rose.g=0;
     head(); requestAnimationFrame(()=>{ fit(); cvs.forEach(cv=>{ const c=cv.getContext('2d'); c.fillStyle='#0b1528'; c.fillRect(0,0,cv._w,cv._h) });
       if(!run){ run=true; last=performance.now(); requestAnimationFrame(frame) } });
   }
@@ -3242,16 +3261,16 @@ const WX=(()=>{
   $('#wxClose').onclick=hide;
   ov.addEventListener('click',e=>{ if(e.target===ov) hide() });
   addEventListener('keydown',e=>{ if(e.key==='Escape'&&open) hide() });
-  addEventListener('resize',()=>{ if(!open) return; if(!ipadL()){ hide(); return } fit() });
+  addEventListener('resize',()=>{ if(!open) return; if(!wxOK()){ hide(); return } fit() });
   /* press and hold the Wind box (iPad landscape only); the box is rebuilt on every render, so the hold is caught on the page */
   let t=null,x0=0,y0=0,tile=null;
   const clr=()=>{ clearTimeout(t); t=null; if(tile) tile.classList.remove('wxhold'); tile=null };
-  document.addEventListener('pointerdown',e=>{ if(e.button>0||!ipadL()) return; const b=e.target.closest&&e.target.closest('.now .st.wind'); if(!b) return;
+  document.addEventListener('pointerdown',e=>{ if(e.button>0||!wxOK()) return; const b=e.target.closest&&e.target.closest('.now .st.wind'); if(!b) return;
     tile=b; x0=e.clientX; y0=e.clientY; b.classList.add('wxhold');
     t=setTimeout(()=>{ t=null; if(tile) tile.classList.remove('wxhold'); tile=null; if(navigator.vibrate) navigator.vibrate(14); show() },600) },true);
   document.addEventListener('pointermove',e=>{ if(t&&(Math.abs(e.clientX-x0)>10||Math.abs(e.clientY-y0)>10)) clr() },true);
   ['pointerup','pointercancel'].forEach(n=>document.addEventListener(n,clr,true));
-  document.addEventListener('contextmenu',e=>{ if(ipadL()&&e.target.closest&&e.target.closest('.now .st.wind')) e.preventDefault() });
+  document.addEventListener('contextmenu',e=>{ if(wxOK()&&e.target.closest&&e.target.closest('.now .st.wind')) e.preventDefault() });
   return {show,hide};
 })();
 {const ln=$('#locName'),sync=()=>{$('#dlocName').textContent=ln.textContent}; sync(); new MutationObserver(sync).observe(ln,{childList:true,characterData:true,subtree:true})} $('#shClose').onclick=closeSheet;
