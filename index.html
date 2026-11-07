@@ -1384,7 +1384,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.164 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether v2.165 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1406,7 +1406,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="gi gwx"><div class="gv"><svg class="v-wx" viewBox="0 0 58 58" aria-hidden="true"><circle class="o" cx="29" cy="29" r="26"/><circle class="r" cx="29" cy="29" r="20"/><path d="M29 12l-7 15h14z"/></svg></div><div class="gx"><b>Wind <i class="yor">Studio</i></b><span>Press and hold the Wind box for six live views of the wind.</span></div></div>
       <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Cycle Through Saved Locations</b><span>Swipe up or down on the main screen (or two fingers on an iPad keyboard trackpad). Rolls round from the last place to the first.</span></div></div>
       <div class="gi gh2"><div class="gv"><div class="v-hold" aria-hidden="true"><div class="hg"><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr pick"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div></div><div class="fg"></div><div class="hs"><div class="bd">SAT<i>×</i></div><div class="cols"><u style="--h:30%"></u><u style="--h:62%"></u><u style="--h:45%"></u><u style="--h:78%"></u></div></div></div></div><div class="gx"><b>Get Hourly for any day</b><span>In the 10-Day list, press and hold a day to open its hourly details. To go back:</span><div class="v-btns"><div class="v-badge s">Sat · Oct 31<i aria-hidden="true">✕</i></div><div class="v-or">or</div><div class="v-pill s">Back to 10-Day</div></div></div></div>
-      <div class="gi"><div class="gv"><div class="v-seg u"><span class="on">°C</span><span>°F</span></div></div><div class="gx"><b>Units</b><span>Switch °C and °F.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-seg u"><span class="on">°C</span><span>°F</span></div></div><div class="gx"><b>Units</b><span>Switch °C and °F. Each city remembers its own.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-circ"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg></span><span class="v-circ q">?</span></div></div><div class="gx"><b>Refresh and Guide</b><span>Reload the forecast, or reopen this guide.</span></div></div>
       <div class="gi" id="gBice"><div class="gv"><div class="bice" style="--c:#ff4d4d"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M9 3.6l3 2.4 3-2.4M9 20.4l3-2.4 3 2.4"/></svg><span class="bt"><span class="bk">BLACK ICE</span><span class="bv">High</span></span></div><div class="v-dots"><i style="--c:#ff9f2e"></i><i style="--c:#ff4d4d"></i><i style="--c:#ff2d9a"></i></div></div><div class="gx"><b>Black ice</b><span>Appears only when black ice is possible: Moderate, High or Severe. Shown under the Current temp and in the hours it is expected.</span></div></div>
     </div>
@@ -1426,7 +1426,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.164';
+const VER='2.165';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1443,14 +1443,16 @@ stage(); addEventListener('resize',stage);
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
-const S={loc:LS.get('loc',DEFAULT_LOC),units:LS.get('units','metric'),saved:LS.get('saved',[]),recent:LS.get('recent',[]),data:null,sel:0,idx:0,offline:false,locked:LS.get('lock',false)};
+const S={loc:LS.get('loc',DEFAULT_LOC),units:LS.get('units','metric'),cityUnits:LS.get('cityUnits',{}),saved:LS.get('saved',[]),recent:LS.get('recent',[]),data:null,sel:0,idx:0,offline:false,locked:LS.get('lock',false)};
 
 const PROV={'British Columbia':'BC','Alberta':'AB','Saskatchewan':'SK','Manitoba':'MB','Ontario':'ON','Quebec':'QC','Québec':'QC','New Brunswick':'NB','Nova Scotia':'NS','Prince Edward Island':'PE','Newfoundland and Labrador':'NL','Yukon':'YT','Northwest Territories':'NT','Nunavut':'NU'};
 const STATES={'Alabama':'AL','Alaska':'AK','Arizona':'AZ','Arkansas':'AR','California':'CA','Colorado':'CO','Connecticut':'CT','Delaware':'DE','District of Columbia':'DC','Florida':'FL','Georgia':'GA','Hawaii':'HI','Idaho':'ID','Illinois':'IL','Indiana':'IN','Iowa':'IA','Kansas':'KS','Kentucky':'KY','Louisiana':'LA','Maine':'ME','Maryland':'MD','Massachusetts':'MA','Michigan':'MI','Minnesota':'MN','Mississippi':'MS','Missouri':'MO','Montana':'MT','Nebraska':'NE','Nevada':'NV','New Hampshire':'NH','New Jersey':'NJ','New Mexico':'NM','New York':'NY','North Carolina':'NC','North Dakota':'ND','Ohio':'OH','Oklahoma':'OK','Oregon':'OR','Pennsylvania':'PA','Rhode Island':'RI','South Carolina':'SC','South Dakota':'SD','Tennessee':'TN','Texas':'TX','Utah':'UT','Vermont':'VT','Virginia':'VA','Washington':'WA','West Virginia':'WV','Wisconsin':'WI','Wyoming':'WY'};
 const abbr=a=>PROV[a]||STATES[a]||a;
 
 /* ---------- helpers ---------- */
-const met=()=>S.units==='metric';
+/* v2.165: °C/°F is remembered per city; a city never switched uses the default */
+const unitKey=()=>S.loc.lat.toFixed(2)+','+S.loc.lon.toFixed(2);
+const met=()=>(S.cityUnits[unitKey()]||S.units)==='metric';
 const fT=c=>c==null?'–':Math.round(met()?c:c*9/5+32)+'°';
 const nT=c=>met()?c:c*9/5+32;
 const fP=mm=>{if(mm==null)return '–';if(met()){return (mm<10&&mm>0?mm.toFixed(1).replace(/\.0$/,''):Math.round(mm))+' mm'}const i=mm/25.4;return (i<1&&i>0?i.toFixed(2).replace(/0$/,''):i.toFixed(1))+' in'};
@@ -3269,8 +3271,8 @@ function hourlyJump(smooth){
   go($('#hscroll'),[...document.querySelectorAll('#hgrid .r.time .c')]);
 }
 document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>{if(S.mode===b.dataset.m)return; S.mode=b.dataset.m; render(); requestAnimationFrame(()=>requestAnimationFrame(()=>hourlyJump(true)))});
-$('#uC').onclick=()=>{S.units='metric';LS.set('units','metric');render()};
-$('#uF').onclick=()=>{S.units='imperial';LS.set('units','imperial');render()};
+$('#uC').onclick=()=>{S.cityUnits[unitKey()]='metric';LS.set('cityUnits',S.cityUnits);render()};
+$('#uF').onclick=()=>{S.cityUnits[unitKey()]='imperial';LS.set('cityUnits',S.cityUnits);render()};
 $('#refresh').onclick=()=>load(true);
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden){touchSeen();return}
