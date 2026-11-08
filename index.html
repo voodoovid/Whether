@@ -1352,18 +1352,25 @@ body:not(.locked) .loc svg{fill:#f4b942}
 .cnsub .vt{font-weight:700;padding:1px 8px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);font-size:12.5px}
 #cnClose{margin-left:auto;flex:none;font-size:17px;font-weight:800;color:#fff;padding:8px 18px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28)}
 #cnClose:active{background:rgba(255,255,255,.3)}
-.cng{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-auto-rows:1fr;gap:10px;padding:12px}
+.cng{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:12px}
+/* v2.177: readings grouped into sections (Wind, Rain, Pressure, ...), laid out in rows */
+.cnr{display:flex;gap:10px;flex:1 0 auto}
+.cns{flex:var(--n) 1 0;min-width:0;display:flex;flex-direction:column;padding:7px 8px 8px;border-radius:21px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.13)}
+.cns h3{display:flex;align-items:center;gap:7px;margin:0 4px 6px;font-size:13.5px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;color:#9fd0ff}
+.cns h3 svg{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.cns .cnti{flex:1;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:8px}
 .cnt{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;min-width:0;padding:11px 10px 10px;border-radius:18px;
   background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
 .cnt.w2{grid-column:span 2}
 .cnt .cl{font-size:12.5px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;line-height:1.15}
 .cnt .cv{font-size:34px;font-weight:800;line-height:1.1;margin-top:5px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .cnt .cv small{font-size:.46em;font-weight:800;margin-left:3px}
+.cnt .cv{align-self:stretch;overflow:hidden}   /* v2.177: long values shrink to fit their box (see fitV) */
 .cnt .cv.tp{color:#f4b942}   /* v2.176: every reading here is the station's own, so all values are my yellow */
 .cnt .cs{font-size:14px;font-weight:700;line-height:1.2;margin-top:3px}
 .cnt .cq{font-size:13.5px;font-weight:600;font-style:italic;line-height:1.25;margin-top:auto;padding-top:7px;color:#bfe3ff}
 .cnfoot{flex:none;padding:2px 18px 12px;font-size:12.5px;font-weight:600;text-align:center}
-@media (max-width:1100px){ .cng{grid-template-columns:repeat(4,minmax(0,1fr))} .cnt .cv{font-size:30px} }
+@media (max-width:1100px){ .cnr{flex-wrap:wrap} .cns{flex-basis:calc(var(--n) * 150px)} .cnt .cv{font-size:30px} }
 </style>
 </head>
 <body>
@@ -1489,7 +1496,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.176) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.177) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1511,7 +1518,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.176) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.177) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1574,7 +1581,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.176';
+const VER='2.177';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2327,7 +2334,7 @@ const CN=(()=>{
     const sl=cc.sea_level_pressure, trend=cc.pressure_trend;
     const bh=s.bh; let btr='Trend: measuring';
     if(bh.length){ const mins=Math.round((bh[bh.length-1].t-bh[0].t)/60); if(mins>=10){ const d=batt-bh[0].v; btr=d>0.02?`↗ Rising over ${mins} min`:d<-0.02?`↘ Falling over ${mins} min`:`→ Steady over ${mins} min` } }
-    return {t,lull,gust,temp,rh,pres,lux,uv,solar,rain,ltgN,ltgD,batt,dp,wb,dl,dens,perH,hi,wc,high,sl,trend,btr,cc,hw:s.hw};
+    return {t,lull,avg,gust,temp,rh,pres,lux,uv,solar,rain,ltgN,ltgD,batt,dp,wb,dl,dens,perH,hi,wc,high,sl,trend,btr,cc,hw:s.hw};
   }
 
   /* each tile: id, label, span, then a function giving value, sub line and a cheeky comment */
@@ -2337,7 +2344,12 @@ const CN=(()=>{
     {id:'wet',l:'Wet bulb',f:x=>({v:tmp(x.wb),tp:1,s:`Delta-T ${dT(x.dl)}`,q:band(x.wb,[[0,'What a damp thermometer would say. Brr.'],[8,'A soggy thermometer is unimpressed.'],[16,'Mild. Even the thermometer is bored.'],[99,'Sweaty thermometer territory.']])})},
     {id:'hi',l:'Heat index',f:x=>x.hi==null?{v:'–',s:'Not hot enough',q:'Needs 27° and sticky. Not today, Vancouver.'}:{v:tmp(x.hi),tp:1,s:'Hot and humid combined',q:band(x.hi-x.temp,[[2,'Basically just the temperature.'],[5,'Warmer than it looks. Hydrate.'],[99,'Sauna with opinions.']])}},
     {id:'wc',l:'Wind chill',f:x=>x.wc==null?{v:'–',s:'No chill today',q:'The wind is not bothering anyone.'}:{v:tmp(x.wc),tp:1,s:'Wind makes it colder',q:band(x.wc,[[-15,'Ouch. Stay in.'],[-5,'Properly nippy. Zip up.'],[5,'Brisk. Wear the jacket.'],[99,'A chilly nudge. Barely a bother.']])}},
-    {id:'gust',l:'Gust',f:x=>({v:U(fW1(x.gust*3.6),wUnit()),s:`Lull ${fW1(x.lull*3.6)} · 5-min high ${fW1(x.high)}`,q:band(x.gust*3.6,[[10,'Barely a whisper.'],[30,'Hold your hat. Loosely.'],[50,'Umbrellas are a bad idea.'],[999,'Stay inside. Seriously.']])})},
+    {id:'gust',l:'Gust',f:x=>({v:U(fW1(x.gust*3.6),wUnit()),s:`5-min high ${fW1(x.high)} ${wUnit()}`,q:band(x.gust*3.6,[[10,'Barely a whisper.'],[30,'Hold your hat. Loosely.'],[50,'Umbrellas are a bad idea.'],[999,'Stay inside. Seriously.']])})},
+    {id:'lull',l:'Lull',f:x=>({v:U(fW1(x.lull*3.6),wUnit()),s:'Softest wind this minute',q:band(x.lull*3.6,[[1,'Dead calm between the puffs.'],[10,'The wind takes a breather.'],[25,'Even the quiet bits are breezy.'],[999,'No let-up. Hold on to something.']])})},   // v2.177
+    {id:'avg5',l:'5-Minute Average',f:x=>{ let a=null; try{ a=WX.avg(300000) }catch(e){}   // v2.177: same 5-minute average as the main Wind box
+      if(a==null) return {v:'–',s:'Gathering 5 minutes of wind',q:'Patience. Averages take time.'};
+      const now=x.avg*3.6, d=now-a;
+      return {v:U(fW1(a),wUnit()),s:`Now ${fW1(now)} ${wUnit()} · ${Math.abs(d)<1.5?'steady':d>0?'picking up':'easing off'}`,q:band(a,[[5,'Calm on average. Riveting.'],[15,'A gentle, consistent breeze.'],[30,'Steadily breezy. Flags approve.'],[999,'Consistently rude wind.']])} }},
     {id:'pres',l:'Pressure',f:x=>({v:U(f(x.sl!=null?x.sl:x.pres),'mb'),s:x.sl!=null?`Station ${f(x.pres)} mb`:'Station pressure',q:band(x.sl!=null?x.sl:x.pres,[[1000,'Low. Brace for weather drama.'],[1013,'Meh. Average-ish.'],[1022,'Normal. Boring. Take it.'],[9999,'High and mighty. Settled skies.']])})},
     {id:'trend',l:'Pressure trend',f:x=>{ const t=x.trend; if(!t) return {v:'–',s:'Waiting for the station',q:'Barometer is thinking about it.'};
       return {v:t==='rising'?'↗ Rising':t==='falling'?'↘ Falling':'→ Steady',s:'From the station barometer',q:t==='rising'?'Things are looking up. Probably.':t==='falling'?'The sky is winding up. Brace.':'Nothing to see here.'} }},
@@ -2357,7 +2369,22 @@ const CN=(()=>{
       s:`${h.rssi!=null?Math.round(h.rssi)+' dBm':'Signal n/a'} · Up ${up(h.up)}`+(h.hubFw!=null?` · Hub ${h.hubFw}`:''),
       q:h.up!=null&&h.up>7*86400?'Hasn’t rebooted in ages. Show-off.':'A tiny robot on your roof, reporting for duty.'} }}
   ];
-  grid.innerHTML=TILES.map(t=>`<div class="cnt${t.span?' w2':''}" id="cn_${t.id}"><div class="cl">${t.l}</div><div class="cv">–</div><div class="cs">&nbsp;</div><div class="cq">&nbsp;</div></div>`).join('');
+  /* v2.177: separate sections, three rows */
+  const IC={wind:'<path d="M3 8h11a3 3 0 1 0-3-3"/><path d="M3 12h16a3 3 0 1 1-3 3"/><path d="M3 16h7"/>',
+    rain:'<path d="M7 17a5 5 0 1 1 1.5-9.8A6 6 0 0 1 20 10a4 4 0 0 1-1 7.9"/><path d="M9 20l1-2M13 21l1-2M17 20l1-2"/>',
+    pres:'<circle cx="12" cy="13" r="8"/><path d="M12 13l4-4"/><path d="M8 5l1 2M16 5l-1 2"/>',
+    ltg:'<path d="M13 2L5 14h6l-1 8 8-12h-6z"/>',
+    sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    air:'<path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/>',
+    sens:'<rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 11v2"/><path d="M6 10v4M9 10v4"/>'};
+  const SECS=[
+    [['wind','Wind',['gust','lull','avg5','wc']],['rain','Rain',['rate','ry']]],
+    [['pres','Pressure',['pres','trend','dens']],['ltg','Lightning',['ltg','ltgh']],['sun','Sun',['uv','sol']]],
+    [['air','Air',['hum','dew','wet','hi']],['sens','Sensor',['batt','info']]]];
+  const TB=Object.fromEntries(TILES.map(t=>[t.id,t]));
+  const tile=t=>`<div class="cnt${t.span?' w2':''}" id="cn_${t.id}"><div class="cl">${t.l}</div><div class="cv">–</div><div class="cs">&nbsp;</div><div class="cq">&nbsp;</div></div>`;
+  grid.innerHTML=SECS.map(row=>`<div class="cnr">${row.map(([ic,name,ids])=>{ const n=ids.reduce((a,i)=>a+(TB[i].span||1),0);
+    return `<section class="cns" style="--n:${n}" aria-label="${name}"><h3><svg viewBox="0 0 24 24" aria-hidden="true">${IC[ic]}</svg>${name}</h3><div class="cnti">${ids.map(i=>tile(TB[i])).join('')}</div></section>` }).join('')}</div>`).join('');
   const els=TILES.map(t=>{ const e=document.getElementById('cn_'+t.id); return {t,v:e.querySelector('.cv'),s:e.querySelector('.cs'),q:e.querySelector('.cq')} });
   const clock=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit',second:'2-digit'});
   let open=false, timer=0;
@@ -2369,8 +2396,11 @@ const CN=(()=>{
     src.innerHTML=x?`<span class="amk">Amankenzie</span> Station · ${live?'reading from '+clock(new Date(x.t*1000)):'waiting for a fresh reading'}`:`<span class="amk">Amankenzie</span> Station · waiting for the first reading`;
     for(const e of els){ if(!x){ e.v.textContent='–'; e.v.classList.remove('tp'); e.s.textContent=' '; e.q.textContent='Waiting for the station…'; continue }
       let r; try{ r=e.t.f(x) }catch(err){ r={v:'–',s:'',q:''} }
-      e.v.innerHTML=r.v; e.v.classList.toggle('tp',r.v!=='–');   /* v2.176: all station values in my yellow (dashes stay white) */ e.s.textContent=r.s||' '; e.q.textContent=r.q||' ' }
+      e.v.innerHTML=r.v; e.v.classList.toggle('tp',r.v!=='–');   /* v2.176: all station values in my yellow (dashes stay white) */ e.s.textContent=r.s||' '; e.q.textContent=r.q||' '; fitV(e.v) }
   }
+  /* v2.177: shrink a value only when it would not fit its box, never wrap or clip it */
+  function fitV(v){ if(v.dataset.f===v.innerHTML+'|'+v.clientWidth) return; v.style.fontSize=''; let fs=parseFloat(getComputedStyle(v).fontSize);
+    while(v.scrollWidth>v.clientWidth+1&&fs>16){ fs-=1; v.style.fontSize=fs+'px' } v.dataset.f=v.innerHTML+'|'+v.clientWidth }
   function show(){ if(btn.hidden) return; open=true; ov.hidden=false; grid.scrollTop=0; paint(); clearInterval(timer); timer=setInterval(paint,1000) }
   function hide(){ open=false; ov.hidden=true; clearInterval(timer); timer=0 }
   function sync(){ const s=TW.snap(), ok=s.token&&s.home; if(btn.hidden===ok) btn.hidden=!ok; if(!ok&&open) hide() }   // Home only: the button disappears everywhere else
