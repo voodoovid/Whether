@@ -1291,6 +1291,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 /* ---- v2.169 ---- */
 /* pop-up titles (Location, Settings, Quick Guide, Wind Studio) in my yellow */
 .shtop b,.gt h2{color:#f4b942}
+.amk{color:#f4b942}   /* v2.172: every "Amankenzie" is my yellow */
 .shbt{display:flex;align-items:center;gap:8px}
 #stBtn{display:inline-flex;align-items:center;gap:7px;padding:0 15px 0 12px}
 #stBtn svg{width:16px;height:16px;flex:none;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
@@ -1449,16 +1450,16 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.171) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.172) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
   <div class="shc">
-    <div class="shtop"><b id="stTitle">Settings</b><button id="stClose">Done</button></div>
+    <div class="shtop"><b id="stTitle">Settings</b><div class="shbt"><button id="stLoc" type="button">Locations</button><button id="stClose">Done</button></div></div>
     <div class="shh">Dark mode</div>
     <div class="dmseg" id="dmSeg" role="radiogroup" aria-label="Dark mode"><button type="button" role="radio" data-dm="on">On</button><button type="button" role="radio" data-dm="off">Off</button><button type="button" role="radio" data-dm="auto">Auto</button></div>
     <p class="dmnote" id="dmNote"></p>
-    <div class="shh" id="tpH">Home weather station</div>
+    <div class="shh" id="tpH"><span class="amk">Amankenzie</span> Weather Station</div>
     <div class="tpbox" id="tpBox">
       <p id="tpIntro">Paste your Tempest access token to show your own station's live readings at Home. It stays on this device and is sent only to Tempest.</p>
       <form class="tpf" id="tpForm" autocomplete="off"><input id="tpTok" type="text" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Tempest access token" aria-label="Tempest access token"><button type="submit" id="tpGo">Connect</button></form>
@@ -1467,7 +1468,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.171) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.172) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1492,9 +1493,9 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="gi"><div class="gv"><div class="v-loc"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>City</span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></div></div><div class="gx"><b>Location</b><span>Tap to search or pick a saved place. Searched places wait under Recent until you tap Save.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Location Lock</span><i class="tk"><b></b></i></div></div><div class="gx"><b>Location Lock</b><span>On by default: Whether stays on the city you picked until you change it. Turn it off (the switch in the location menu, or press and hold the city name) and the city turns yellow; after 30 minutes away Whether then returns to Home.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">Next 24 hours</span></div></div><div class="gx"><b>Back to now</b><span>Press and hold the Next 24 hours title to jump the hourly view back to now.</span></div></div>
-      <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">Settings</span></div></div><div class="gx"><b>Settings</b><span>Beside Done at the top of the Location menu: Dark mode (On, Off or Auto) and your Home weather station.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">Settings</span></div></div><div class="gx"><b>Settings</b><span>Beside Done at the top of the Location menu: Dark mode (On, Off or Auto) and your <span class="amk">Amankenzie</span> Weather Station. Its own Locations button takes you back to the location list.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-title"><img src="icon-192.png" alt="" width="26" height="26"><div class="tt"><b>Whether</b><i>(or not)</i></div></div></div><div class="gx"><b>Go Home</b><span>Press and hold the Whether <em class="yor">(or not)</em> title to jump to your Home location, the first one in your saved list.</span></div></div>
-      <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill v-stn"><i class="ld" style="display:inline-block;flex:none;width:9px;height:9px;border-radius:50%;background:#5fd3a0"></i><span>Amankenzie <br>Station</span></span></div></div><div class="gx"><b>Amankenzie Station</b><span>At Home, with your Tempest connected, the temperature, Feels like, wind (with its live dial), rain and shoe conditions come from your own station. Everything else stays forecast.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill v-stn"><i class="ld" style="display:inline-block;flex:none;width:9px;height:9px;border-radius:50%;background:#5fd3a0"></i><span><span class="amk">Amankenzie</span> <br>Station</span></span></div></div><div class="gx"><b><span class="amk">Amankenzie</span> Station</b><span>At Home, with your Tempest connected, the temperature, Feels like, wind (with its live dial), rain and shoe conditions come from your own station. Everything else stays forecast.</span></div></div>
       <div class="gi gwx"><div class="gv"><svg class="v-wx" viewBox="0 0 58 58" aria-hidden="true"><circle class="o" cx="29" cy="29" r="26"/><circle class="r" cx="29" cy="29" r="20"/><path d="M29 12l-7 15h14z"/></svg></div><div class="gx"><b>Wind <i class="yor">Studio</i></b><span>Press and hold the Wind box for six live views of the wind.</span></div></div>
       <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Cycle Through Saved Locations</b><span>Swipe up or down on the main screen (or two fingers on an iPad keyboard trackpad). Rolls round from the last place to the first.</span></div></div>
       <div class="gi gh2"><div class="gv"><div class="v-hold" aria-hidden="true"><div class="hg"><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr pick"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div><div class="hr"><b></b><i style="--c:#46b0ff"></i><i style="--c:#ffd04a"></i><i style="--c:#c4f1ff"></i><i style="--c:#ff9f2e"></i></div></div><div class="fg"></div><div class="hs"><div class="bd">SAT<i>×</i></div><div class="cols"><u style="--h:30%"></u><u style="--h:62%"></u><u style="--h:45%"></u><u style="--h:78%"></u></div></div></div></div><div class="gx"><b>Get Hourly for any day</b><span>In the 10-Day list, press and hold a day to open its hourly details. To go back:</span><div class="v-btns"><div class="v-badge s">Sat · Oct 31<i aria-hidden="true">✕</i></div><div class="v-or">or</div><div class="v-pill s">Back to 10-Day</div></div></div></div>
@@ -1518,7 +1519,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.171';
+const VER='2.172';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2217,7 +2218,7 @@ function render(){
   $('#uC').classList.toggle('on',met()); $('#uF').classList.toggle('on',!met());
   { const ev=`<span class="evt">${(E?E.tom:+C.time.slice(11,13)>=21)?'Tomorrow':'Tonight'} 6–10 PM</span>`, L=!E&&!DV&&!!C._live, up=`<span class="evu">${S.offline?'Offline · saved ':'Updated '}${new Date(L?C._t:j._at).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</span>`;
     // same two lines in both modes (Current keeps an invisible copy below) so the Current/Tonight switch never shifts
-    $('#upd').innerHTML=E?ev+up:up+(L?'<span class="evt lcl"><i class="ld"></i>Amankenzie Station</span>':ev.replace('class="evt"','class="evt ghost" aria-hidden="true"'));
+    $('#upd').innerHTML=E?ev+up:up+(L?'<span class="evt lcl"><i class="ld"></i><span class="amk">Amankenzie</span>&nbsp;Station</span>':ev.replace('class="evt"','class="evt ghost" aria-hidden="true"'));
     if(DV) $('#upd').innerHTML=`<span class="evt">${E?'Night 6–10 PM':dd===1?'Tomorrow':'In '+dd+' days'}</span><span class="evu">Forecast · updated ${new Date(j._at).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</span>`; }
   { const db=$('#dayb'); if(DV) db.innerHTML=`${dayName(DV.date)} · ${dayDate(DV.date)}<i aria-hidden="true">✕</i>`; }
   document.body.classList.toggle('dayv',!!DV); syncBtn(); requestAnimationFrame(()=>{ placeDayBadge(); fitStrip() });
@@ -3073,8 +3074,8 @@ function guideHours(){
 /* ---- v2.167: every button shows a hint pop-up on hover (mouse or trackpad) ---- */
 (function(){
   const tip=document.createElement('div'); tip.id='tip'; tip.setAttribute('role','tooltip'); tip.hidden=true; document.body.appendChild(tip);
-  const MAP={btn10:null,uC:'Show temperatures in °C',uF:'Show temperatures in °F',refresh:'Refresh the forecast',helpBtn:'Open the quick user guide',stBtn:'Open Settings: dark mode and home weather station',
-    locBtn:'Change location (press and hold to lock or unlock)',lockSw:'Location Lock: stay on the city you picked',shClose:'Close Location',gClose:'Close the guide',stClose:'Close Settings',gps:'Use this device’s location',tpGo:'Connect your Tempest station',tpDel:'Remove the token from this device',tpCopy:'Copy the token so you can paste it into another app',tpcNo:'Cancel and keep the token',tpcYes:'Delete the token from this device'};
+  const MAP={btn10:null,uC:'Show temperatures in °C',uF:'Show temperatures in °F',refresh:'Refresh the forecast',helpBtn:'Open the quick user guide',stBtn:'Open Settings: dark mode and Amankenzie Weather Station',
+    locBtn:'Change location (press and hold to lock or unlock)',lockSw:'Location Lock: stay on the city you picked',shClose:'Close Location',gClose:'Close the guide',stClose:'Close Settings',stLoc:'Open the Locations list',gps:'Use this device’s location',tpGo:'Connect your Tempest station',tpDel:'Remove the token from this device',tpCopy:'Copy the token so you can paste it into another app',tpcNo:'Cancel and keep the token',tpcYes:'Delete the token from this device'};
   Object.keys(MAP).forEach(id=>{ const el=document.getElementById(id); if(el&&MAP[id]) el.dataset.hint=MAP[id] });
   const text=b=>{ if(b.dataset.hint) return b.dataset.hint; if(b.dataset.m) return b.dataset.m==='eve'?'Show tonight, 6–10 PM':'Show conditions now'; if(b.dataset.dm) return {on:'Always use the night look',off:'Always use the day look',auto:'Follow daylight where you are'}[b.dataset.dm];
     if(b.classList.contains('sv')) return 'Save this location'; if(b.classList.contains('x')) return 'Remove this location';
@@ -3101,6 +3102,7 @@ document.querySelectorAll('#dmSeg button').forEach(b=>b.onclick=()=>{ DM.set(b.d
 function openSettings(){ drawDM(); $('#settings').hidden=false; $('#settings .shc').scrollTop=0 }
 function closeSettings(){ $('#settings').hidden=true }
 $('#stBtn').onclick=()=>{ closeSheet(); openSettings() }; $('#stClose').onclick=closeSettings;
+$('#stLoc').onclick=()=>{ closeSettings(); openSheet() };   // v2.172: Locations button beside Done in Settings
 $('#settings').addEventListener('click',e=>{ if(e.target.id==='settings') closeSettings() });
 addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('#settings').hidden) closeSettings() });
 function openGuide(){ $('#gShoe').innerHTML=SHOE; $('#gVer').innerHTML='<span class="gw1">Whether</span><span class="gor">(or not)</span><span class="gv2">(v'+VER+')</span>'; guideHours(); { const gb=$('#guide .gb'), bi=$('#gBice'), on=!$('#bice').hidden; if(bi) on?gb.prepend(bi):gb.append(bi) }   // v2.58: black ice leads the guide only when it applies, otherwise it sits last
@@ -3321,7 +3323,9 @@ const WX=(()=>{
       txt(c,tot?CN[top]:'–',cx,y+26,24,800,'center','#fff');
       txt(c,tot?`${Math.round(mx/tot*100)}% of the time`:'',cx,y+44,10.5,700,'center','#f4d442');
       txt(c,note,cx,y+60,tfit(c,note,cw-8,9.5,700),700,'center','#fff') });
-    txt(c,'Week & year build from the Amankenzie Station while the app is open',w/2,h-8,tfit(c,'Week & year build from the Amankenzie Station while the app is open',w-20,9.5,700),700,'center','rgba(255,255,255,.75)');
+    { const A='Week & year build from the ', B='Amankenzie', Z=' Station while the app is open', f=tfit(c,A+B+Z,w-20,9.5,700);
+      c.font=`700 ${f}px ${FONT}`; const wA=c.measureText(A).width, wB=c.measureText(B).width, wZ=c.measureText(Z).width, x0=w/2-(wA+wB+wZ)/2;
+      txt(c,A,x0,h-8,f,700,'left','rgba(255,255,255,.75)'); txt(c,B,x0+wA,h-8,f,700,'left','#f4b942'); txt(c,Z,x0+wA+wB,h-8,f,700,'left','rgba(255,255,255,.75)') }   // v2.172: Amankenzie in my yellow
   }};
 
   /* 06 · Wind Rose: the next 24 hours sorted by where the wind comes from; the longest petal is the main direction */
@@ -3391,7 +3395,7 @@ const WX=(()=>{
       if(cv.width!==W||cv.height!==H){ cv.width=W; cv.height=H; VIEWS[i].p&&(VIEWS[i].p=[]) }
       const c=cv.getContext('2d'); c.setTransform(dpr,0,0,dpr,0,0); cv._w=r.width; cv._h=r.height }) }
   function head(){ const L=TW.wind&&TW.wind(), d=$('#wxSrc'), dot=$('#wxDot');
-    d.textContent=L?'Live · Amankenzie Station':S.day>0?'Forecast · selected day':S.mode==='eve'?'Forecast · Tonight 6–10':'Forecast · '+(S.loc&&S.loc.name||'');
+    if(L) d.innerHTML='Live · <span class="amk">Amankenzie</span> Station'; else d.textContent=S.day>0?'Forecast · selected day':S.mode==='eve'?'Forecast · Tonight 6–10':'Forecast · '+(S.loc&&S.loc.name||'');
     dot.classList.toggle('fc',!L); $('#wxVer').textContent='(v'+VER+')' }
   function frame(now){
     if(!open){ run=false; return }
