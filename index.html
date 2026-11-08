@@ -1326,6 +1326,45 @@ body:not(.locked) .loc svg{fill:#f4b942}
   body.dayv #nowWind .st.wind .v small{font-size:12px}
   body.dayv #nowWind .st.wind .w{font-size:14px;line-height:1.05}
 }
+
+/* v2.173: Conditions button + pop-up (iPad landscape only, at Home) */
+#condBtn{display:none}
+@media (min-width:901px) and (min-height:600px) and (orientation:landscape){
+  html:not(.mac) #condBtn:not([hidden]){display:flex;align-items:center;justify-content:center;gap:9px;grid-column:1;grid-row:1;justify-self:end;align-self:center;position:relative;z-index:4;
+    width:min(224px,17vw);margin-right:6px;box-sizing:border-box;min-height:46px;padding:0 14px;border-radius:999px;color:#fff;font-size:20px;font-weight:800;letter-spacing:.2px;white-space:nowrap;
+    text-shadow:var(--ol,0 1px 3px rgba(0,0,0,.5));background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 6px 16px rgba(0,0,0,.22)}
+  html:not(.mac) #condBtn:active{background:rgba(255,255,255,.32)}
+  #condBtn svg{width:22px;height:22px;flex:none;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+}
+#cn{position:fixed;inset:0;z-index:56;display:flex;align-items:center;justify-content:center;background:rgba(2,6,14,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 14px)}
+#cn[hidden]{display:none}
+#cn,#cn *{text-shadow:none}
+.cnc{width:min(1240px,100%);max-height:100%;display:flex;flex-direction:column;overflow:hidden;color:#fff;
+  background:rgba(10,18,34,.97);border:1px solid rgba(255,255,255,.18);border-radius:26px;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:wxIn .32s cubic-bezier(.2,.9,.3,1.15)}
+.cnh{display:flex;align-items:center;gap:14px;flex:none;padding:12px 16px 12px 18px;border-bottom:1px solid rgba(255,255,255,.12);background:linear-gradient(180deg,rgba(77,150,240,.28),rgba(77,150,240,0))}
+.cnh img{width:38px;height:38px;border-radius:10px;flex:none;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+.cnh h2{font-size:25px;font-weight:800;letter-spacing:-.2px;line-height:1.1}
+.cnh h2 i{font-style:normal;color:#f4b942}
+.cnsub{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-top:3px}
+.cnsub .ld{width:9px;height:9px;border-radius:50%;background:#5fd3a0;animation:wxPulse 1.8s infinite}
+.cnsub .ld.off{background:#ff5d6c;animation:none}
+.cnsub .vt{font-weight:700;padding:1px 8px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);font-size:12.5px}
+#cnClose{margin-left:auto;flex:none;font-size:17px;font-weight:800;color:#fff;padding:8px 18px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28)}
+#cnClose:active{background:rgba(255,255,255,.3)}
+.cng{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-auto-rows:1fr;gap:10px;padding:12px}
+.cnt{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;min-width:0;padding:11px 10px 10px;border-radius:18px;
+  background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
+.cnt.w2{grid-column:span 2}
+.cnt .cl{font-size:12.5px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;line-height:1.15}
+.cnt .cv{font-size:34px;font-weight:800;line-height:1.1;margin-top:5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cnt .cv small{font-size:.46em;font-weight:800;margin-left:3px}
+.cnt .cv.tp{color:#f4b942}
+.cnt .cs{font-size:14px;font-weight:700;line-height:1.2;margin-top:3px}
+.cnt .cq{font-size:13.5px;font-weight:600;font-style:italic;line-height:1.25;margin-top:auto;padding-top:7px;color:#bfe3ff}
+.cnt.ol .cl::before,.cnfoot i::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:#7fb2f5;box-shadow:0 0 0 1.5px rgba(127,178,245,.35);margin-right:6px;vertical-align:1px}
+.cnfoot{flex:none;padding:2px 18px 12px;font-size:12.5px;font-weight:600;text-align:center}
+@media (max-width:1100px){ .cng{grid-template-columns:repeat(4,minmax(0,1fr))} .cnt .cv{font-size:30px} }
 </style>
 </head>
 <body>
@@ -1380,6 +1419,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 <canvas id="fx" aria-hidden="true"></canvas>
 <div id="flash" aria-hidden="true"></div>
 <div id="app">
+  <button id="condBtn" type="button" hidden aria-haspopup="dialog" data-hint="Every reading from your weather station"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14a8 8 0 0 1 16 0"/><path d="M12 14l4-4"/><path d="M4 18h16"/></svg>Conditions</button>
   <section id="left">
     <div class="bar">
       <div class="brand"><img src="icon-192.png" alt="" width="32" height="32"><div class="ttl"><span class="t1">Whether</span><span class="t2">(or not)</span></div><span class="vtag" id="vtag"></span></div>
@@ -1450,7 +1490,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.172) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.173) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1468,7 +1508,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.172) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.173) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1495,6 +1535,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">Next 24 hours</span></div></div><div class="gx"><b>Back to now</b><span>Press and hold the Next 24 hours title to jump the hourly view back to now.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">Settings</span></div></div><div class="gx"><b>Settings</b><span>Beside Done at the top of the Location menu: Dark mode (On, Off or Auto) and your <span class="amk">Amankenzie</span> Weather Station. Its own Locations button takes you back to the location list.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-title"><img src="icon-192.png" alt="" width="26" height="26"><div class="tt"><b>Whether</b><i>(or not)</i></div></div></div><div class="gx"><b>Go Home</b><span>Press and hold the Whether <em class="yor">(or not)</em> title to jump to your Home location, the first one in your saved list.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">Conditions</span></div></div><div class="gx"><b>Conditions</b><span>iPad landscape, at Home: opens every reading your station reports, each with a cheeky comment. Press Done or tap outside to close it.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill v-stn"><i class="ld" style="display:inline-block;flex:none;width:9px;height:9px;border-radius:50%;background:#5fd3a0"></i><span><span class="amk">Amankenzie</span> <br>Station</span></span></div></div><div class="gx"><b><span class="amk">Amankenzie</span> Station</b><span>At Home, with your Tempest connected, the temperature, Feels like, wind (with its live dial), rain and shoe conditions come from your own station. Everything else stays forecast.</span></div></div>
       <div class="gi gwx"><div class="gv"><svg class="v-wx" viewBox="0 0 58 58" aria-hidden="true"><circle class="o" cx="29" cy="29" r="26"/><circle class="r" cx="29" cy="29" r="20"/><path d="M29 12l-7 15h14z"/></svg></div><div class="gx"><b>Wind <i class="yor">Studio</i></b><span>Press and hold the Wind box for six live views of the wind.</span></div></div>
       <div class="gi"><div class="gv"><svg class="v-sw" viewBox="0 0 128 56" aria-hidden="true"><path class="ar" d="M52 18L64 6L76 18M52 38L64 50L76 38"/><circle cx="64" cy="28" r="7"/></svg></div><div class="gx"><b>Cycle Through Saved Locations</b><span>Swipe up or down on the main screen (or two fingers on an iPad keyboard trackpad). Rolls round from the last place to the first.</span></div></div>
@@ -1515,11 +1556,22 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="wxg" id="wxGrid"></div>
   </div>
 </div>
+<div id="cn" hidden role="dialog" aria-modal="true" aria-labelledby="cnTitle">
+  <div class="cnc">
+    <div class="cnh">
+      <img src="icon-192.png" alt="" width="38" height="38">
+      <div><h2 id="cnTitle">Station <i>Conditions</i></h2><div class="cnsub"><span class="ld" id="cnDot"></span><span id="cnSrc"></span><span class="vt">Whether <i class="yor">(or not)</i> <span id="cnVer"></span></span></div></div>
+      <button id="cnClose" type="button">Done</button>
+    </div>
+    <div class="cng" id="cnGrid"></div>
+    <div class="cnfoot"><i></i>A blue dot marks readings that come from Tempest's online service. Everything else is straight from the sensor.</div>
+  </div>
+</div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.172';
+const VER='2.173';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1963,13 +2015,14 @@ function rainPass(j){
 const IPADL=()=>!phoneMQ.matches&&matchMedia('(hover:none) and (pointer:coarse)').matches;
 const TW=(()=>{
   const REST='https://swd.weatherflow.com/swd/rest', WSU='wss://ws.weatherflow.com/swd/data', KEY='tempestToken';
-  const st={token:'',station:null,ws:null,retry:0,timer:null,manual:false,lastMsg:0,obs:null,obsAt:0,rapid:null,rapidAt:0,dayTotal:null,extra:0,dayMin:null,extraMin:0,seenT:0,logT:0,rainLog:[],wasOn:false,lastWord:''};
+  const st={token:'',station:null,ws:null,retry:0,timer:null,manual:false,lastMsg:0,obs:null,obsAt:0,rapid:null,rapidAt:0,dayTotal:null,extra:0,dayMin:null,extraMin:0,seenT:0,logT:0,rainLog:[],wasOn:false,lastWord:'',raw:null,cc:null,gh:[],bh:[],hw:{fw:null,hubFw:null,rssi:null,hubRssi:null,up:null}};
   try{ st.token=localStorage.getItem(KEY)||'' }catch(e){}
   const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const isHome=()=>{ try{ return !!S.loc&&key(S.loc)===key(homeLoc()) }catch(e){ return false } };
   const fresh=()=>!!st.obs&&Date.now()-st.obsAt<180000;       // a station reading arrives about once a minute
   const on=()=>!!st.token&&isHome()&&fresh()&&!S.offline&&!(S.day>0);
   const shown=()=>on()&&S.mode!=='eve';
+  const ghPush=v=>{ const n=Date.now(); st.gh.push({t:n,v}); while(st.gh.length&&n-st.gh[0].t>300000) st.gh.shift() };   // v2.173: last 5 minutes of wind, for the Conditions pop-up
   const rapidOk=()=>!!st.rapid&&Date.now()-st.rapidAt<15000;  // live wind arrives every 3 seconds
   function windNow(){ const o=st.obs; if(!o) return {kmh:0,dir:0,gust:0};
     const r=rapidOk(), kmh=(r?st.rapid.ms:o.avg)*3.6, dir=r?st.rapid.dir:o.dir;
@@ -2091,6 +2144,7 @@ const TW=(()=>{
       const s=list[0], dev=(s.devices||[]).find(d=>d.device_type==='ST');
       if(!dev) throw new Error('no Tempest sensor on this station');
       st.station={id:s.station_id,deviceId:dev.device_id};
+      { const hub=(s.devices||[]).find(d=>d.device_type==='HB'); if(dev.firmware_revision!=null) st.hw.fw=dev.firmware_revision; if(hub&&hub.firmware_revision!=null) st.hw.hubFw=hub.firmware_revision }
       mark(1,'pass','Station: found'); return true;
     }catch(e){ st.station=null; mark(1,'fail','Station: '+e.message); mark(2,'','Live feed: skipped'); mark(3,'','Rain today: skipped'); return false }
   }
@@ -2115,13 +2169,21 @@ const TW=(()=>{
   function stopWS(){ st.manual=true; clearTimeout(st.timer); st.timer=null; if(st.ws){ try{ st.ws.close() }catch(e){} st.ws=null } }
   function onMsg(m){
     if(m.type==='connection_opened'){ mark(2,'pass','Live feed: connected'); return }
-    if(m.type==='rapid_wind'&&m.ob){ st.rapid={ms:m.ob[1],dir:m.ob[2]}; st.rapidAt=Date.now(); mark(2,'pass','Live feed: receiving'); paintWind(); return }
+    if(m.type==='rapid_wind'&&m.ob){ st.rapid={ms:m.ob[1],dir:m.ob[2]}; st.rapidAt=Date.now(); ghPush(m.ob[1]*3.6); mark(2,'pass','Live feed: receiving'); paintWind(); return }
     if(m.type==='obs_st'&&m.obs&&m.obs[0]) onObs(m.obs[0]);
+    if(m.type==='device_status'||m.type==='hub_status'){   // v2.173: firmware, signal and uptime for the Conditions pop-up
+      const hb=m.type==='hub_status';
+      if(m.firmware_revision!=null) hb?(st.hw.hubFw=m.firmware_revision):(st.hw.fw=m.firmware_revision);
+      if(m.rssi!=null) hb?(st.hw.hubRssi=m.rssi):(st.hw.rssi=m.rssi);
+      if(m.hub_rssi!=null) st.hw.hubRssi=m.hub_rssi;
+      if(m.uptime!=null&&!hb) st.hw.up=m.uptime }
   }
   // obs_st field order per Tempest's docs
   function onObs(o){
     const [t,lull,avg,gust,dir,,pres,temp,rh,lux,uv,solar,rain,ptype]=o;
     if(temp==null||isNaN(temp)) return;
+    st.raw=o; ghPush((gust||0)*3.6);   // v2.173: the whole reading, for the Conditions pop-up
+    if(o[16]!=null&&(!st.bh.length||st.bh[st.bh.length-1].t!==t)){ st.bh.push({t,v:o[16]}); while(st.bh.length&&t-st.bh[0].t>1800) st.bh.shift() }
     st.obs={t,lull,avg:avg||0,gust:gust||0,dir:dir||0,temp,rh:rh==null?50:rh,rain:rain||0,ptype:ptype||0,uv:(uv==null||isNaN(uv))?null:uv}; st.obsAt=Date.now();
     if(t>st.seenT){ st.extra+=rain||0; if((rain||0)>0) st.extraMin+=(o[17]||1); st.seenT=t }          // added on top of the fetched daily total
     if(t>st.logT){ st.logT=t; st.rainLog.push({t,mm:rain||0}) }   // the last hour's rain, from the live readings
@@ -2134,7 +2196,7 @@ const TW=(()=>{
     if(!quiet) mark(3,'wait','Rain today: loading');
     try{
       const d=await getJSON('/better_forecast',{station_id:st.station.id,units_temp:'c',units_wind:'kph',units_pressure:'mb',units_precip:'mm',units_distance:'km'});
-      const c=d.current_conditions||{};
+      const c=d.current_conditions||{}; st.cc=c;
       try{ st.fc={}; st.fcE=[]; for(const h of (d.forecast&&d.forecast.hourly)||[]) if(h.air_temperature!=null){ st.fc[h.local_day+'-'+h.local_hour]=h.air_temperature; if(h.time!=null) st.fcE.push({t:+h.time,v:+h.air_temperature}) } st.fcE.sort((a,b)=>a.t-b.t) }catch(e){ st.fc=null; st.fcE=null }   /* v2.158: also kept by clock time, so "right now" works even when Tempest's list starts at the next hour */   // v2.124 (temporary): Tempest's own hourly temperatures
       if(c.precip_accum_local_day==null) throw new Error('not provided');
       st.dayTotal=c.precip_accum_local_day; st.extra=0; st.dayMin=c.precip_minutes_local_day==null?null:c.precip_minutes_local_day; st.extraMin=0; st.seenT=Date.now()/1000;
@@ -2191,8 +2253,100 @@ const TW=(()=>{
     if(p&&q) return p.v+(q.v-p.v)*(n-p.t)/(q.t-p.t);
     const e=p||q; return Math.abs(e.t-n)<5400?e.v:null };   // v2.158: Tempest's forecast temperature for this very moment
   const wind=()=>shown()?{...windNow(),live:true,rapid:rapidOk()}:null;   // v2.140: for the Wind Studio pop-up
-  return {overlay,mount,start,fcT,fcNow,wind,at:()=>st.obs?st.obs.t*1000:Date.now()};
+  const snap=()=>({token:!!st.token,home:isHome(),fresh:fresh(),raw:st.raw,cc:st.cc,gh:st.gh,bh:st.bh,hw:st.hw});   // v2.173
+  return {overlay,mount,start,fcT,fcNow,wind,snap,at:()=>st.obs?st.obs.t*1000:Date.now()};
 })();
+/* v2.173: Conditions pop-up: every reading from the Tempest, each with a comment. iPad landscape, Home only. */
+const CN=(()=>{
+  const btn=document.getElementById('condBtn'), ov=document.getElementById('cn'), grid=document.getElementById('cnGrid');
+  if(!btn||!ov||!grid) return {sync(){}};
+  const f=(n,d=1)=>(n==null||isNaN(n))?'–':Number(n).toFixed(d);
+  const tmp=c=>(c==null||isNaN(c))?'–':f(met()?c:c*9/5+32,1)+'°';
+  const dT=d=>(d==null||isNaN(d))?'–':f(met()?d:d*1.8,1)+'°';
+  const hm=m=>{ const t=Math.max(0,Math.round(m)), h=Math.floor(t/60), r=t%60; return h?`${h} h ${r} min`:`${r} min` };
+  const up=sec=>{ if(sec==null||isNaN(sec)) return 'n/a'; const d=Math.floor(sec/86400), h=Math.floor(sec%86400/3600), m=Math.floor(sec%3600/60); return d?`${d}d ${h}h`:h?`${h}h ${m}m`:`${m}m` };
+  const dewPoint=(t,rh)=>{ const a=17.625,b=243.04,g=Math.log(rh/100)+a*t/(b+t); return b*g/(a-g) };
+  const wetBulb=(t,rh)=>t*Math.atan(0.151977*Math.sqrt(rh+8.313659))+Math.atan(t+rh)-Math.atan(rh-1.676331)+0.00391838*Math.pow(rh,1.5)*Math.atan(0.023101*rh)-4.686035;
+  const airDens=(t,rh,p)=>{ const T=t+273.15, es=6.1078*Math.pow(10,7.5*t/(t+237.3)), pv=es*rh; return (p*100-pv)/(287.05*T)+pv/(461.495*T) };
+  const heatIdx=(t,rh)=>{ const T=t*9/5+32; let h=0.5*(T+61+(T-68)*1.2+rh*0.094);
+    if((h+T)/2>=80){ h=-42.379+2.04901523*T+10.14333127*rh-0.22475541*T*rh-0.00683783*T*T-0.05481717*rh*rh+0.00122874*T*T*rh+0.00085282*T*rh*rh-0.00000199*T*T*rh*rh;
+      if(rh<13&&T>=80&&T<=112) h-=((13-rh)/4)*Math.sqrt((17-Math.abs(T-95))/17); else if(rh>85&&T>=80&&T<=87) h+=((rh-85)/10)*((87-T)/5) }
+    return (h-32)*5/9 };
+  const rainWord=r=>!(r>0)?'No rain':r<0.25?'Very light rain':r<1?'Light rain':r<4?'Moderate rain':r<16?'Heavy rain':r<50?'Very heavy rain':'Extreme rain';
+  const dewWord=d=>d<5?'Dry':d<10?'Comfortable':d<16?'Slightly humid':d<21?'Humid':'Muggy';
+  const uvWord=u=>u<3?'Low':u<6?'Moderate':u<8?'High':u<11?'Very high':'Extreme';
+  const band=(v,list)=>{ for(const [lim,txt] of list) if(v<lim) return txt; return list[list.length-1][1] };
+  const U=(v,u)=>`${v}<small>${u}</small>`;
+
+  function X(){
+    const s=TW.snap(), o=s.raw; if(!o) return null;
+    const [t,lull,avg,gust,dir,,pres,temp,rh,lux,uv,solar,rain,ptype,ltgD,ltgN,batt,iv]=o, cc=s.cc||{};
+    const dp=cc.dew_point!=null?cc.dew_point:dewPoint(temp,rh);
+    const wb=cc.wet_bulb_temperature!=null?cc.wet_bulb_temperature:wetBulb(temp,rh);
+    const dl=cc.delta_t!=null?cc.delta_t:temp-wb;
+    const dens=cc.air_density!=null?cc.air_density:airDens(temp,rh,pres);
+    const kmh=avg*3.6, perH=rain*60/(iv||1);
+    const hi=(temp>=26.7&&rh>=40)?heatIdx(temp,rh):null;
+    const wc=(temp<=10&&kmh>4.8)?13.12+0.6215*temp-11.37*Math.pow(kmh,0.16)+0.3965*temp*Math.pow(kmh,0.16):null;
+    const gh=s.gh.map(p=>p.v), high=gh.length?Math.max(...gh,gust*3.6):gust*3.6;
+    const sl=cc.sea_level_pressure, trend=cc.pressure_trend;
+    const bh=s.bh; let btr='Trend: measuring';
+    if(bh.length){ const mins=Math.round((bh[bh.length-1].t-bh[0].t)/60); if(mins>=10){ const d=batt-bh[0].v; btr=d>0.02?`↗ Rising over ${mins} min`:d<-0.02?`↘ Falling over ${mins} min`:`→ Steady over ${mins} min` } }
+    return {t,lull,gust,temp,rh,pres,lux,uv,solar,rain,ltgN,ltgD,batt,dp,wb,dl,dens,perH,hi,wc,high,sl,trend,btr,cc,hw:s.hw};
+  }
+
+  /* each tile: id, label, online (comes from Tempest's cloud), span, then a function giving value, sub line and a cheeky comment */
+  const TILES=[
+    {id:'hum',l:'Humidity',f:x=>({v:U(Math.round(x.rh),'%'),s:`Dew point ${tmp(x.dp)}`,q:band(x.rh,[[40,'Dry. Your skin has filed a complaint.'],[70,'Perfectly fine. Suspiciously fine.'],[90,'Damp. The air is basically a sponge.'],[101,'Soup. Wear a snorkel.']])})},
+    {id:'dew',l:'Dew point',online:1,f:x=>({v:tmp(x.dp),tp:1,s:dewWord(x.dp),q:band(x.dp,[[5,'Almost refreshing. Almost.'],[10,'Enjoy it while it lasts.'],[16,'Getting sticky. Not a crime yet.'],[21,'Your hair has opinions.'],[99,'Is this even Vancouver?']])})},
+    {id:'wet',l:'Wet bulb',online:1,f:x=>({v:tmp(x.wb),tp:1,s:`Delta-T ${dT(x.dl)}`,q:band(x.wb,[[0,'What a damp thermometer would say. Brr.'],[8,'A soggy thermometer is unimpressed.'],[16,'Mild. Even the thermometer is bored.'],[99,'Sweaty thermometer territory.']])})},
+    {id:'hi',l:'Heat index',f:x=>x.hi==null?{v:'–',s:'Not hot enough',q:'Needs 27° and sticky. Not today, Vancouver.'}:{v:tmp(x.hi),tp:1,s:'Hot and humid combined',q:band(x.hi-x.temp,[[2,'Basically just the temperature.'],[5,'Warmer than it looks. Hydrate.'],[99,'Sauna with opinions.']])}},
+    {id:'wc',l:'Wind chill',f:x=>x.wc==null?{v:'–',s:'No chill today',q:'The wind is not bothering anyone.'}:{v:tmp(x.wc),tp:1,s:'Wind makes it colder',q:band(x.wc,[[-15,'Ouch. Stay in.'],[-5,'Properly nippy. Zip up.'],[5,'Brisk. Wear the jacket.'],[99,'A chilly nudge. Barely a bother.']])}},
+    {id:'gust',l:'Gust',f:x=>({v:U(f(x.gust*3.6),'km/h'),s:`Lull ${f(x.lull*3.6)} · 5-min high ${f(x.high)}`,q:band(x.gust*3.6,[[10,'Barely a whisper.'],[30,'Hold your hat. Loosely.'],[50,'Umbrellas are a bad idea.'],[999,'Stay inside. Seriously.']])})},
+    {id:'pres',l:'Pressure',online:1,f:x=>({v:U(f(x.sl!=null?x.sl:x.pres),'mb'),s:x.sl!=null?`Station ${f(x.pres)} mb`:'Station pressure',q:band(x.sl!=null?x.sl:x.pres,[[1000,'Low. Brace for weather drama.'],[1013,'Meh. Average-ish.'],[1022,'Normal. Boring. Take it.'],[9999,'High and mighty. Settled skies.']])})},
+    {id:'trend',l:'Pressure trend',online:1,f:x=>{ const t=x.trend; if(!t) return {v:'–',s:'Waiting for Tempest',q:'Barometer is thinking about it.'};
+      return {v:t==='rising'?'↗ Rising':t==='falling'?'↘ Falling':'→ Steady',s:'Per Tempest online',q:t==='rising'?'Things are looking up. Probably.':t==='falling'?'The sky is winding up. Brace.':'Nothing to see here.'} }},
+    {id:'dens',l:'Air density',online:1,f:x=>({v:U(f(x.dens,3),'kg/m³'),s:`Station ${f(x.pres)} mb`,q:band(x.dens,[[1.15,'Thin air. Golf balls rejoice.'],[1.25,'Totally average air. Riveting.'],[9,'Thick air. Great for nobody.']])})},
+    {id:'uv',l:'UV index',f:x=>({v:f(x.uv),s:uvWord(x.uv),q:band(x.uv,[[0.05,'Night. Or Vancouver in November.'],[3,'Pale and fine. Skip the sunscreen.'],[6,'Sunscreen time. Be sensible.'],[8,'Hat. Shade. Common sense.'],[99,'You will fry. Seek shade.']])})},
+    {id:'sol',l:'Solar',f:x=>({v:U(Math.round(x.solar),'W/m²'),s:x.lux>=1000?`${f(x.lux/1000)} klux`:`${Math.round(x.lux)} lux`,q:band(x.solar,[[5,'Sun? Never heard of her.'],[100,'Mostly vibes, not much sun.'],[400,'Partly solar powered.'],[800,'Solid sunshine. Show off.'],[9999,'Solar panel heaven.']])})},
+    {id:'ltg',l:'Lightning',f:x=>({v:x.ltgN?U(x.ltgN,'strikes'):'None',s:x.ltgN?`Average ${x.ltgD} km away`:'Nothing this minute',q:x.ltgN?'Zap! Start counting seconds.':'No zaps. Thor is on a break.'})},
+    {id:'rate',l:'Rain rate now',f:x=>({v:U(f(x.perH),'mm/h'),s:rainWord(x.perH),q:band(x.perH,[[0.01,'Dry. Suspicious. Check the sky again.'],[1,'Drizzle. The classic.'],[4,'Proper rain. Umbrella time.'],[16,'Heavy. Trade the umbrella for a boat.'],[999,'Biblical. Build an ark.']])})},
+    {id:'ry',l:'Rain yesterday',online:1,f:x=>{ const c=x.cc, v=c.precip_accum_local_yesterday; if(v==null) return {v:'–',s:'Loading',q:'Counting yesterday’s drops.'};
+      return {v:U(f(v),'mm'),s:c.precip_minutes_local_yesterday!=null?`${hm(c.precip_minutes_local_yesterday)} of rain`:'',q:band(v,[[0.1,'Dry yesterday. Mark the calendar.'],[5,'A perfectly respectable damp day.'],[20,'Properly wet. Very on brand.'],[999,'Biblical. Did you build the ark?']])} }},
+    {id:'ltgh',l:'Lightning 1 hr',online:1,f:x=>{ const c=x.cc, n=c.lightning_strike_count_last_1hr; if(n==null) return {v:'–',s:'Loading',q:'Waiting for the thunder report.'};
+      let sub=c.lightning_strike_count_last_3hr!=null?`3 hr: ${c.lightning_strike_count_last_3hr}`:''; const e=c.lightning_strike_last_epoch;
+      if(e){ const m=Math.max(0,Math.round((Date.now()/1000-e)/60)); if(m<180) sub+=` · ${m} min ago` }
+      return {v:U(n,'strikes'),s:sub,q:n?'The sky has been busy.':'Quiet skies. Enjoy it.'} }},
+    {id:'batt',l:'Sensor battery',f:x=>({v:U(f(x.batt,2),'V'),s:x.btr,q:band(x.batt,[[2.1,'Critical. Feed it some light.'],[2.4,'Hangry. Needs a sunny day.'],[2.6,'Fine. A little light is a snack.'],[9,'Fully fed. Happy little sensor.']])})},
+    {id:'info',l:'Sensor info',span:2,f:x=>{ const h=x.hw; return {v:`<span style="font-size:26px">${h.fw!=null?'Firmware '+h.fw:'Firmware n/a'}</span>`,
+      s:`${h.rssi!=null?Math.round(h.rssi)+' dBm':'Signal n/a'} · Up ${up(h.up)}`+(h.hubFw!=null?` · Hub ${h.hubFw}`:''),
+      q:h.up!=null&&h.up>7*86400?'Hasn’t rebooted in ages. Show-off.':'A tiny robot on your roof, reporting for duty.'} }}
+  ];
+  grid.innerHTML=TILES.map(t=>`<div class="cnt${t.span?' w2':''}${t.online?' ol':''}" id="cn_${t.id}"><div class="cl">${t.l}</div><div class="cv">–</div><div class="cs">&nbsp;</div><div class="cq">&nbsp;</div></div>`).join('');
+  const els=TILES.map(t=>{ const e=document.getElementById('cn_'+t.id); return {t,v:e.querySelector('.cv'),s:e.querySelector('.cs'),q:e.querySelector('.cq')} });
+  const clock=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit',second:'2-digit'});
+  let open=false, timer=0;
+  function paint(){
+    const x=X(), dot=document.getElementById('cnDot'), src=document.getElementById('cnSrc');
+    document.getElementById('cnVer').textContent='(v'+VER+')';
+    const live=TW.snap().fresh;
+    dot.classList.toggle('off',!live);
+    src.innerHTML=x?`<span class="amk">Amankenzie</span> Station · ${live?'reading from '+clock(new Date(x.t*1000)):'waiting for a fresh reading'}`:`<span class="amk">Amankenzie</span> Station · waiting for the first reading`;
+    for(const e of els){ if(!x){ e.v.textContent='–'; e.v.classList.remove('tp'); e.s.textContent=' '; e.q.textContent='Waiting for the station…'; continue }
+      let r; try{ r=e.t.f(x) }catch(err){ r={v:'–',s:'',q:''} }
+      e.v.innerHTML=r.v; e.v.classList.toggle('tp',!!r.tp); e.s.textContent=r.s||' '; e.q.textContent=r.q||' ' }
+  }
+  function show(){ if(btn.hidden) return; open=true; ov.hidden=false; grid.scrollTop=0; paint(); clearInterval(timer); timer=setInterval(paint,1000) }
+  function hide(){ open=false; ov.hidden=true; clearInterval(timer); timer=0 }
+  function sync(){ const s=TW.snap(), ok=s.token&&s.home; if(btn.hidden===ok) btn.hidden=!ok; if(!ok&&open) hide() }   // Home only: the button disappears everywhere else
+  btn.addEventListener('click',show);
+  document.getElementById('cnClose').addEventListener('click',hide);
+  ov.addEventListener('click',e=>{ if(e.target===ov) hide() });
+  addEventListener('keydown',e=>{ if(e.key==='Escape'&&open) hide() });
+  setInterval(sync,500); sync();
+  return {sync,show,hide};
+})();
+
 function render(){
   const j=S.data; if(!j) return;
   // new location: every time view goes back to "now"
@@ -2746,7 +2900,7 @@ $('#gps').addEventListener('click',()=>{
   // v2.68: works from anywhere on the left half in iPad landscape; a cancelled touch (iPad scroll takeover) still counts using the last finger position
   const app=$('#app'), phone=LIKE; let g=null;
   app.addEventListener('touchstart',e=>{
-    if(!phone.matches||e.touches.length!==1||document.body.classList.contains('d10')||document.body.classList.contains('dayv')||e.target.closest('input,a,#sheet,#settings,#tpConfirm,.sheet')||(e.target.closest('#daily')&&(matchMedia('(max-width:900px)').matches||(()=>{const r=$('#drows');return r&&r.scrollHeight>r.clientHeight+2})()))){g=null;return}   // v2.69: on iPad landscape the 10-day list swipes locations too (unless it needs to scroll)
+    if(!phone.matches||e.touches.length!==1||document.body.classList.contains('d10')||document.body.classList.contains('dayv')||e.target.closest('input,a,#sheet,#settings,#tpConfirm,#cn,.sheet')||(e.target.closest('#daily')&&(matchMedia('(max-width:900px)').matches||(()=>{const r=$('#drows');return r&&r.scrollHeight>r.clientHeight+2})()))){g=null;return}   // v2.69: on iPad landscape the 10-day list swipes locations too (unless it needs to scroll)
     const t=e.touches[0];
     // v2.105: a swipe starting at the very top or bottom edge belongs to iOS (Notification Centre, home bar / app switcher), not to Whether
     if(t.clientY<EDGE_TOP()||t.clientY>innerHeight-EDGE_BOT()){g=null;return}
@@ -3030,7 +3184,7 @@ $('#d10close').onclick=()=>set10(false);
    sideways switches Today / 10-day on iPhone-style layouts, and on iPad landscape moves through the hourly panel. Not on Mac. ---- */
 (function(){
   const de=document.documentElement; let acc={x:0,y:0}, quiet=null, locked=false;
-  const blocked=t=>!$('#sheet').hidden||!$('#settings').hidden||!$('#guide').hidden||!$('#wx').hidden||(t&&t.closest&&t.closest('input,textarea,#sheet,#settings,#guide,#wx'));
+  const blocked=t=>!$('#sheet').hidden||!$('#settings').hidden||!$('#guide').hidden||!$('#wx').hidden||!$('#cn').hidden||(t&&t.closest&&t.closest('input,textarea,#sheet,#settings,#guide,#wx,#cn'));
   const canScroll=(t,ax,d)=>{ for(let el=t;el&&el!==document.body;el=el.parentElement){ const cs=getComputedStyle(el), o=ax==='y'?cs.overflowY:cs.overflowX;
       if(!/(auto|scroll)/.test(o)) continue;
       if(ax==='y'?el.scrollHeight>el.clientHeight+2:el.scrollWidth>el.clientWidth+2){ const pos=ax==='y'?el.scrollTop:el.scrollLeft, max=ax==='y'?el.scrollHeight-el.clientHeight:el.scrollWidth-el.clientWidth;
