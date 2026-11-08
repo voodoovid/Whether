@@ -1359,10 +1359,9 @@ body:not(.locked) .loc svg{fill:#f4b942}
 .cnt .cl{font-size:12.5px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;line-height:1.15}
 .cnt .cv{font-size:34px;font-weight:800;line-height:1.1;margin-top:5px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .cnt .cv small{font-size:.46em;font-weight:800;margin-left:3px}
-.cnt .cv.tp{color:#f4b942}
+.cnt .cv.tp{color:#f4b942}   /* v2.176: every reading here is the station's own, so all values are my yellow */
 .cnt .cs{font-size:14px;font-weight:700;line-height:1.2;margin-top:3px}
 .cnt .cq{font-size:13.5px;font-weight:600;font-style:italic;line-height:1.25;margin-top:auto;padding-top:7px;color:#bfe3ff}
-.cnt.ol .cl::before,.cnfoot i::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:#7fb2f5;box-shadow:0 0 0 1.5px rgba(127,178,245,.35);margin-right:6px;vertical-align:1px}
 .cnfoot{flex:none;padding:2px 18px 12px;font-size:12.5px;font-weight:600;text-align:center}
 @media (max-width:1100px){ .cng{grid-template-columns:repeat(4,minmax(0,1fr))} .cnt .cv{font-size:30px} }
 </style>
@@ -1490,7 +1489,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.175) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.176) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1512,7 +1511,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.175) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.176) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1568,14 +1567,14 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <button id="cnClose" type="button">Done</button>
     </div>
     <div class="cng" id="cnGrid"></div>
-    <div class="cnfoot"><i></i>A blue dot marks readings that come from Tempest's online service. Everything else is straight from the sensor.</div>
+    <div class="cnfoot">Every reading here is measured by <span class="amk">Amankenzie</span> Station, shown in yellow. No forecasts on this page.</div>
   </div>
 </div>
 <div id="msg" hidden></div>
 
 <script>
 'use strict';
-const VER='2.175';
+const VER='2.176';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2331,25 +2330,25 @@ const CN=(()=>{
     return {t,lull,gust,temp,rh,pres,lux,uv,solar,rain,ltgN,ltgD,batt,dp,wb,dl,dens,perH,hi,wc,high,sl,trend,btr,cc,hw:s.hw};
   }
 
-  /* each tile: id, label, online (comes from Tempest's cloud), span, then a function giving value, sub line and a cheeky comment */
+  /* each tile: id, label, span, then a function giving value, sub line and a cheeky comment */
   const TILES=[
     {id:'hum',l:'Humidity',f:x=>({v:U(Math.round(x.rh),'%'),s:`Dew point ${tmp(x.dp)}`,q:band(x.rh,[[40,'Dry. Your skin has filed a complaint.'],[70,'Perfectly fine. Suspiciously fine.'],[90,'Damp. The air is basically a sponge.'],[101,'Soup. Wear a snorkel.']])})},
-    {id:'dew',l:'Dew point',online:1,f:x=>({v:tmp(x.dp),tp:1,s:dewWord(x.dp),q:band(x.dp,[[5,'Almost refreshing. Almost.'],[10,'Enjoy it while it lasts.'],[16,'Getting sticky. Not a crime yet.'],[21,'Your hair has opinions.'],[99,'Is this even Vancouver?']])})},
-    {id:'wet',l:'Wet bulb',online:1,f:x=>({v:tmp(x.wb),tp:1,s:`Delta-T ${dT(x.dl)}`,q:band(x.wb,[[0,'What a damp thermometer would say. Brr.'],[8,'A soggy thermometer is unimpressed.'],[16,'Mild. Even the thermometer is bored.'],[99,'Sweaty thermometer territory.']])})},
+    {id:'dew',l:'Dew point',f:x=>({v:tmp(x.dp),tp:1,s:dewWord(x.dp),q:band(x.dp,[[5,'Almost refreshing. Almost.'],[10,'Enjoy it while it lasts.'],[16,'Getting sticky. Not a crime yet.'],[21,'Your hair has opinions.'],[99,'Is this even Vancouver?']])})},
+    {id:'wet',l:'Wet bulb',f:x=>({v:tmp(x.wb),tp:1,s:`Delta-T ${dT(x.dl)}`,q:band(x.wb,[[0,'What a damp thermometer would say. Brr.'],[8,'A soggy thermometer is unimpressed.'],[16,'Mild. Even the thermometer is bored.'],[99,'Sweaty thermometer territory.']])})},
     {id:'hi',l:'Heat index',f:x=>x.hi==null?{v:'–',s:'Not hot enough',q:'Needs 27° and sticky. Not today, Vancouver.'}:{v:tmp(x.hi),tp:1,s:'Hot and humid combined',q:band(x.hi-x.temp,[[2,'Basically just the temperature.'],[5,'Warmer than it looks. Hydrate.'],[99,'Sauna with opinions.']])}},
     {id:'wc',l:'Wind chill',f:x=>x.wc==null?{v:'–',s:'No chill today',q:'The wind is not bothering anyone.'}:{v:tmp(x.wc),tp:1,s:'Wind makes it colder',q:band(x.wc,[[-15,'Ouch. Stay in.'],[-5,'Properly nippy. Zip up.'],[5,'Brisk. Wear the jacket.'],[99,'A chilly nudge. Barely a bother.']])}},
     {id:'gust',l:'Gust',f:x=>({v:U(fW1(x.gust*3.6),wUnit()),s:`Lull ${fW1(x.lull*3.6)} · 5-min high ${fW1(x.high)}`,q:band(x.gust*3.6,[[10,'Barely a whisper.'],[30,'Hold your hat. Loosely.'],[50,'Umbrellas are a bad idea.'],[999,'Stay inside. Seriously.']])})},
-    {id:'pres',l:'Pressure',online:1,f:x=>({v:U(f(x.sl!=null?x.sl:x.pres),'mb'),s:x.sl!=null?`Station ${f(x.pres)} mb`:'Station pressure',q:band(x.sl!=null?x.sl:x.pres,[[1000,'Low. Brace for weather drama.'],[1013,'Meh. Average-ish.'],[1022,'Normal. Boring. Take it.'],[9999,'High and mighty. Settled skies.']])})},
-    {id:'trend',l:'Pressure trend',online:1,f:x=>{ const t=x.trend; if(!t) return {v:'–',s:'Waiting for Tempest',q:'Barometer is thinking about it.'};
-      return {v:t==='rising'?'↗ Rising':t==='falling'?'↘ Falling':'→ Steady',s:'Per Tempest online',q:t==='rising'?'Things are looking up. Probably.':t==='falling'?'The sky is winding up. Brace.':'Nothing to see here.'} }},
-    {id:'dens',l:'Air density',online:1,f:x=>({v:U(f(x.dens,3),'kg/m³'),s:`Station ${f(x.pres)} mb`,q:band(x.dens,[[1.15,'Thin air. Golf balls rejoice.'],[1.25,'Totally average air. Riveting.'],[9,'Thick air. Great for nobody.']])})},
+    {id:'pres',l:'Pressure',f:x=>({v:U(f(x.sl!=null?x.sl:x.pres),'mb'),s:x.sl!=null?`Station ${f(x.pres)} mb`:'Station pressure',q:band(x.sl!=null?x.sl:x.pres,[[1000,'Low. Brace for weather drama.'],[1013,'Meh. Average-ish.'],[1022,'Normal. Boring. Take it.'],[9999,'High and mighty. Settled skies.']])})},
+    {id:'trend',l:'Pressure trend',f:x=>{ const t=x.trend; if(!t) return {v:'–',s:'Waiting for the station',q:'Barometer is thinking about it.'};
+      return {v:t==='rising'?'↗ Rising':t==='falling'?'↘ Falling':'→ Steady',s:'From the station barometer',q:t==='rising'?'Things are looking up. Probably.':t==='falling'?'The sky is winding up. Brace.':'Nothing to see here.'} }},
+    {id:'dens',l:'Air density',f:x=>({v:U(f(x.dens,3),'kg/m³'),s:`Station ${f(x.pres)} mb`,q:band(x.dens,[[1.15,'Thin air. Golf balls rejoice.'],[1.25,'Totally average air. Riveting.'],[9,'Thick air. Great for nobody.']])})},
     {id:'uv',l:'UV index',f:x=>({v:f(x.uv),s:uvWord(x.uv),q:band(x.uv,[[0.05,'Night. Or Vancouver in November.'],[3,'Pale and fine. Skip the sunscreen.'],[6,'Sunscreen time. Be sensible.'],[8,'Hat. Shade. Common sense.'],[99,'You will fry. Seek shade.']])})},
     {id:'sol',l:'Solar',f:x=>({v:U(Math.round(x.solar),'W/m²'),s:x.lux>=1000?`${f(x.lux/1000)} klux`:`${Math.round(x.lux)} lux`,q:band(x.solar,[[5,'Sun? Never heard of her.'],[100,'Mostly vibes, not much sun.'],[400,'Partly solar powered.'],[800,'Solid sunshine. Show off.'],[9999,'Solar panel heaven.']])})},
     {id:'ltg',l:'Lightning',f:x=>({v:x.ltgN?U(x.ltgN,'strikes'):'None',s:x.ltgN?`Average ${x.ltgD} km away`:'Nothing this minute',q:x.ltgN?'Zap! Start counting seconds.':'No zaps. Thor is on a break.'})},
     {id:'rate',l:'Rain rate now',f:x=>({v:U(f(x.perH),'mm/h'),s:rainWord(x.perH),q:band(x.perH,[[0.01,'Dry. Suspicious. Check the sky again.'],[1,'Drizzle. The classic.'],[4,'Proper rain. Umbrella time.'],[16,'Heavy. Trade the umbrella for a boat.'],[999,'Biblical. Build an ark.']])})},
-    {id:'ry',l:'Rain yesterday',online:1,f:x=>{ const c=x.cc, v=c.precip_accum_local_yesterday; if(v==null) return {v:'–',s:'Loading',q:'Counting yesterday’s drops.'};
+    {id:'ry',l:'Rain yesterday',f:x=>{ const c=x.cc, v=c.precip_accum_local_yesterday; if(v==null) return {v:'–',s:'Loading',q:'Counting yesterday’s drops.'};
       return {v:U(f(v),'mm'),s:c.precip_minutes_local_yesterday!=null?`${hm(c.precip_minutes_local_yesterday)} of rain`:'',q:band(v,[[0.1,'Dry yesterday. Mark the calendar.'],[5,'A perfectly respectable damp day.'],[20,'Properly wet. Very on brand.'],[999,'Biblical. Did you build the ark?']])} }},
-    {id:'ltgh',l:'Lightning 1 hr',online:1,f:x=>{ const c=x.cc, n=c.lightning_strike_count_last_1hr; if(n==null) return {v:'–',s:'Loading',q:'Waiting for the thunder report.'};
+    {id:'ltgh',l:'Lightning 1 hr',f:x=>{ const c=x.cc, n=c.lightning_strike_count_last_1hr; if(n==null) return {v:'–',s:'Loading',q:'Waiting for the thunder report.'};
       let sub=c.lightning_strike_count_last_3hr!=null?`3 hr: ${c.lightning_strike_count_last_3hr}`:''; const e=c.lightning_strike_last_epoch;
       if(e){ const m=Math.max(0,Math.round((Date.now()/1000-e)/60)); if(m<180) sub+=` · ${m} min ago` }
       return {v:U(n,'strikes'),s:sub,q:n?'The sky has been busy.':'Quiet skies. Enjoy it.'} }},
@@ -2358,7 +2357,7 @@ const CN=(()=>{
       s:`${h.rssi!=null?Math.round(h.rssi)+' dBm':'Signal n/a'} · Up ${up(h.up)}`+(h.hubFw!=null?` · Hub ${h.hubFw}`:''),
       q:h.up!=null&&h.up>7*86400?'Hasn’t rebooted in ages. Show-off.':'A tiny robot on your roof, reporting for duty.'} }}
   ];
-  grid.innerHTML=TILES.map(t=>`<div class="cnt${t.span?' w2':''}${t.online?' ol':''}" id="cn_${t.id}"><div class="cl">${t.l}</div><div class="cv">–</div><div class="cs">&nbsp;</div><div class="cq">&nbsp;</div></div>`).join('');
+  grid.innerHTML=TILES.map(t=>`<div class="cnt${t.span?' w2':''}" id="cn_${t.id}"><div class="cl">${t.l}</div><div class="cv">–</div><div class="cs">&nbsp;</div><div class="cq">&nbsp;</div></div>`).join('');
   const els=TILES.map(t=>{ const e=document.getElementById('cn_'+t.id); return {t,v:e.querySelector('.cv'),s:e.querySelector('.cs'),q:e.querySelector('.cq')} });
   const clock=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit',second:'2-digit'});
   let open=false, timer=0;
@@ -2370,7 +2369,7 @@ const CN=(()=>{
     src.innerHTML=x?`<span class="amk">Amankenzie</span> Station · ${live?'reading from '+clock(new Date(x.t*1000)):'waiting for a fresh reading'}`:`<span class="amk">Amankenzie</span> Station · waiting for the first reading`;
     for(const e of els){ if(!x){ e.v.textContent='–'; e.v.classList.remove('tp'); e.s.textContent=' '; e.q.textContent='Waiting for the station…'; continue }
       let r; try{ r=e.t.f(x) }catch(err){ r={v:'–',s:'',q:''} }
-      e.v.innerHTML=r.v; e.v.classList.toggle('tp',!!r.tp); e.s.textContent=r.s||' '; e.q.textContent=r.q||' ' }
+      e.v.innerHTML=r.v; e.v.classList.toggle('tp',r.v!=='–');   /* v2.176: all station values in my yellow (dashes stay white) */ e.s.textContent=r.s||' '; e.q.textContent=r.q||' ' }
   }
   function show(){ if(btn.hidden) return; open=true; ov.hidden=false; grid.scrollTop=0; paint(); clearInterval(timer); timer=setInterval(paint,1000) }
   function hide(){ open=false; ov.hidden=true; clearInterval(timer); timer=0 }
