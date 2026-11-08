@@ -1280,15 +1280,15 @@ body:not(.locked) .loc svg{fill:#f4b942}
 .v-wx path{fill:#fff}
 /* ---- v2.169 ---- */
 /* pop-up titles (Location, Settings, Quick Guide, Wind Studio) in my yellow */
-.shtop b,.gt h2,.wxh h2,.wxh h2 i{color:#f4b942}
+.shtop b,.gt h2{color:#f4b942}
 .shbt{display:flex;align-items:center;gap:8px}
 #stBtn{display:inline-flex;align-items:center;gap:7px;padding:0 15px 0 12px}
 #stBtn svg{width:16px;height:16px;flex:none;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .shc .locksw{margin:12px 0 4px}
 /* Location pop-up opens lower on iPad landscape */
 @media (min-width:901px) and (min-height:600px) and (orientation:landscape){
-  #sheet{padding-top:calc(env(safe-area-inset-top) + 150px)}
-  #sheet .shc{max-height:calc(100dvh - 190px)}
+  #sheet,#settings{padding-top:calc(env(safe-area-inset-top) + max(14px,(100dvh - 820px)/2))}
+  #sheet .shc,#settings .shc{max-height:calc(100dvh - 28px)}
 }
 /* last 5 minutes line in the main Wind box */
 .st.wind .w5{display:flex;flex-direction:column;align-items:center;text-align:center;line-height:1.05;margin-top:2px;white-space:nowrap}
@@ -1296,8 +1296,8 @@ body:not(.locked) .loc svg{fill:#f4b942}
 .st.wind .w5v{font-size:16px;font-weight:800}
 @media (min-width:901px) and (min-height:600px) and (orientation:landscape){
   html:not(.mac) #nowWind .st.wind{grid-template-rows:auto auto auto auto;height:112px}
-  html:not(.mac) #nowWind .st.wind>.w5{grid-column:1;grid-row:4;justify-self:center;width:0;flex-direction:row;justify-content:center;align-items:baseline;gap:5px;position:relative;left:-8px;margin-top:1px}
-  html:not(.mac) #nowWind .st.wind>.w5 .w5l{font-size:13px}
+  html:not(.mac) #nowWind .st.wind>.w5{position:absolute;left:0;right:0;bottom:5px;margin:0;flex-direction:row;justify-content:center;align-items:baseline;gap:6px;margin-top:1px}
+  html:not(.mac) #nowWind .st.wind>.w5 .w5l{font-size:12.5px}
   html:not(.mac) #nowWind .st.wind>.w5 .w5v{font-size:15px}
 }
 @media (max-width:900px){
@@ -1439,7 +1439,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.169) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.170) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1455,9 +1455,9 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR1"><i></i><span>Station: not connected</span></div>
       <div class="tpr" id="tpR2"><i></i><span>Live feed: not connected</span></div>
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
-      <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
+      <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.169) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.170) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1501,7 +1501,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.169';
+const VER='2.170';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2017,7 +2017,7 @@ const TW=(()=>{
         const html=`${fW1(v)}<small>${wUnit()}</small>`; if(vv&&vv.dataset.s!==html){ vv.innerHTML=html; vv.dataset.s=html }
         const word=windWord(v,Math.max(w.gust,v)); if(wd&&st.lastWord!==word){ wd.textContent=word; st.lastWord=word; fitText() }
         const w5=t.querySelector('.w5'); if(w5){ let a=null; try{ a=WX.avg(300000) }catch(e){}
-          const s5=`<span class="w5l">Last 5 Minutes:</span><span class="w5v">${a==null?'…':fW1(a)}</span>`; if(w5.dataset.s!==s5){ w5.innerHTML=s5; w5.dataset.s=s5; fitText() } }
+          const s5=`<span class="w5l">5-Minute Average:</span><span class="w5v">${a==null?'…':fW1(a)+' '+(met()?'km/h':'mph')}</span>`; if(w5.dataset.s!==s5){ w5.innerHTML=s5; w5.dataset.s=s5; fitText() } }
         if(df&&v>.3){ const c=compass(dial.sD); if(df.textContent!==c) df.textContent=c } } }
     // wobble only while live wind readings keep arriving, so movement always means data is arriving
     const amp=(REDUCED||!rapidOk())?0:Math.min(6,Math.max(0,w.gust-v)*.3)*Math.min(1,v/5);
@@ -2053,7 +2053,7 @@ const TW=(()=>{
   const mark=(n,state,msg)=>{ const r=document.getElementById('tpR'+n); if(!r) return; r.className='tpr'+(state==='fail'?' fail':''); r.firstElementChild.className=state||''; r.lastElementChild.textContent=msg };
   function ui(){
     const has=!!st.token, f=document.getElementById('tpForm'), d=document.getElementById('tpDel'), i=document.getElementById('tpIntro');
-    if(f) f.hidden=has; if(d) d.hidden=!has;
+    if(f) f.hidden=has; if(d) d.hidden=!has; const cp=document.getElementById('tpCopy'); if(cp) cp.hidden=!has;
     if(i) i.textContent=has?'Connected on this device. At Home, these readings come from your own station. The token is sent only to Tempest.':'Paste your Tempest access token to show your own station’s live readings at Home. It stays on this device and is sent only to Tempest.';
     if(!has){ mark(1,'','Station: not connected'); mark(2,'','Live feed: not connected'); mark(3,'','Rain today: not loaded') }
   }
@@ -2143,6 +2143,9 @@ const TW=(()=>{
     try{ localStorage.setItem(KEY,v) }catch(e){ mark(1,'fail','Station: could not save the token on this device') ; return }
     start() });
   const del=document.getElementById('tpDel'); if(del) del.addEventListener('click',forget);
+  const cpb=document.getElementById('tpCopy'); if(cpb) cpb.addEventListener('click',async()=>{ const t=st.token; if(!t) return; let ok=false;
+    try{ await navigator.clipboard.writeText(t); ok=true }catch(e){ try{ const a=document.createElement('textarea'); a.value=t; a.style.cssText='position:fixed;opacity:0'; document.body.appendChild(a); a.select(); ok=document.execCommand('copy'); a.remove() }catch(_){} }
+    cpb.textContent=ok?'Copied':'Could not copy'; setTimeout(()=>{ cpb.textContent='Copy token' },1600) });
   // notice when the station goes quiet (or comes back) and redraw with the forecast or the live readings
   setInterval(()=>{ const n=on(); if(n!==st.wasOn){ st.wasOn=n; if(S.data) render() } },20000);
   setInterval(()=>{ if(st.token&&st.station&&document.visibilityState==='visible') loadSeed(true) },300000);
@@ -3047,7 +3050,7 @@ function guideHours(){
 (function(){
   const tip=document.createElement('div'); tip.id='tip'; tip.setAttribute('role','tooltip'); tip.hidden=true; document.body.appendChild(tip);
   const MAP={btn10:null,uC:'Show temperatures in °C',uF:'Show temperatures in °F',refresh:'Refresh the forecast',helpBtn:'Open the quick user guide',stBtn:'Open Settings: dark mode and home weather station',
-    locBtn:'Change location (press and hold to lock or unlock)',lockSw:'Location Lock: stay on the city you picked',shClose:'Close Location',gClose:'Close the guide',stClose:'Close Settings',gps:'Use this device’s location',tpGo:'Connect your Tempest station',tpDel:'Remove the token from this device'};
+    locBtn:'Change location (press and hold to lock or unlock)',lockSw:'Location Lock: stay on the city you picked',shClose:'Close Location',gClose:'Close the guide',stClose:'Close Settings',gps:'Use this device’s location',tpGo:'Connect your Tempest station',tpDel:'Remove the token from this device',tpCopy:'Copy the token so you can paste it into another app'};
   Object.keys(MAP).forEach(id=>{ const el=document.getElementById(id); if(el&&MAP[id]) el.dataset.hint=MAP[id] });
   const text=b=>{ if(b.dataset.hint) return b.dataset.hint; if(b.dataset.m) return b.dataset.m==='eve'?'Show tonight, 6–10 PM':'Show conditions now'; if(b.dataset.dm) return {on:'Always use the night look',off:'Always use the day look',auto:'Follow daylight where you are'}[b.dataset.dm];
     if(b.classList.contains('sv')) return 'Save this location'; if(b.classList.contains('x')) return 'Remove this location';
