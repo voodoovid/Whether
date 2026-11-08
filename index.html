@@ -1490,7 +1490,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.173) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.174) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1508,7 +1508,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.173) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.174) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1571,7 +1571,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.173';
+const VER='2.174';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2302,7 +2302,7 @@ const CN=(()=>{
     {id:'wet',l:'Wet bulb',online:1,f:x=>({v:tmp(x.wb),tp:1,s:`Delta-T ${dT(x.dl)}`,q:band(x.wb,[[0,'What a damp thermometer would say. Brr.'],[8,'A soggy thermometer is unimpressed.'],[16,'Mild. Even the thermometer is bored.'],[99,'Sweaty thermometer territory.']])})},
     {id:'hi',l:'Heat index',f:x=>x.hi==null?{v:'–',s:'Not hot enough',q:'Needs 27° and sticky. Not today, Vancouver.'}:{v:tmp(x.hi),tp:1,s:'Hot and humid combined',q:band(x.hi-x.temp,[[2,'Basically just the temperature.'],[5,'Warmer than it looks. Hydrate.'],[99,'Sauna with opinions.']])}},
     {id:'wc',l:'Wind chill',f:x=>x.wc==null?{v:'–',s:'No chill today',q:'The wind is not bothering anyone.'}:{v:tmp(x.wc),tp:1,s:'Wind makes it colder',q:band(x.wc,[[-15,'Ouch. Stay in.'],[-5,'Properly nippy. Zip up.'],[5,'Brisk. Wear the jacket.'],[99,'A chilly nudge. Barely a bother.']])}},
-    {id:'gust',l:'Gust',f:x=>({v:U(f(x.gust*3.6),'km/h'),s:`Lull ${f(x.lull*3.6)} · 5-min high ${f(x.high)}`,q:band(x.gust*3.6,[[10,'Barely a whisper.'],[30,'Hold your hat. Loosely.'],[50,'Umbrellas are a bad idea.'],[999,'Stay inside. Seriously.']])})},
+    {id:'gust',l:'Gust',f:x=>({v:U(fW1(x.gust*3.6),wUnit()),s:`Lull ${fW1(x.lull*3.6)} · 5-min high ${fW1(x.high)}`,q:band(x.gust*3.6,[[10,'Barely a whisper.'],[30,'Hold your hat. Loosely.'],[50,'Umbrellas are a bad idea.'],[999,'Stay inside. Seriously.']])})},
     {id:'pres',l:'Pressure',online:1,f:x=>({v:U(f(x.sl!=null?x.sl:x.pres),'mb'),s:x.sl!=null?`Station ${f(x.pres)} mb`:'Station pressure',q:band(x.sl!=null?x.sl:x.pres,[[1000,'Low. Brace for weather drama.'],[1013,'Meh. Average-ish.'],[1022,'Normal. Boring. Take it.'],[9999,'High and mighty. Settled skies.']])})},
     {id:'trend',l:'Pressure trend',online:1,f:x=>{ const t=x.trend; if(!t) return {v:'–',s:'Waiting for Tempest',q:'Barometer is thinking about it.'};
       return {v:t==='rising'?'↗ Rising':t==='falling'?'↘ Falling':'→ Steady',s:'Per Tempest online',q:t==='rising'?'Things are looking up. Probably.':t==='falling'?'The sky is winding up. Brace.':'Nothing to see here.'} }},
