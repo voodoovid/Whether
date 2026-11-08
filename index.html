@@ -1490,7 +1490,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.174) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.175) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1506,9 +1506,13 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR1"><i></i><span>Station: not connected</span></div>
       <div class="tpr" id="tpR2"><i></i><span>Live feed: not connected</span></div>
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
-      <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
+      <div class="tpr" id="tpR4"><i></i><span>First full reading: not connected</span></div>
+      <div class="tpr" id="tpR5"><i></i><span>Forecast: not connected</span></div>
+      <div class="tpr" id="tpR6"><i></i><span>Today’s low (history): not connected</span></div>
+      <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
+      <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.174) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.175) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1533,7 +1537,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="gi"><div class="gv"><div class="v-loc"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>City</span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></div></div><div class="gx"><b>Location</b><span>Tap to search or pick a saved place. Searched places wait under Recent until you tap Save.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Location Lock</span><i class="tk"><b></b></i></div></div><div class="gx"><b>Location Lock</b><span>On by default: Whether stays on the city you picked until you change it. Turn it off (the switch in the location menu, or press and hold the city name) and the city turns yellow; after 30 minutes away Whether then returns to Home.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">Next 24 hours</span></div></div><div class="gx"><b>Back to now</b><span>Press and hold the Next 24 hours title to jump the hourly view back to now.</span></div></div>
-      <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">Settings</span></div></div><div class="gx"><b>Settings</b><span>Beside Done at the top of the Location menu: Dark mode (On, Off or Auto) and your <span class="amk">Amankenzie</span> Weather Station. Its own Locations button takes you back to the location list.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">Settings</span></div></div><div class="gx"><b>Settings</b><span>Beside Done at the top of the Location menu: Dark mode (On, Off or Auto) and your <span class="amk">Amankenzie</span> Weather Station. It also runs the station’s connection tests (green is good, red shows what failed); Run tests again repeats them. Its own Locations button takes you back to the location list.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-title"><img src="icon-192.png" alt="" width="26" height="26"><div class="tt"><b>Whether</b><i>(or not)</i></div></div></div><div class="gx"><b>Go Home</b><span>Press and hold the Whether <em class="yor">(or not)</em> title to jump to your Home location, the first one in your saved list.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">Conditions</span></div></div><div class="gx"><b>Conditions</b><span>iPad landscape, at Home: opens every reading your station reports, each with a cheeky comment. Press Done or tap outside to close it.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill v-stn"><i class="ld" style="display:inline-block;flex:none;width:9px;height:9px;border-radius:50%;background:#5fd3a0"></i><span><span class="amk">Amankenzie</span> <br>Station</span></span></div></div><div class="gx"><b><span class="amk">Amankenzie</span> Station</b><span>At Home, with your Tempest connected, the temperature, Feels like, wind (with its live dial), rain and shoe conditions come from your own station. Everything else stays forecast.</span></div></div>
@@ -1571,7 +1575,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.174';
+const VER='2.175';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2126,7 +2130,8 @@ const TW=(()=>{
     const has=!!st.token, f=document.getElementById('tpForm'), d=document.getElementById('tpDel'), i=document.getElementById('tpIntro');
     if(f) f.hidden=has; if(d) d.hidden=!has; const cp=document.getElementById('tpCopy'); if(cp) cp.hidden=!has;
     if(i) i.textContent=has?'Connected on this device. At Home, these readings come from your own station. The token is sent only to Tempest.':'Paste your Tempest access token to show your own station’s live readings at Home. It stays on this device and is sent only to Tempest.';
-    if(!has){ mark(1,'','Station: not connected'); mark(2,'','Live feed: not connected'); mark(3,'','Rain today: not loaded') }
+    const rn=document.getElementById('tpRun'); if(rn) rn.hidden=!has;
+    if(!has){ mark(1,'','Station: not connected'); mark(2,'','Live feed: not connected'); mark(3,'','Rain today: not loaded'); mark(4,'','First full reading: not connected'); mark(5,'','Forecast: not connected'); mark(6,'','Today’s low (history): not connected'); mark(7,'','Rain today (cloud vs readings): not connected') }
   }
   async function getJSON(path,params){
     const q=new URLSearchParams({...params,token:st.token}).toString();
@@ -2146,11 +2151,11 @@ const TW=(()=>{
       st.station={id:s.station_id,deviceId:dev.device_id};
       { const hub=(s.devices||[]).find(d=>d.device_type==='HB'); if(dev.firmware_revision!=null) st.hw.fw=dev.firmware_revision; if(hub&&hub.firmware_revision!=null) st.hw.hubFw=hub.firmware_revision }
       mark(1,'pass','Station: found'); return true;
-    }catch(e){ st.station=null; mark(1,'fail','Station: '+e.message); mark(2,'','Live feed: skipped'); mark(3,'','Rain today: skipped'); return false }
+    }catch(e){ st.station=null; mark(1,'fail','Station: '+e.message); mark(2,'','Live feed: skipped'); mark(3,'','Rain today: skipped'); mark(4,'','First full reading: skipped'); mark(5,'','Forecast: skipped'); mark(6,'','Today’s low (history): skipped'); mark(7,'','Rain today (cloud vs readings): skipped'); return false }
   }
   function connect(){
     if(!st.station||!st.token) return;
-    clearTimeout(st.timer); st.manual=false; mark(2,'wait','Live feed: connecting');
+    clearTimeout(st.timer); st.manual=false; mark(2,'wait','Live feed: connecting'); mark(4,'wait','First full reading: waiting, they arrive about once a minute');
     let w; try{ w=new WebSocket(`${WSU}?token=${encodeURIComponent(st.token)}`) }catch(e){ mark(2,'fail','Live feed: could not open'); return }
     st.ws=w; w._data=false; w._limit=false;
     w.onopen=()=>{ st.lastMsg=Date.now();   // v2.139: the retry wait resets only when real data arrives (see onMsg)
@@ -2182,7 +2187,7 @@ const TW=(()=>{
   function onObs(o){
     const [t,lull,avg,gust,dir,,pres,temp,rh,lux,uv,solar,rain,ptype]=o;
     if(temp==null||isNaN(temp)) return;
-    st.raw=o; ghPush((gust||0)*3.6);   // v2.173: the whole reading, for the Conditions pop-up
+    st.raw=o; ghPush((gust||0)*3.6); mark(4,'pass','First full reading: received at '+new Date(t*1000).toLocaleTimeString([],{hour:'numeric',minute:'2-digit',second:'2-digit'}));   // v2.173: the whole reading, for the Conditions pop-up
     if(o[16]!=null&&(!st.bh.length||st.bh[st.bh.length-1].t!==t)){ st.bh.push({t,v:o[16]}); while(st.bh.length&&t-st.bh[0].t>1800) st.bh.shift() }
     st.obs={t,lull,avg:avg||0,gust:gust||0,dir:dir||0,temp,rh:rh==null?50:rh,rain:rain||0,ptype:ptype||0,uv:(uv==null||isNaN(uv))?null:uv}; st.obsAt=Date.now();
     if(t>st.seenT){ st.extra+=rain||0; if((rain||0)>0) st.extraMin+=(o[17]||1); st.seenT=t }          // added on top of the fetched daily total
@@ -2193,10 +2198,12 @@ const TW=(()=>{
   function refresh(){ st.wasOn=on(); if(!S.data) return; const n=Date.now(); if(n-rt<5000) return; rt=n; render() }
   async function loadSeed(quiet){
     if(!st.station) return;
-    if(!quiet) mark(3,'wait','Rain today: loading');
+    if(!quiet){ mark(3,'wait','Rain today: loading'); mark(5,'wait','Forecast: loading') }
+    let gotFc=false;
     try{
       const d=await getJSON('/better_forecast',{station_id:st.station.id,units_temp:'c',units_wind:'kph',units_pressure:'mb',units_precip:'mm',units_distance:'km'});
       const c=d.current_conditions||{}; st.cc=c;
+      { const nd=((d.forecast&&d.forecast.daily)||[]).length; gotFc=true; mark(5,nd?'pass':'fail',nd?`Forecast: ${nd} days received`:'Forecast: came back empty') }
       try{ st.fc={}; st.fcE=[]; for(const h of (d.forecast&&d.forecast.hourly)||[]) if(h.air_temperature!=null){ st.fc[h.local_day+'-'+h.local_hour]=h.air_temperature; if(h.time!=null) st.fcE.push({t:+h.time,v:+h.air_temperature}) } st.fcE.sort((a,b)=>a.t-b.t) }catch(e){ st.fc=null; st.fcE=null }   /* v2.158: also kept by clock time, so "right now" works even when Tempest's list starts at the next hour */   // v2.124 (temporary): Tempest's own hourly temperatures
       if(c.precip_accum_local_day==null) throw new Error('not provided');
       st.dayTotal=c.precip_accum_local_day; st.extra=0; st.dayMin=c.precip_minutes_local_day==null?null:c.precip_minutes_local_day; st.extraMin=0; st.seenT=Date.now()/1000;
@@ -2204,12 +2211,40 @@ const TW=(()=>{
       /* v2.164: draw straight away, not through refresh()'s 5-second limit, so the forecast's rain never stays up once Tempest's total is in */
       clearTimeout(seedT); seedT=0; if(S.data&&on()){ rt=Date.now(); render() }
     }catch(e){ if(!quiet||st.dayTotal==null) mark(3,'fail','Rain today: '+e.message);
+      if(!gotFc&&(!quiet||!st.cc)) mark(5,'fail','Forecast: '+e.message);
       /* v2.164: until Tempest's total has loaded, try again every 20 s instead of showing the forecast's rain for up to 5 minutes */
       if(st.dayTotal==null&&!document.hidden){ clearTimeout(seedT); seedT=setTimeout(()=>{ seedT=0; loadSeed(true) },20000) } }
   }
+
+  /* v2.175: the Sandbox's other two connection tests, now in Settings.
+     Today's low (history): are today's readings there, and what were the low and high?
+     Rain today (cloud vs readings): does Tempest's online rain-today total match the sensor's own readings added up (green within 0.3 mm or 5%)? */
+  let chkRun=0;
+  async function loadChecks(){
+    if(!st.station||!st.token) return; const run=++chkRun;
+    mark(6,'wait','Today’s low (history): loading today’s readings'); mark(7,'wait','Rain today (cloud vs readings): adding up');
+    const d0=new Date(); d0.setHours(0,0,0,0); const a=Math.floor(d0.getTime()/1000), b=Math.floor(Date.now()/1000);
+    let hist=null, herr=null, fcd=null;
+    try{ hist=await getJSON('/observations/device/'+st.station.deviceId,{time_start:a,time_end:b}) }catch(e){ herr=e }
+    try{ fcd=await getJSON('/better_forecast',{station_id:st.station.id,units_temp:'c',units_wind:'kph',units_pressure:'mb',units_precip:'mm',units_distance:'km'}) }catch(e){}
+    if(run!==chkRun) return;
+    const clk=x=>new Date(x*1000).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}), tt=c=>(met()?c:c*9/5+32).toFixed(1)+'°';
+    try{ if(herr) throw herr;
+      const o=(hist.obs||[]).filter(r=>r&&r[7]!=null&&!isNaN(r[7])); if(!o.length) throw new Error('Tempest returned no readings for today');
+      let lo=o[0], hi=o[0]; o.forEach(r=>{ if(r[7]<lo[7]) lo=r; if(r[7]>hi[7]) hi=r });
+      mark(6,'pass',`Today’s low (history): low ${tt(lo[7])} at ${clk(lo[0])}, high ${tt(hi[7])} at ${clk(hi[0])} (${o.length} readings, first ${clk(o[0][0])})`);
+    }catch(e){ mark(6,'fail','Today’s low (history): '+e.message) }
+    try{ if(herr) throw herr;
+      const o=(hist.obs||[]).filter(r=>r&&r[12]!=null&&!isNaN(r[12])); if(!o.length) throw new Error('Tempest returned no readings for today');
+      const sum=o.reduce((q,r)=>q+r[12],0), cloud=fcd&&fcd.current_conditions&&fcd.current_conditions.precip_accum_local_day;
+      if(cloud==null) throw new Error('Tempest’s cloud gave no rain-today total');
+      const diff=cloud-sum, tol=Math.max(0.3,sum*0.05);
+      mark(7,Math.abs(diff)<=tol?'pass':'fail',`Rain today (cloud vs readings): cloud ${cloud.toFixed(1)} mm · readings add up to ${sum.toFixed(1)} mm (${o.length} readings) · ${diff>=0?'+':'−'}${Math.abs(diff).toFixed(1)} mm apart`);
+    }catch(e){ mark(7,'fail','Rain today (cloud vs readings): '+e.message) }
+  }
   async function start(){
     ui(); if(!st.token) return;
-    if(await findStation()){ connect(); loadSeed(false) }
+    if(await findStation()){ connect(); loadSeed(false); loadChecks() }
   }
   function forget(){
     stopWS(); try{ localStorage.removeItem(KEY) }catch(e){}
@@ -2230,6 +2265,7 @@ const TW=(()=>{
   if(cfYes) cfYes.addEventListener('click',()=>{ cfShow(false); forget() });
   if(cf) cf.addEventListener('click',e=>{ if(e.target===cf) cfShow(false) });
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&cf&&!cf.hidden){ e.stopPropagation(); cfShow(false) } },true);
+  const rnb=document.getElementById('tpRun'); if(rnb) rnb.addEventListener('click',()=>{ if(!st.station){ start(); return } loadSeed(false); loadChecks(); if(!st.ws||st.ws.readyState>1) connect() });   // v2.175
   const cpb=document.getElementById('tpCopy'); if(cpb) cpb.addEventListener('click',async()=>{ const t=st.token; if(!t) return; let ok=false;
     try{ await navigator.clipboard.writeText(t); ok=true }catch(e){ try{ const a=document.createElement('textarea'); a.value=t; a.style.cssText='position:fixed;opacity:0'; document.body.appendChild(a); a.select(); ok=document.execCommand('copy'); a.remove() }catch(_){} }
     cpb.textContent=ok?'Copied':'Could not copy'; setTimeout(()=>{ cpb.textContent='Copy token' },1600) });
