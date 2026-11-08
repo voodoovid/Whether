@@ -157,6 +157,22 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .dc.hu{color:rgb(var(--hum));filter:brightness(1.25)}
 .dc.fl{font-weight:700}
 
+#tip{position:fixed;left:0;top:0;z-index:9999;max-width:min(300px,calc(100vw - 16px));padding:7px 12px;border-radius:12px;font-size:13px;font-weight:700;line-height:1.3;color:#fff;background:rgba(10,18,38,.94);border:1px solid rgba(255,255,255,.3);box-shadow:0 8px 24px rgba(0,0,0,.45);pointer-events:none;text-align:center}
+#tip[hidden]{display:none}
+/* v2.167: version number sits beside the app name, "(or not)  (v2.167)" */
+.t2row{display:flex;align-items:baseline;justify-content:center;gap:5px;white-space:nowrap;margin-top:3px}
+.t2row .t2{margin-top:0}
+.brand .t2row .vtag,.brand .vtag{display:inline-block!important;margin:0;padding:0;background:none;border-radius:0;align-self:auto;font-size:.46em;font-weight:800;letter-spacing:.2px;color:#fff;opacity:.9;text-shadow:-1px -1px 0 rgba(0,0,0,.6),1px -1px 0 rgba(0,0,0,.6),-1px 1px 0 rgba(0,0,0,.6),1px 1px 0 rgba(0,0,0,.6)}
+/* v2.167: Settings button: top row on iPad landscape / Mac; on phones (no room up there) it sits in the Next 24 hours header */
+#setBtn2{display:none}
+@media (max-width:900px){
+  #setBtn{display:none}
+  #strip .ph #setBtn2{display:grid;width:32px;height:32px;margin:0 auto;flex:none}
+  .brand{gap:5px} .brand img{width:26px;height:26px} .tools{gap:4px} .brand .vtag{font-size:.44em}
+}
+/* v2.167: the Next 24 hours title area responds to press and hold */
+#strip .ph,#hourly .ph{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;transition:opacity .2s ease}
+#strip .ph.hold,#hourly .ph.hold{opacity:.65}
 /* position pager under the location chip */
 .pager{position:absolute;left:4px;top:38px;z-index:3;padding:4px 13px;border-radius:999px;font-size:15px;font-weight:800;letter-spacing:.2px;color:#fff;
   background:var(--glass);border:1px solid var(--edge);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);text-shadow:var(--ol,0 1px 3px rgba(0,0,0,.5));
@@ -169,8 +185,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 #saved .row.lift{transition:box-shadow .16s ease,background .16s ease;z-index:5;background:rgba(60,110,190,.55);box-shadow:0 10px 28px rgba(0,0,0,.5);touch-action:none}
 #saved .row>span:first-child{flex:1;min-width:0}
 
-#sheet{position:fixed;inset:0;background:rgba(2,6,14,.5);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:50;display:flex;align-items:flex-start;justify-content:center;padding:calc(env(safe-area-inset-top) + 56px) 16px 16px}
-#sheet[hidden]{display:none}
+#sheet,#settings{position:fixed;inset:0;background:rgba(2,6,14,.5);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:50;display:flex;align-items:flex-start;justify-content:center;padding:calc(env(safe-area-inset-top) + 56px) 16px 16px}
+#sheet[hidden],#settings[hidden]{display:none}
 .shc{width:min(460px,100%);max-height:calc(100dvh - 90px);overflow:auto;background:rgba(14,24,44,.92);border:1px solid var(--edge);border-radius:22px;padding:14px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
 .sht{display:flex;gap:10px;margin-bottom:10px}
 .sht input{flex:1;min-width:0;background:rgba(255,255,255,.08);border:1px solid var(--edge);border-radius:12px;padding:11px 13px;font-size:16px;color:#fff;outline:none}
@@ -542,7 +558,7 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 }
 /* location sheet: same sky, glass and outlined white text as the app */
 .shc{background:linear-gradient(172deg,var(--sky1),var(--sky2));border:1px solid rgba(255,255,255,.28);box-shadow:0 24px 60px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.18);padding:16px}
-.shc,.shc .row,.shc .shh,.shc .ver{text-shadow:-1px -1px 0 rgba(0,0,0,.55),1px -1px 0 rgba(0,0,0,.55),-1px 1px 0 rgba(0,0,0,.55),1px 1px 0 rgba(0,0,0,.55)}
+.shc,.shc .row,.shc .shh,.shc .ver,.shc .dmnote{text-shadow:-1px -1px 0 rgba(0,0,0,.55),1px -1px 0 rgba(0,0,0,.55),-1px 1px 0 rgba(0,0,0,.55),1px 1px 0 rgba(0,0,0,.55)}
 .sht input{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);border-radius:14px;font-weight:600;box-shadow:inset 0 1px 0 rgba(255,255,255,.15)}
 .sht input:focus{border-color:rgba(255,255,255,.7)}
 .sht button{color:#fff;font-weight:800;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:0 16px}
@@ -629,7 +645,7 @@ svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:
 .pager{font-size:12px;padding:2px 10px;letter-spacing:.3px;transform:translateY(4px)}
 .pager.on{transform:none}
 /* v2.31: version tag moves into the 24-hour header on phones; columns tighten to fit short screens */
-.vph{display:none}
+.vph{display:none!important}
 @media (max-width:900px), (min-width:901px) and (min-height:600px) and (orientation:landscape){
   .brand .vtag{display:none}
   .vph{display:inline-block;margin:0 auto;color:#fff;font-size:12px}
@@ -991,6 +1007,10 @@ html.mac .curk.mode{margin-bottom:8px} html.mac .nowmain{margin-top:14px}
 .shc .locksw svg{width:18px;height:18px}
 /* v2.101: a locked location shows in green */
 body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;box-shadow:0 0 0 1.5px rgba(52,199,89,.95),0 4px 14px rgba(52,199,89,.3)!important;border-color:rgba(52,199,89,.95)!important}
+/* v2.167: lock OFF = city name and surround in my yellow, background unchanged */
+body:not(.locked) .loc,body:not(.locked) .now>.loc{box-shadow:0 0 0 1.5px #f4b942,0 4px 14px rgba(244,185,66,.28)!important;border-color:#f4b942!important}
+body:not(.locked) .loc #locName,body:not(.locked) .loc #dlocName,body:not(.locked) .loc>span{color:#f4b942}
+body:not(.locked) .loc svg{fill:#f4b942}
 #locBtn{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;transition:transform .2s ease}
 #locBtn.lhold{transform:scale(.95)}
 
@@ -1126,6 +1146,10 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
   html:not(.mac) .nowside .upd{font-size:13.5px}
   html:not(.mac) .bigt{font-size:min(106px,9vw)} html:not(.mac) .nowtop .ic{font-size:min(88px,7vw)}
 }
+.dmseg{display:flex;gap:6px;padding:4px;border-radius:999px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+.dmseg button{flex:1;min-height:44px;border-radius:999px;font-size:15.5px;font-weight:800;letter-spacing:.3px;color:#fff;text-shadow:-1px -1px 0 rgba(0,0,0,.55),1px -1px 0 rgba(0,0,0,.55),-1px 1px 0 rgba(0,0,0,.55),1px 1px 0 rgba(0,0,0,.55);transition:background .2s}
+.dmseg button.on{background:rgba(255,255,255,.34);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 2px 8px rgba(0,0,0,.25)}
+.dmnote{margin:8px 6px 2px;font-size:13.5px;font-weight:600;color:#fff;opacity:.92;line-height:1.35}
 .tpbox{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);border-radius:16px;padding:12px 14px;margin-bottom:8px;font-size:14px;font-weight:600;line-height:1.35}
 .tpbox p{margin:0 0 10px;color:#fff;opacity:.92}
 .tpf{display:flex;gap:8px;margin-bottom:10px}
@@ -1323,11 +1347,12 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 <div id="app">
   <section id="left">
     <div class="bar">
-      <div class="brand"><img src="icon-192.png" alt="" width="32" height="32"><div class="ttl"><span class="t1">Whether</span><span class="t2">(or not)</span></div><span class="vtag" id="vtag"></span></div>
+      <div class="brand"><img src="icon-192.png" alt="" width="32" height="32"><div class="ttl"><span class="t1">Whether</span><span class="t2row"><span class="t2">(or not)</span><span class="vtag" id="vtag"></span></span></div></div>
       <div class="tools">
         <button id="btn10" aria-label="10-day forecast">10-Day</button>
         <div class="seg" role="group" aria-label="Units"><button id="uC">°C</button><button id="uF">°F</button></div>
         <button class="rbtn" id="refresh" aria-label="Refresh"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg></button>
+        <button class="rbtn" id="setBtn" aria-label="Settings" aria-haspopup="dialog"><svg viewBox="0 0 24 24"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="2.4"/><circle cx="8" cy="17" r="2.4"/></svg></button>
         <button class="rbtn hq" id="helpBtn" aria-label="User guide" aria-haspopup="dialog">?</button>
       </div>
     </div>
@@ -1359,7 +1384,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
     </div>
     <div class="tiles" id="tiles"></div>
     <section class="panel glass" id="strip">
-      <div class="ph"><h2>Next 24 hours</h2><span class="vtag vph" id="vtag2"></span><span class="hint" id="hint">Swipe ›</span></div>
+      <div class="ph"><h2>Next 24 hours</h2><span class="vtag vph" id="vtag2"></span><button class="rbtn" id="setBtn2" aria-label="Settings" aria-haspopup="dialog"><svg viewBox="0 0 24 24"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="2.4"/><circle cx="8" cy="17" r="2.4"/></svg></button><span class="hint" id="hint">Swipe ›</span></div>
       <div id="sscroll"><div id="scols"></div></div>
     </section>
   </section>
@@ -1391,6 +1416,15 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
     <div id="recent"></div>
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
+    <div class="ver">Whether (v2.167) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+  </div>
+</div>
+<div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
+  <div class="shc">
+    <div class="shtop"><b id="stTitle">Settings</b><button id="stClose">Done</button></div>
+    <div class="shh">Dark mode</div>
+    <div class="dmseg" id="dmSeg" role="radiogroup" aria-label="Dark mode"><button type="button" role="radio" data-dm="on">On</button><button type="button" role="radio" data-dm="off">Off</button><button type="button" role="radio" data-dm="auto">Auto</button></div>
+    <p class="dmnote" id="dmNote"></p>
     <div class="shh" id="tpH">Home weather station</div>
     <div class="tpbox" id="tpBox">
       <p id="tpIntro">Paste your Tempest access token to show your own station's live readings at Home. It stays on this device and is sent only to Tempest.</p>
@@ -1400,7 +1434,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether v2.166 · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether (v2.167) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1416,7 +1450,9 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
       <div class="gi"><div class="gv"><svg class="v-sw hr" id="gHrs" viewBox="0 0 128 86" aria-hidden="true"></svg></div><div class="gx"><b>Hourly panel</b><span>Swipe sideways for more hours.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">10-Day</span><svg class="v-ar" viewBox="0 0 28 16" aria-hidden="true"><path d="M3 8H25M9 2L3 8l6 6M19 2l6 6-6 6"/></svg></div></div><div class="gx"><b>10-Day forecast</b><span>Press the 10-Day button or swipe left or right over the Current temp to open the 10-Day forecast.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-loc"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>City</span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></div></div><div class="gx"><b>Location</b><span>Tap to search or pick a saved place. Searched places wait under Recent until you tap Save.</span></div></div>
-      <div class="gi"><div class="gv"><div class="v-lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Location Lock</span><i class="tk"><b></b></i></div></div><div class="gx"><b>Location Lock</b><span>After 30 minutes away, Whether returns to Home. Press and hold the location name, or use the switch in the location menu, to stay where you are.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Location Lock</span><i class="tk"><b></b></i></div></div><div class="gx"><b>Location Lock</b><span>On by default: Whether stays on the city you picked until you change it. Turn it off (the switch in the location menu, or press and hold the city name) and the city turns yellow; after 30 minutes away Whether then returns to Home.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">Next 24 hours</span></div></div><div class="gx"><b>Back to now</b><span>Press and hold the Next 24 hours title to jump the hourly view back to now.</span></div></div>
+      <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">Settings</span></div></div><div class="gx"><b>Settings</b><span>The sliders button: Dark mode (On, Off or Auto) and your Home weather station. It sits beside the ? on iPad and Mac, and in the Next 24 hours title on iPhone.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-title"><img src="icon-192.png" alt="" width="26" height="26"><div class="tt"><b>Whether</b><i>(or not)</i></div></div></div><div class="gx"><b>Go Home</b><span>Press and hold the Whether <em class="yor">(or not)</em> title to jump to your Home location, the first one in your saved list.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill v-stn"><i class="ld" style="display:inline-block;flex:none;width:9px;height:9px;border-radius:50%;background:#5fd3a0"></i><span>Amankenzie <br>Station</span></span></div></div><div class="gx"><b>Amankenzie Station</b><span>At Home, with your Tempest connected, the temperature, Feels like, wind (with its live dial), rain and shoe conditions come from your own station. Everything else stays forecast.</span></div></div>
       <div class="gi gwx"><div class="gv"><svg class="v-wx" viewBox="0 0 58 58" aria-hidden="true"><circle class="o" cx="29" cy="29" r="26"/><circle class="r" cx="29" cy="29" r="20"/><path d="M29 12l-7 15h14z"/></svg></div><div class="gx"><b>Wind <i class="yor">Studio</i></b><span>Press and hold the Wind box for six live views of the wind.</span></div></div>
@@ -1442,7 +1478,7 @@ body.locked .loc,body.locked .now>.loc{background:rgba(52,199,89,.42)!important;
 
 <script>
 'use strict';
-const VER='2.166';
+const VER='2.167';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1459,7 +1495,7 @@ stage(); addEventListener('resize',stage);
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const DEFAULT_LOC={name:'Vancouver, BC',lat:49.2827,lon:-123.1207};
-const S={loc:LS.get('loc',DEFAULT_LOC),units:LS.get('units','metric'),cityUnits:LS.get('cityUnits',{}),saved:LS.get('saved',[]),recent:LS.get('recent',[]),data:null,sel:0,idx:0,offline:false,locked:LS.get('lock',false)};
+const S={loc:LS.get('loc',DEFAULT_LOC),units:LS.get('units','metric'),cityUnits:LS.get('cityUnits',{}),saved:LS.get('saved',[]),recent:LS.get('recent',[]),data:null,sel:0,idx:0,offline:false,locked:LS.get('lock2',true)};
 
 const PROV={'British Columbia':'BC','Alberta':'AB','Saskatchewan':'SK','Manitoba':'MB','Ontario':'ON','Quebec':'QC','Québec':'QC','New Brunswick':'NB','Nova Scotia':'NS','Prince Edward Island':'PE','Newfoundland and Labrador':'NL','Yukon':'YT','Northwest Territories':'NT','Nunavut':'NU'};
 const STATES={'Alabama':'AL','Alaska':'AK','Arizona':'AZ','Arkansas':'AR','California':'CA','Colorado':'CO','Connecticut':'CT','Delaware':'DE','District of Columbia':'DC','Florida':'FL','Georgia':'GA','Hawaii':'HI','Idaho':'ID','Illinois':'IL','Indiana':'IN','Iowa':'IA','Kansas':'KS','Kentucky':'KY','Louisiana':'LA','Maine':'ME','Maryland':'MD','Massachusetts':'MA','Michigan':'MI','Minnesota':'MN','Mississippi':'MS','Missouri':'MO','Montana':'MT','Nebraska':'NE','Nevada':'NV','New Hampshire':'NH','New Jersey':'NJ','New Mexico':'NM','New York':'NY','North Carolina':'NC','North Dakota':'ND','Ohio':'OH','Oklahoma':'OK','Oregon':'OR','Pennsylvania':'PA','Rhode Island':'RI','South Carolina':'SC','South Dakota':'SD','Tennessee':'TN','Texas':'TX','Utah':'UT','Vermont':'VT','Virginia':'VA','Washington':'WA','West Virginia':'WV','Wisconsin':'WI','Wyoming':'WY'};
@@ -1536,9 +1572,12 @@ function heat(kind,v,txt,cls=''){
   return `<div class="hc ${cls}" style="background:rgba(${RGB[kind]},${a.toFixed(2)});color:${dark?'#06101e':'#fff'}">${txt}</div>`;
 }
 
+/* v2.167: Settings > Dark mode. Auto = follow daylight where you are (as before); On = always the night look; Off = always the day look */
+const DM={get(){const v=LS.get('dark','auto');return v==='on'||v==='off'?v:'auto'},set(v){LS.set('dark',v)}};
+const dayLook=C=>{const m=DM.get();return m==='on'?false:m==='off'?true:!!C.is_day};
 /* sky-adaptive backdrop */
 function applySky(C){
-  const day=!!C.is_day, code=C.weather_code, cc=C.cloud_cover??0;
+  const day=dayLook(C), code=C.weather_code, cc=C.cloud_cover??0;
   const wet=(code>=51&&code<=67)||(code>=71&&code<=77)||(code>=80&&code<=99);
   let a,b;
   if(wet) [a,b]=day?['#2d4058','#667e9a']:['#0a1424','#27374f'];
@@ -1569,7 +1608,7 @@ function fxCfg(C){
   const RAIN={51:.15,53:.25,55:.35,56:.25,57:.35,61:.35,63:.6,65:.9,66:.45,67:.8,80:.4,81:.65,82:.95,95:.8,96:.9,99:.95};
   const SNOW={71:.3,73:.55,75:.85,77:.3,85:.5,86:.85};
   return {kind:RAIN[code]!=null?'rain':SNOW[code]!=null?'snow':'none', inten:RAIN[code]??SNOW[code]??0,
-    storm:code>=95, fog:code===45||code===48, cloud:C.cloud_cover??0, day:!!C.is_day,
+    storm:code>=95, fog:code===45||code===48, cloud:C.cloud_cover??0, day:dayLook(C),
     wind:C.wind_speed_10m??0, gust:C.wind_gusts_10m??0, dir:C.wind_direction_10m??270};
 }
 
@@ -2652,7 +2691,7 @@ $('#gps').addEventListener('click',()=>{
   // v2.68: works from anywhere on the left half in iPad landscape; a cancelled touch (iPad scroll takeover) still counts using the last finger position
   const app=$('#app'), phone=LIKE; let g=null;
   app.addEventListener('touchstart',e=>{
-    if(!phone.matches||e.touches.length!==1||document.body.classList.contains('d10')||document.body.classList.contains('dayv')||e.target.closest('input,a,#sheet,.sheet')||(e.target.closest('#daily')&&(matchMedia('(max-width:900px)').matches||(()=>{const r=$('#drows');return r&&r.scrollHeight>r.clientHeight+2})()))){g=null;return}   // v2.69: on iPad landscape the 10-day list swipes locations too (unless it needs to scroll)
+    if(!phone.matches||e.touches.length!==1||document.body.classList.contains('d10')||document.body.classList.contains('dayv')||e.target.closest('input,a,#sheet,#settings,.sheet')||(e.target.closest('#daily')&&(matchMedia('(max-width:900px)').matches||(()=>{const r=$('#drows');return r&&r.scrollHeight>r.clientHeight+2})()))){g=null;return}   // v2.69: on iPad landscape the 10-day list swipes locations too (unless it needs to scroll)
     const t=e.touches[0];
     // v2.105: a swipe starting at the very top or bottom edge belongs to iOS (Notification Centre, home bar / app switcher), not to Whether
     if(t.clientY<EDGE_TOP()||t.clientY>innerHeight-EDGE_BOT()){g=null;return}
@@ -2754,7 +2793,7 @@ function showPager(){
   const now=el.offsetParent, lb=$('#locBtn'), cu=$('#mode');
   if(now&&lb){const nr=now.getBoundingClientRect(), r=lb.getBoundingClientRect(), w=el.offsetWidth, k=1/SC;
     const cr=cu?cu.getBoundingClientRect():r; el.style.left=Math.max(0,Math.min(nr.width*k-w,Math.round((cr.left-nr.left+cr.width/2)*k-w/2)))+'px';
-    el.style.top=Math.round(cu?Math.max((r.bottom-nr.top)*k+3,(cr.top-nr.top)*k-el.offsetHeight-5):(r.bottom-nr.top)*k+8)+'px'}
+    el.style.top=Math.round(cu?Math.max((r.bottom-nr.top)*k+1,((r.bottom+cr.top)/2-nr.top)*k-el.offsetHeight/2):(r.bottom-nr.top)*k+8)+'px'}   /* v2.167: centred exactly between the city bubble and Current/Tonight */
   el.classList.add('on'); clearTimeout(showPager._t); showPager._t=setTimeout(()=>el.classList.remove('on'),2200);
 }
 function slideIn(){
@@ -2763,7 +2802,7 @@ function slideIn(){
   els.forEach(el=>{ el.style.opacity=''; el.animate([{transform:`translateY(${D*70}px)`,opacity:0},{transform:'none',opacity:1}],{duration:400,easing:'cubic-bezier(.2,.85,.25,1)'}) });
   setTimeout(()=>{cycling=false},420);
 }
-$('#vtag').textContent='v'+VER; $('#vtag2').textContent='v'+VER; $('#rotv').textContent='v'+VER;
+$('#vtag').textContent='(v'+VER+')'; $('#vtag2').textContent='(v'+VER+')'; $('#rotv').textContent='(v'+VER+')';
 /* ---- v2.82: press and hold the title to go Home (first saved location, else Vancouver) ---- */
 (function(){
   const b=document.querySelector('.brand'); if(!b) return; let t=null,x0=0,y0=0,fired=false;
@@ -2774,6 +2813,20 @@ $('#vtag').textContent='v'+VER; $('#vtag2').textContent='v'+VER; $('#rotv').text
   b.addEventListener('pointermove',e=>{ if(t&&(Math.abs(e.clientX-x0)>10||Math.abs(e.clientY-y0)>10)) clr() });
   ['pointerup','pointercancel','pointerleave'].forEach(n=>b.addEventListener(n,clr));
   b.addEventListener('contextmenu',e=>e.preventDefault());
+})();
+/* ---- v2.167: press and hold anywhere in the "Next 24 hours" title area to jump back to now ---- */
+(function(){
+  document.querySelectorAll('#strip .ph,#hourly .ph').forEach(b=>{ let t=null,x0=0,y0=0;
+    b.dataset.hint='Press and hold to jump back to now';
+    const clr=()=>{clearTimeout(t);t=null;b.classList.remove('hold')};
+    b.addEventListener('pointerdown',e=>{ if(e.button>0||(e.target.closest&&e.target.closest('button'))) return; x0=e.clientX; y0=e.clientY; b.classList.add('hold');
+      t=setTimeout(()=>{ t=null; b.classList.remove('hold'); if(navigator.vibrate) navigator.vibrate(14);
+        if(S.mode!=='now'){ S.mode='now'; render(); requestAnimationFrame(()=>requestAnimationFrame(()=>hourlyJump(true))) } else hourlyJump(true);
+        toast('Back to now',1600) },600) });
+    b.addEventListener('pointermove',e=>{ if(t&&(Math.abs(e.clientX-x0)>10||Math.abs(e.clientY-y0)>10)) clr() });
+    ['pointerup','pointercancel','pointerleave'].forEach(n=>b.addEventListener(n,clr));
+    b.addEventListener('contextmenu',e=>e.preventDefault());
+  });
 })();
 /* ---- v2.97: after more than 30 minutes away, return to Home unless Lock is on ---- */
 const AWAY_MS=30*60e3;
@@ -2787,8 +2840,8 @@ function autoHome(){          // true when it moved you Home
   const n=S.saved.findIndex(s=>key(s)===key(h)); if(n>=0&&S.saved.length>1) S.pg=`${n+1} of ${S.saved.length}`;
   setLoc(h); toast('Back to Home · '+h.name,2500); return true;
 }
-function toggleLock(){ S.locked=!S.locked; LS.set('lock',S.locked); drawLock();
-  toast(S.locked?'Location locked':'Lock off · returns Home after 30 min away',2500) }
+function toggleLock(){ S.locked=!S.locked; LS.set('lock2',S.locked); drawLock();   // v2.167: Lock is ON by default; off = back to Home after 30 min away
+  toast(S.locked?'Location locked · stays until you change it':'Lock off · returns Home after 30 min away',2500) }
 $('#lockSw').onclick=toggleLock;
 /* v2.102: press and hold the location name on the main page to lock / unlock */
 (function(){
@@ -2915,7 +2968,7 @@ $('#d10close').onclick=()=>set10(false);
    sideways switches Today / 10-day on iPhone-style layouts, and on iPad landscape moves through the hourly panel. Not on Mac. ---- */
 (function(){
   const de=document.documentElement; let acc={x:0,y:0}, quiet=null, locked=false;
-  const blocked=t=>!$('#sheet').hidden||!$('#guide').hidden||!$('#wx').hidden||(t&&t.closest&&t.closest('input,textarea,#sheet,#guide,#wx'));
+  const blocked=t=>!$('#sheet').hidden||!$('#settings').hidden||!$('#guide').hidden||!$('#wx').hidden||(t&&t.closest&&t.closest('input,textarea,#sheet,#settings,#guide,#wx'));
   const canScroll=(t,ax,d)=>{ for(let el=t;el&&el!==document.body;el=el.parentElement){ const cs=getComputedStyle(el), o=ax==='y'?cs.overflowY:cs.overflowX;
       if(!/(auto|scroll)/.test(o)) continue;
       if(ax==='y'?el.scrollHeight>el.clientHeight+2:el.scrollWidth>el.clientWidth+2){ const pos=ax==='y'?el.scrollTop:el.scrollLeft, max=ax==='y'?el.scrollHeight-el.clientHeight:el.scrollWidth-el.clientWidth;
@@ -2956,7 +3009,40 @@ function guideHours(){
       return {l:cur?'Now':(h%12||12)+(h<12?' AM':' PM'), n:wx(cur?C.weather_code:H.weather_code[i], cur?C.is_day:H.is_day[i]).i, t:fT(cur?C.temperature_2m:H.temperature_2m[i])} }) } } }catch(e){}
   g.innerHTML=P.map((p,k)=>{ const x=8+k*41; return `<rect x="${x}" y="2" width="30" height="64" rx="9"/><text class="tl" x="${x+15}" y="15">${p.l}</text><svg x="${x+3}" y="19" width="24" height="24" viewBox="0 0 48 48"><use href="#i-${p.n}"/></svg><text class="tt" x="${x+15}" y="58">${p.t}</text>` }).join('')+'<path class="ar" d="M22 78H106M28 73L22 78L28 83M100 73L106 78L100 83"/>';
 }
-function openGuide(){ $('#gShoe').innerHTML=SHOE; $('#gVer').innerHTML='<span class="gw1">Whether</span><span class="gor">(or not)</span><span class="gv2">v'+VER+'</span>'; guideHours(); { const gb=$('#guide .gb'), bi=$('#gBice'), on=!$('#bice').hidden; if(bi) on?gb.prepend(bi):gb.append(bi) }   // v2.58: black ice leads the guide only when it applies, otherwise it sits last
+/* ---- v2.167: every button shows a hint pop-up on hover (mouse or trackpad) ---- */
+(function(){
+  const tip=document.createElement('div'); tip.id='tip'; tip.setAttribute('role','tooltip'); tip.hidden=true; document.body.appendChild(tip);
+  const MAP={btn10:null,uC:'Show temperatures in °C',uF:'Show temperatures in °F',refresh:'Refresh the forecast',helpBtn:'Open the quick user guide',setBtn:'Settings: dark mode and home weather station',setBtn2:'Settings: dark mode and home weather station',
+    locBtn:'Change location (press and hold to lock or unlock)',lockSw:'Location Lock: stay on the city you picked',shClose:'Close Location',gClose:'Close the guide',stClose:'Close Settings',gps:'Use this device’s location',tpGo:'Connect your Tempest station',tpDel:'Remove the token from this device'};
+  Object.keys(MAP).forEach(id=>{ const el=document.getElementById(id); if(el&&MAP[id]) el.dataset.hint=MAP[id] });
+  const text=b=>{ if(b.dataset.hint) return b.dataset.hint; if(b.dataset.m) return b.dataset.m==='eve'?'Show tonight, 6–10 PM':'Show conditions now'; if(b.dataset.dm) return {on:'Always use the night look',off:'Always use the day look',auto:'Follow daylight where you are'}[b.dataset.dm];
+    if(b.classList.contains('sv')) return 'Save this location'; if(b.classList.contains('x')) return 'Remove this location';
+    const a=b.getAttribute('aria-label')||b.getAttribute('title')||(b.textContent||'').trim(); return /^done$/i.test(a)?'Close this window':a };
+  let tm=null;
+  const hide=()=>{ clearTimeout(tm); tm=null; tip.hidden=true };
+  document.addEventListener('pointerover',e=>{
+    if(e.pointerType!=='mouse') return;
+    const b=e.target.closest&&e.target.closest('button,[role=switch],[data-hint]'); if(!b){ hide(); return }
+    const t=text(b); if(!t){ hide(); return }
+    clearTimeout(tm); tm=setTimeout(()=>{ tip.textContent=t; tip.hidden=false; tip.style.left='0px'; tip.style.top='0px';
+      const r=b.getBoundingClientRect(), w=tip.offsetWidth, h=tip.offsetHeight, vw=innerWidth, vh=innerHeight;
+      let x=Math.round(r.left+r.width/2-w/2); x=Math.max(8,Math.min(vw-w-8,x));
+      let y=Math.round(r.bottom+10); if(y+h>vh-8) y=Math.round(r.top-h-10);
+      tip.style.left=x+'px'; tip.style.top=Math.max(8,y)+'px' },380) });
+  document.addEventListener('pointerout',e=>{ if(e.pointerType==='mouse') hide() });
+  ['pointerdown','wheel','keydown'].forEach(n=>document.addEventListener(n,hide,{passive:true}));
+  addEventListener('scroll',hide,true);
+})();
+/* ---- v2.167: Settings pop-up ---- */
+const DMNOTE={on:'Always the night look, day or night.',off:'Always the daytime look, day or night.',auto:'Follows daylight where you are (sunrise and sunset). This is how Whether has always worked.'};
+function drawDM(){ const v=DM.get(); document.querySelectorAll('#dmSeg button').forEach(b=>{ const on=b.dataset.dm===v; b.classList.toggle('on',on); b.setAttribute('aria-checked',on?'true':'false') }); $('#dmNote').textContent=DMNOTE[v] }
+document.querySelectorAll('#dmSeg button').forEach(b=>b.onclick=()=>{ DM.set(b.dataset.dm); drawDM(); if(S.data) render() });
+function openSettings(){ drawDM(); $('#settings').hidden=false; $('#settings .shc').scrollTop=0 }
+function closeSettings(){ $('#settings').hidden=true }
+$('#setBtn').onclick=openSettings; $('#setBtn2').onclick=openSettings; $('#stClose').onclick=closeSettings;
+$('#settings').addEventListener('click',e=>{ if(e.target.id==='settings') closeSettings() });
+addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('#settings').hidden) closeSettings() });
+function openGuide(){ $('#gShoe').innerHTML=SHOE; $('#gVer').innerHTML='<span class="gw1">Whether</span><span class="gor">(or not)</span><span class="gv2">(v'+VER+')</span>'; guideHours(); { const gb=$('#guide .gb'), bi=$('#gBice'), on=!$('#bice').hidden; if(bi) on?gb.prepend(bi):gb.append(bi) }   // v2.58: black ice leads the guide only when it applies, otherwise it sits last
   $('#guide').hidden=false; $('#guide .gb').scrollTop=0 }
 function closeGuide(){ $('#guide').hidden=true }
 $('#helpBtn').onclick=openGuide; $('#gClose').onclick=closeGuide;
@@ -3048,16 +3134,20 @@ const WX=(()=>{
     const gf=W.gust/Math.max(W.kmh,1), pk=T24.reduce((m,q)=>q.k>m.k?q:m,{k:-1,t:''}), calm=T24.filter(q=>q.k<6).length;
     let vx=0,vy=0,vs=0; T24.forEach(q=>{ const a=q.d*Math.PI/180; vx+=Math.sin(a)*q.k; vy+=Math.cos(a)*q.k; vs+=q.k }); const st=vs?Math.hypot(vx,vy)/vs:0;
     const bf=bft(W.kmh), live=W.live;
+    /* v2.167: a dry sense of humour under every number */
+    const NOWL=['Not a leaf stirs','Smoke dawdles','Hair unbothered','Flags go flap','Papers wander','Brollies nervous','Brollies retreat','Walking: sporty','Bins go on tour','Fences flee','Trees take notes','Roofs reconsider','Goodbye, patio'];
+    const BFL=['Doing nothing','Barely trying','Pleasantly lazy','Flags clock in','Kite o’clock','Brolly trouble','Mind the hat','Leaning in','Twigs resign','Chimneys at risk','Insurance calls','Why go outside?','Nope. Just nope.'];
+    const topG=Math.max(mg.g,bm);
     const C=[
-      ['NOW',fW1(W.kmh),wUnit(),BF[bf][1]],
-      ['10-MIN AVERAGE',avg10==null?'…':fW1(avg10),avg10==null?'':wUnit(),avg10==null?'Collecting':live?'Live station':'Forecast'],
-      ['GUST FACTOR',gf.toFixed(1)+'×','',gf<1.3?'Steady':gf<1.7?'Gusty':'Very gusty'],
-      ['TODAY AVERAGE',tAvg==null?'–':fW1(tAvg),tAvg==null?'':wUnit(),'Whole day'],
-      ['TODAY TOP GUST',fW1(Math.max(mg.g,bm)),wUnit(),bm>mg.g?'Measured':mg.t?'at '+hl(mg.t):''],
-      ['PEAK NEXT 24 H',pk.k<0?'–':fW1(pk.k),pk.k<0?'':wUnit(),pk.t?'at '+hl(pk.t):''],
-      ['CALM HOURS',String(calm),'of 24','Under '+(met()?'6 km/h':'4 mph')],
-      ['DIRECTION',Math.round(st*100)+'%','steady',st>.8?'Holds steady':st>.5?'Shifts some':'All over'],
-      ['BEAUFORT','F'+bf,'',BF[bf][1]]];
+      ['NOW',fW1(W.kmh),wUnit(),NOWL[bf]],
+      ['10-MIN AVERAGE',avg10==null?'…':fW1(avg10),avg10==null?'':wUnit(),avg10==null?'Gathering gossip':Math.abs(W.kmh-avg10)<1.5?'Unbothered':W.kmh>avg10?'Picking up pace':'Losing interest'],
+      ['GUST FACTOR',gf.toFixed(1)+'×','',gf<1.3?'Almost smug':gf<1.7?'Mildly dramatic':'Full drama'],
+      ['TODAY AVERAGE',tAvg==null?'–':fW1(tAvg),tAvg==null?'':wUnit(),tAvg==null?'':tAvg<10?'A quiet one':tAvg<20?'Decent effort':tAvg<35?'Hold your hat':'Bring ballast'],
+      ['TODAY TOP GUST',fW1(topG),wUnit(),topG<30?'Barely a sneeze':topG<50?'Brief tantrum':topG<70?'Umbrella killer':'Trampoline time'],
+      ['PEAK NEXT 24 H',pk.k<0?'–':fW1(pk.k),pk.k<0?'':wUnit(),pk.k<0?'':pk.k<15?'Peak: yawn':pk.k<30?'Modest finale':pk.k<50?'Headline act':'Secure the patio'],
+      ['CALM HOURS',String(calm),'of 24',calm===0?'No days off':calm<8?'Occasional naps':calm<16?'Lots of napping':'Basically asleep'],
+      ['DIRECTION',Math.round(st*100)+'%','steady',st>.8?'Knows its mind':st>.5?'Can’t decide':'Hopelessly lost'],
+      ['BEAUFORT','F'+bf,'',BFL[bf]]];
     const pad=12, top=40, gp=7, cw=(w-pad*2-gp*2)/3, ch=(h-top-pad-gp*2)/3;
     C.forEach((q,i)=>{ const x=pad+(i%3)*(cw+gp), y=top+Math.floor(i/3)*(ch+gp); box(c,x,y,cw,ch);
       txt(c,q[0],x+9,y+15,tfit(c,q[0],cw-14,9.5,800),800,'left','#7fd4f5');
@@ -3241,7 +3331,7 @@ const WX=(()=>{
       const c=cv.getContext('2d'); c.setTransform(dpr,0,0,dpr,0,0); cv._w=r.width; cv._h=r.height }) }
   function head(){ const L=TW.wind&&TW.wind(), d=$('#wxSrc'), dot=$('#wxDot');
     d.textContent=L?'Live · Amankenzie Station':S.day>0?'Forecast · selected day':S.mode==='eve'?'Forecast · Tonight 6–10':'Forecast · '+(S.loc&&S.loc.name||'');
-    dot.classList.toggle('fc',!L); $('#wxVer').textContent='v'+VER }
+    dot.classList.toggle('fc',!L); $('#wxVer').textContent='(v'+VER+')' }
   function frame(now){
     if(!open){ run=false; return }
     if(document.hidden){ last=now; requestAnimationFrame(frame); return }
