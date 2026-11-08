@@ -1149,6 +1149,16 @@ body:not(.locked) .loc svg{fill:#f4b942}
 .tpr i.pass{background:#5fd3a0}.tpr i.fail{background:#ff5d6c}.tpr i.wait{background:#f2c14e}
 .tpr.fail span{color:#ffb3ba}
 .tpbox[hidden],.tpf[hidden],.tpx[hidden]{display:none}
+/* v2.171: Remove token asks first, in a floating pop-up above Settings */
+#tpConfirm{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top) + 16px) 16px 16px;background:rgba(2,6,14,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#tpConfirm[hidden]{display:none}
+.tpcc{width:min(380px,100%);box-sizing:border-box;padding:20px 18px 16px;border-radius:26px;background:linear-gradient(172deg,var(--sky1),var(--sky2));border:1px solid rgba(255,255,255,.28);box-shadow:0 24px 60px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.18);text-align:center;color:#fff;text-shadow:-1px -1px 0 rgba(0,0,0,.55),1px -1px 0 rgba(0,0,0,.55),-1px 1px 0 rgba(0,0,0,.55),1px 1px 0 rgba(0,0,0,.55)}
+.tpcc b{display:block;font-size:22px;font-weight:800;color:#f4b942;margin-bottom:8px}
+.tpcc p{margin:0 0 16px;font-size:15px;font-weight:600;line-height:1.4}
+.tpcb{display:flex;gap:10px}
+.tpcb button{flex:1;min-height:46px;color:#fff;font-weight:800;font-size:15px;border-radius:999px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.34);text-shadow:inherit}
+.tpcb button:active{background:rgba(255,255,255,.34)}
+.tpcb #tpcYes{background:rgba(255,93,108,.5);border-color:rgba(255,179,186,.7)}
 /* v2.123: wind always shows one decimal, so its numbers get a little narrower to stay inside their boxes */
 .dx.wnd b{zoom:.84}
 .wd .ws{zoom:.9}
@@ -1439,7 +1449,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.170) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.171) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1457,7 +1467,14 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR3"><i></i><span>Rain today: not loaded</span></div>
       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.170) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.171) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+  </div>
+</div>
+<div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
+  <div class="tpcc">
+    <b id="tpcT">Remove token?</b>
+    <p>Your Tempest token will be deleted from this device and Home will go back to the forecast. Copy it first if you need it again.</p>
+    <div class="tpcb"><button type="button" id="tpcNo">Keep token</button><button type="button" id="tpcYes">Remove</button></div>
   </div>
 </div>
 <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="gTitle">
@@ -1501,7 +1518,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.170';
+const VER='2.171';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2142,7 +2159,14 @@ const TW=(()=>{
     stopWS(); st.token=v; inp.value=''; inp.blur();
     try{ localStorage.setItem(KEY,v) }catch(e){ mark(1,'fail','Station: could not save the token on this device') ; return }
     start() });
-  const del=document.getElementById('tpDel'); if(del) del.addEventListener('click',forget);
+  /* v2.171: asks before removing the token */
+  const cf=document.getElementById('tpConfirm'), cfNo=document.getElementById('tpcNo'), cfYes=document.getElementById('tpcYes');
+  const cfShow=v=>{ if(cf) cf.hidden=!v; if(v&&cfNo) cfNo.focus() };
+  const del=document.getElementById('tpDel'); if(del) del.addEventListener('click',()=>cfShow(true));
+  if(cfNo) cfNo.addEventListener('click',()=>cfShow(false));
+  if(cfYes) cfYes.addEventListener('click',()=>{ cfShow(false); forget() });
+  if(cf) cf.addEventListener('click',e=>{ if(e.target===cf) cfShow(false) });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&cf&&!cf.hidden){ e.stopPropagation(); cfShow(false) } },true);
   const cpb=document.getElementById('tpCopy'); if(cpb) cpb.addEventListener('click',async()=>{ const t=st.token; if(!t) return; let ok=false;
     try{ await navigator.clipboard.writeText(t); ok=true }catch(e){ try{ const a=document.createElement('textarea'); a.value=t; a.style.cssText='position:fixed;opacity:0'; document.body.appendChild(a); a.select(); ok=document.execCommand('copy'); a.remove() }catch(_){} }
     cpb.textContent=ok?'Copied':'Could not copy'; setTimeout(()=>{ cpb.textContent='Copy token' },1600) });
@@ -2721,7 +2745,7 @@ $('#gps').addEventListener('click',()=>{
   // v2.68: works from anywhere on the left half in iPad landscape; a cancelled touch (iPad scroll takeover) still counts using the last finger position
   const app=$('#app'), phone=LIKE; let g=null;
   app.addEventListener('touchstart',e=>{
-    if(!phone.matches||e.touches.length!==1||document.body.classList.contains('d10')||document.body.classList.contains('dayv')||e.target.closest('input,a,#sheet,#settings,.sheet')||(e.target.closest('#daily')&&(matchMedia('(max-width:900px)').matches||(()=>{const r=$('#drows');return r&&r.scrollHeight>r.clientHeight+2})()))){g=null;return}   // v2.69: on iPad landscape the 10-day list swipes locations too (unless it needs to scroll)
+    if(!phone.matches||e.touches.length!==1||document.body.classList.contains('d10')||document.body.classList.contains('dayv')||e.target.closest('input,a,#sheet,#settings,#tpConfirm,.sheet')||(e.target.closest('#daily')&&(matchMedia('(max-width:900px)').matches||(()=>{const r=$('#drows');return r&&r.scrollHeight>r.clientHeight+2})()))){g=null;return}   // v2.69: on iPad landscape the 10-day list swipes locations too (unless it needs to scroll)
     const t=e.touches[0];
     // v2.105: a swipe starting at the very top or bottom edge belongs to iOS (Notification Centre, home bar / app switcher), not to Whether
     if(t.clientY<EDGE_TOP()||t.clientY>innerHeight-EDGE_BOT()){g=null;return}
@@ -3050,7 +3074,7 @@ function guideHours(){
 (function(){
   const tip=document.createElement('div'); tip.id='tip'; tip.setAttribute('role','tooltip'); tip.hidden=true; document.body.appendChild(tip);
   const MAP={btn10:null,uC:'Show temperatures in °C',uF:'Show temperatures in °F',refresh:'Refresh the forecast',helpBtn:'Open the quick user guide',stBtn:'Open Settings: dark mode and home weather station',
-    locBtn:'Change location (press and hold to lock or unlock)',lockSw:'Location Lock: stay on the city you picked',shClose:'Close Location',gClose:'Close the guide',stClose:'Close Settings',gps:'Use this device’s location',tpGo:'Connect your Tempest station',tpDel:'Remove the token from this device',tpCopy:'Copy the token so you can paste it into another app'};
+    locBtn:'Change location (press and hold to lock or unlock)',lockSw:'Location Lock: stay on the city you picked',shClose:'Close Location',gClose:'Close the guide',stClose:'Close Settings',gps:'Use this device’s location',tpGo:'Connect your Tempest station',tpDel:'Remove the token from this device',tpCopy:'Copy the token so you can paste it into another app',tpcNo:'Cancel and keep the token',tpcYes:'Delete the token from this device'};
   Object.keys(MAP).forEach(id=>{ const el=document.getElementById(id); if(el&&MAP[id]) el.dataset.hint=MAP[id] });
   const text=b=>{ if(b.dataset.hint) return b.dataset.hint; if(b.dataset.m) return b.dataset.m==='eve'?'Show tonight, 6–10 PM':'Show conditions now'; if(b.dataset.dm) return {on:'Always use the night look',off:'Always use the day look',auto:'Follow daylight where you are'}[b.dataset.dm];
     if(b.classList.contains('sv')) return 'Save this location'; if(b.classList.contains('x')) return 'Remove this location';
