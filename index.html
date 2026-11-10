@@ -1382,6 +1382,8 @@ body:not(.locked) .loc svg{fill:#f4b942}
 .wmpin{width:18px;height:18px;border-radius:50%;background:#f4b942;border:3px solid #fff;box-shadow:0 0 0 6px rgba(244,185,66,.3),0 2px 8px rgba(0,0,0,.5)}
 #wmMap .leaflet-control-attribution{font-size:10.5px;font-weight:600;background:rgba(10,18,34,.75);color:#bfe3ff;border-radius:8px 0 0 0;padding:2px 8px}   /* v2.180: readable over Leaflet's white default */
 #wmMap .leaflet-control-attribution a{color:#bfe3ff}
+#wmMap .wmbase{filter:brightness(2.1) contrast(1.25)}   /* v2.183: lift the dark map so land, water and streets show under the rain */
+#wmMap .wmref{filter:brightness(1.6)}
 #wmMap .wmosm{filter:invert(1) hue-rotate(180deg) brightness(.85) saturate(.4)}
 .wmb .leaflet-bottom{bottom:84px}
 #cn{position:fixed;inset:0;z-index:56;display:flex;align-items:center;justify-content:center;background:rgba(2,6,14,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
@@ -1545,7 +1547,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.182) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.183) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1567,7 +1569,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.182) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.183) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1656,7 +1658,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.182';
+const VER='2.183';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2414,8 +2416,8 @@ const WM=(()=>{
       map.getPane('cld').style.filter=`blur(${Math.min(4,Math.max(0,cell*.25)).toFixed(1)}px)` };
     map.on('zoomend',soft); soft();
     const ESRI='https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/';
-    const eb=L.tileLayer(ESRI+'World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxZoom:13,attribution:'Map © Esri · Radar and satellite: Environment Canada'}).addTo(map);
-    const el=L.tileLayer(ESRI+'World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxZoom:13,pane:'lbl'}).addTo(map);
+    const eb=L.tileLayer(ESRI+'World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxZoom:13,className:'wmbase',attribution:'Map © Esri · Radar and satellite: Environment Canada'}).addTo(map);
+    const el=L.tileLayer(ESRI+'World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxZoom:13,className:'wmref',pane:'lbl'}).addTo(map);
     let bad=0, good=0, swapped=false;
     eb.on('tileload',()=>good++);
     eb.on('tileerror',()=>{ if(swapped||++bad<3||good) return; swapped=true; map.removeLayer(eb); map.removeLayer(el);
@@ -2437,7 +2439,7 @@ const WM=(()=>{
     }catch(e){ say(frames.length?'':'The radar could not be reached. Check the connection and open the map again.') }
     busy=false }
   function show(i){ if(!frames.length) return; const p=frames[idx]; if(p){ p.r.setOpacity(0); p.c&&p.c.setOpacity(0) }
-    idx=i; const f=frames[i]; f.r.setOpacity(showR?.85:0); f.c&&f.c.setOpacity(showC?.4:0);   // v2.180: lighter clouds so coastlines and rain show through sl.value=i;
+    idx=i; const f=frames[i]; f.r.setOpacity(showR?.62:0); f.c&&f.c.setOpacity(showC?.22:0);   // v2.183: see-through rain and clouds so the map stays readable   // v2.180: lighter clouds so coastlines and rain show through sl.value=i;
     const last=i===frames.length-1, ago=Math.round((Date.now()-f.t)/60000), tm=$m('wmTm');
     tm.classList.toggle('now',last); tm.querySelector('b').textContent=fmt(f.t); tm.querySelector('span').textContent=last?'Latest':ago+' min ago' }
   function step(){ show((idx+1)%frames.length); clearTimeout(timer); timer=setTimeout(step,idx===frames.length-1?1600:420) }   // hold on the latest frame, then loop
