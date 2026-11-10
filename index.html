@@ -1380,8 +1380,9 @@ body:not(.locked) .loc svg{fill:#f4b942}
 .wmmsg{position:absolute;inset:0;z-index:600;display:grid;place-items:center;text-align:center;font-size:17px;font-weight:700;background:rgba(10,18,34,.55);padding:20px}
 .wmmsg[hidden]{display:none}
 .wmpin{width:18px;height:18px;border-radius:50%;background:#f4b942;border:3px solid #fff;box-shadow:0 0 0 6px rgba(244,185,66,.3),0 2px 8px rgba(0,0,0,.5)}
-.wmb .leaflet-control-attribution{font-size:10px;background:rgba(10,18,34,.7);color:#bfe3ff}
-.wmb .leaflet-control-attribution a{color:#bfe3ff}
+#wmMap .leaflet-control-attribution{font-size:10.5px;font-weight:600;background:rgba(10,18,34,.75);color:#bfe3ff;border-radius:8px 0 0 0;padding:2px 8px}   /* v2.180: readable over Leaflet's white default */
+#wmMap .leaflet-control-attribution a{color:#bfe3ff}
+#wmMap .wmosm{filter:invert(1) hue-rotate(180deg) brightness(.85) saturate(.4)}
 .wmb .leaflet-bottom{bottom:84px}
 #cn{position:fixed;inset:0;z-index:56;display:flex;align-items:center;justify-content:center;background:rgba(2,6,14,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
   padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 14px)}
@@ -1544,7 +1545,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.179) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.180) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1566,7 +1567,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.179) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.180) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1655,7 +1656,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.179';
+const VER='2.180';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2400,9 +2401,16 @@ const WM=(()=>{
   function build(){
     map=L.map('wmMap',{zoomControl:false,attributionControl:true,zoomSnap:.5,minZoom:3,maxZoom:11}).setView([S.loc.lat,S.loc.lon],7);
     map.attributionControl.setPrefix(false);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:12,attribution:'© OpenStreetMap © CARTO · Radar and satellite: Environment Canada'}).addTo(map);
+    /* v2.180: CARTO now stamps "API key required" on its free tiles, so the base map is Esri's keyless dark canvas,
+       falling back to OpenStreetMap (darkened) if Esri ever refuses */
     map.createPane('lbl'); map.getPane('lbl').style.zIndex=450; map.getPane('lbl').style.pointerEvents='none';
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:12,pane:'lbl'}).addTo(map);
+    const ESRI='https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/';
+    const eb=L.tileLayer(ESRI+'World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxZoom:12,attribution:'Map © Esri · Radar and satellite: Environment Canada'}).addTo(map);
+    const el=L.tileLayer(ESRI+'World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxZoom:12,pane:'lbl'}).addTo(map);
+    let bad=0, good=0, swapped=false;
+    eb.on('tileload',()=>good++);
+    eb.on('tileerror',()=>{ if(swapped||++bad<3||good) return; swapped=true; map.removeLayer(eb); map.removeLayer(el);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:12,className:'wmosm',attribution:'© OpenStreetMap contributors · Radar and satellite: Environment Canada'}).addTo(map) });
     pin=L.marker([S.loc.lat,S.loc.lon],{interactive:false,icon:L.divIcon({className:'',html:'<div class="wmpin"></div>',iconSize:[18,18],iconAnchor:[9,9]})}).addTo(map) }
   function clear(){ frames.forEach(f=>{ map.removeLayer(f.r); f.c&&map.removeLayer(f.c) }); frames=[] }
   async function load(){
@@ -2420,7 +2428,7 @@ const WM=(()=>{
     }catch(e){ say(frames.length?'':'The radar could not be reached. Check the connection and open the map again.') }
     busy=false }
   function show(i){ if(!frames.length) return; const p=frames[idx]; if(p){ p.r.setOpacity(0); p.c&&p.c.setOpacity(0) }
-    idx=i; const f=frames[i]; f.r.setOpacity(showR?.85:0); f.c&&f.c.setOpacity(showC?.55:0); sl.value=i;
+    idx=i; const f=frames[i]; f.r.setOpacity(showR?.85:0); f.c&&f.c.setOpacity(showC?.4:0);   // v2.180: lighter clouds so coastlines and rain show through sl.value=i;
     const last=i===frames.length-1, ago=Math.round((Date.now()-f.t)/60000), tm=$m('wmTm');
     tm.classList.toggle('now',last); tm.querySelector('b').textContent=fmt(f.t); tm.querySelector('span').textContent=last?'Latest':ago+' min ago' }
   function step(){ show((idx+1)%frames.length); clearTimeout(timer); timer=setTimeout(step,idx===frames.length-1?1600:420) }   // hold on the latest frame, then loop
