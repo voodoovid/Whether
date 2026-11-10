@@ -1545,7 +1545,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.180) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.181) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1567,7 +1567,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.180) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.181) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1656,7 +1656,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.180';
+const VER='2.181';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2377,6 +2377,7 @@ const TW=(()=>{
 const WM=(()=>{
   const btn=document.getElementById('mapBtn'), ov=document.getElementById('wm');
   if(!btn||!ov) return {};
+  const ZM=10;   // v2.181: open zoomed in on the city (was 7, regional)
   const GEO='https://geo.weather.gc.ca/geomet', RAD='RADAR_1KM_RRAI', CLD='GOES-West_1km_DayVis-NightIR';
   const LJS='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js', LCSS='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
   const $m=id=>document.getElementById(id), msg=$m('wmMsg'), sl=$m('wmSlide');
@@ -2399,18 +2400,18 @@ const WM=(()=>{
     const cut=Date.now()-keepMin*60000; return out.filter(t=>+t>=cut) }
   const wms=(layer,t)=>L.tileLayer.wms(GEO,{layers:layer,format:'image/png',transparent:true,version:'1.3.0',time:t.toISOString().replace('.000',''),tileSize:512,zoomOffset:-1,opacity:0,attribution:''});
   function build(){
-    map=L.map('wmMap',{zoomControl:false,attributionControl:true,zoomSnap:.5,minZoom:3,maxZoom:11}).setView([S.loc.lat,S.loc.lon],7);
+    map=L.map('wmMap',{zoomControl:false,attributionControl:true,zoomSnap:.5,minZoom:3,maxZoom:13}).setView([S.loc.lat,S.loc.lon],ZM);
     map.attributionControl.setPrefix(false);
     /* v2.180: CARTO now stamps "API key required" on its free tiles, so the base map is Esri's keyless dark canvas,
        falling back to OpenStreetMap (darkened) if Esri ever refuses */
     map.createPane('lbl'); map.getPane('lbl').style.zIndex=450; map.getPane('lbl').style.pointerEvents='none';
     const ESRI='https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/';
-    const eb=L.tileLayer(ESRI+'World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxZoom:12,attribution:'Map © Esri · Radar and satellite: Environment Canada'}).addTo(map);
-    const el=L.tileLayer(ESRI+'World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxZoom:12,pane:'lbl'}).addTo(map);
+    const eb=L.tileLayer(ESRI+'World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxZoom:13,attribution:'Map © Esri · Radar and satellite: Environment Canada'}).addTo(map);
+    const el=L.tileLayer(ESRI+'World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxZoom:13,pane:'lbl'}).addTo(map);
     let bad=0, good=0, swapped=false;
     eb.on('tileload',()=>good++);
     eb.on('tileerror',()=>{ if(swapped||++bad<3||good) return; swapped=true; map.removeLayer(eb); map.removeLayer(el);
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:12,className:'wmosm',attribution:'© OpenStreetMap contributors · Radar and satellite: Environment Canada'}).addTo(map) });
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:13,className:'wmosm',attribution:'© OpenStreetMap contributors · Radar and satellite: Environment Canada'}).addTo(map) });
     pin=L.marker([S.loc.lat,S.loc.lon],{interactive:false,icon:L.divIcon({className:'',html:'<div class="wmpin"></div>',iconSize:[18,18],iconAnchor:[9,9]})}).addTo(map) }
   function clear(){ frames.forEach(f=>{ map.removeLayer(f.r); f.c&&map.removeLayer(f.c) }); frames=[] }
   async function load(){
@@ -2436,7 +2437,7 @@ const WM=(()=>{
   async function showMap(){
     open=true; ov.hidden=false; $m('wmVer').textContent='(v'+VER+')'; $m('wmSrc').textContent=S.loc.name+' · rain radar and clouds, last 90 minutes';
     try{ await lib() }catch(e){ say('The map could not load. Check the connection and try again.'); return }
-    if(!map) build(); else { map.invalidateSize(); map.setView([S.loc.lat,S.loc.lon],map.getZoom()); pin.setLatLng([S.loc.lat,S.loc.lon]) }
+    if(!map) build(); else { map.invalidateSize(); map.setView([S.loc.lat,S.loc.lon],ZM); pin.setLatLng([S.loc.lat,S.loc.lon]) }
     setTimeout(()=>map&&map.invalidateSize(),350);
     if(!frames.length||Date.now()-loadedAt>6*60000) load(); else play(true) }
   function hide(){ open=false; ov.hidden=true; play(false) }
@@ -2448,7 +2449,7 @@ const WM=(()=>{
   sl.addEventListener('input',()=>{ play(false); show(+sl.value) });
   $m('wmRad').addEventListener('click',e=>{ showR=!showR; e.currentTarget.classList.toggle('off',!showR); show(idx) });
   $m('wmCld').addEventListener('click',e=>{ showC=!showC; e.currentTarget.classList.toggle('off',!showC); show(idx) });
-  $m('wmCtr').addEventListener('click',()=>map&&map.setView([S.loc.lat,S.loc.lon],7));
+  $m('wmCtr').addEventListener('click',()=>map&&map.setView([S.loc.lat,S.loc.lon],ZM));
   /* swipes inside the map must pan the map, not change location or view */
   ['touchstart','touchmove','touchend','pointerdown','pointermove','pointerup','wheel'].forEach(t=>ov.addEventListener(t,e=>e.stopPropagation(),{passive:true}));
   return {open:()=>open};
