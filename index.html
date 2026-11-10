@@ -1337,6 +1337,52 @@ body:not(.locked) .loc svg{fill:#f4b942}
   html:not(.mac) #condBtn:active{background:rgba(255,255,255,.32)}
   #condBtn svg{width:22px;height:22px;flex:none;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 }
+/* v2.179: Map button (left of Conditions) + animated rain radar / cloud map pop-up. iPad landscape only. */
+#mapBtn{display:none}
+@media (min-width:901px) and (min-height:600px) and (orientation:landscape){
+  html:not(.mac) #mapBtn{display:flex;align-items:center;justify-content:center;gap:8px;grid-column:1;grid-row:1;justify-self:end;align-self:center;position:relative;z-index:4;
+    width:min(132px,10.5vw);margin-right:calc(min(224px,17vw) + 18px);box-sizing:border-box;min-height:46px;padding:0 14px;border-radius:999px;color:#fff;font-size:20px;font-weight:800;letter-spacing:.2px;white-space:nowrap;
+    text-shadow:var(--ol,0 1px 3px rgba(0,0,0,.5));background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 6px 16px rgba(0,0,0,.22)}
+  html:not(.mac) #condBtn[hidden]~#mapBtn{margin-right:6px}
+  html:not(.mac) #mapBtn:active{background:rgba(255,255,255,.32)}
+  #mapBtn svg{width:22px;height:22px;flex:none;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+}
+#wm{position:fixed;inset:0;z-index:56;display:flex;align-items:center;justify-content:center;background:rgba(2,6,14,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 14px)}
+#wm[hidden]{display:none}
+#wm,#wm *{text-shadow:none}
+.wmc{width:min(1240px,100%);height:100%;display:flex;flex-direction:column;overflow:hidden;color:#fff;
+  background:rgba(10,18,34,.97);border:1px solid rgba(255,255,255,.18);border-radius:26px;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:wxIn .32s cubic-bezier(.2,.9,.3,1.15)}
+.wmc .cnh h2 i{font-style:normal;color:#f4b942}
+#wmClose{margin-left:auto;flex:none;font-size:17px;font-weight:800;color:#fff;padding:8px 18px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28)}
+#wmClose:active{background:rgba(255,255,255,.3)}
+.wmb{position:relative;flex:1;min-height:0;margin:0 12px 12px;border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:#0b1220}
+#wmMap{position:absolute;inset:0;background:#0b1220}
+.wmtop{position:absolute;top:12px;right:12px;z-index:500;display:flex;gap:8px}
+.wmtop button,.wmctl button{font-weight:800;color:#fff;border-radius:999px;background:rgba(10,18,34,.82);border:1.5px solid rgba(255,255,255,.32);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.wmtop button{display:flex;align-items:center;gap:7px;padding:8px 14px;font-size:15px}
+.wmtop button i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.wmtop button.off{opacity:.45}
+.wmtop button.off i{background:transparent;box-shadow:inset 0 0 0 1.5px var(--c)}
+.wmctl{position:absolute;left:12px;right:12px;bottom:12px;z-index:500;display:flex;align-items:center;gap:14px;padding:10px 16px;border-radius:20px;background:rgba(10,18,34,.86);border:1px solid rgba(255,255,255,.16);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.wmctl button{flex:none;width:46px;height:46px;display:grid;place-items:center;padding:0}
+.wmctl button svg{width:20px;height:20px;fill:#fff}
+.wmtl{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.wmtl input{width:100%;accent-color:#f4b942;margin:0}
+.wmtk{display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;color:#bfe3ff}
+.wmtm{flex:none;min-width:112px;text-align:right;line-height:1.1}
+.wmtm b{display:block;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+.wmtm span{font-size:12.5px;font-weight:700;color:#bfe3ff}
+.wmtm.now b{color:#f4b942}
+.wmleg{flex:none;display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:#bfe3ff}
+.wmleg i{display:block;width:130px;height:9px;border-radius:5px;background:linear-gradient(90deg,#9be7ff,#2f9bff,#2fd16a,#f4e04d,#ff9b2e,#ff3b3b,#d94dff)}
+.wmleg div{display:flex;justify-content:space-between}
+.wmmsg{position:absolute;inset:0;z-index:600;display:grid;place-items:center;text-align:center;font-size:17px;font-weight:700;background:rgba(10,18,34,.55);padding:20px}
+.wmmsg[hidden]{display:none}
+.wmpin{width:18px;height:18px;border-radius:50%;background:#f4b942;border:3px solid #fff;box-shadow:0 0 0 6px rgba(244,185,66,.3),0 2px 8px rgba(0,0,0,.5)}
+.wmb .leaflet-control-attribution{font-size:10px;background:rgba(10,18,34,.7);color:#bfe3ff}
+.wmb .leaflet-control-attribution a{color:#bfe3ff}
+.wmb .leaflet-bottom{bottom:84px}
 #cn{position:fixed;inset:0;z-index:56;display:flex;align-items:center;justify-content:center;background:rgba(2,6,14,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
   padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 14px)}
 #cn[hidden]{display:none}
@@ -1427,6 +1473,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 <div id="flash" aria-hidden="true"></div>
 <div id="app">
   <button id="condBtn" type="button" hidden aria-haspopup="dialog" data-hint="Every reading from your weather station"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14a8 8 0 0 1 16 0"/><path d="M12 14l4-4"/><path d="M4 18h16"/></svg>Conditions</button>
+  <button id="mapBtn" type="button" aria-haspopup="dialog" data-hint="Moving rain radar and clouds"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg>Map</button>
   <section id="left">
     <div class="bar">
       <div class="brand"><img src="icon-192.png" alt="" width="32" height="32"><div class="ttl"><span class="t1">Whether</span><span class="t2">(or not)</span></div><span class="vtag" id="vtag"></span></div>
@@ -1497,7 +1544,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.178) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.179) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1519,7 +1566,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.178) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.179) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1547,6 +1594,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">Settings</span></div></div><div class="gx"><b>Settings</b><span>Beside Done at the top of the Location menu: Dark mode (On, Off or Auto) and your <span class="amk">Amankenzie</span> Weather Station. It also runs the station’s connection tests (green is good, red shows what failed); Run tests again repeats them. Its own Locations button takes you back to the location list.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-title"><img src="icon-192.png" alt="" width="26" height="26"><div class="tt"><b>Whether</b><i>(or not)</i></div></div></div><div class="gx"><b>Go Home</b><span>Press and hold the Whether <em class="yor">(or not)</em> title to jump to your Home location, the first one in your saved list.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">Conditions</span></div></div><div class="gx"><b>Conditions</b><span>iPad landscape, at Home: opens every reading your station reports, each with a cheeky comment. Press Done or tap outside to close it.</span></div></div>
+      <div class="gi" id="gMap" hidden><div class="gv"><div class="v-row"><span class="v-pill">Map</span></div></div><div class="gx"><b>Map</b><span>Left of Conditions: moving rain radar and clouds for the last 90 minutes. Pinch to zoom, drag to move; Rain and Clouds switch each layer, Recentre goes back to this city.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill v-stn"><i class="ld" style="display:inline-block;flex:none;width:9px;height:9px;border-radius:50%;background:#5fd3a0"></i><span><span class="amk">Amankenzie</span> <br>Station</span></span></div></div><div class="gx"><b><span class="amk">Amankenzie</span> Station</b><span>At Home, with your Tempest connected, the temperature, Feels like, wind (with its live dial), rain and shoe conditions come from your own station. Everything else stays forecast.</span></div></div>
       <div class="gi" id="gTemps" hidden><div class="gv"><div class="v-row" style="font-size:30px;font-weight:800;align-items:baseline;gap:4px"><span style="color:#f4b942">7°</span><span style="font-size:15px;color:#fff">(6°)</span><span style="font-size:15px;color:#f4b942">(7°)</span></div></div><div class="gx"><b>Yellow vs white temperatures</b><span><b style="color:#f4b942">Yellow</b> is your <span class="amk">Amankenzie</span> Station: the big temperature is its live reading, and yellow brackets are its own forecast. <b>White brackets</b> are the Environment Canada forecast. In Next 24 hours the yellow figure is the station’s hourly forecast with Environment Canada’s in white brackets; Now is the live reading.</span></div></div>
       <div class="gi gwx"><div class="gv"><svg class="v-wx" viewBox="0 0 58 58" aria-hidden="true"><circle class="o" cx="29" cy="29" r="26"/><circle class="r" cx="29" cy="29" r="20"/><path d="M29 12l-7 15h14z"/></svg></div><div class="gx"><b>Wind <i class="yor">Studio</i></b><span>Press and hold the Wind box for six live views of the wind.</span></div></div>
@@ -1568,6 +1616,30 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="wxg" id="wxGrid"></div>
   </div>
 </div>
+<div id="wm" hidden role="dialog" aria-modal="true" aria-labelledby="wmTitle">
+  <div class="wmc">
+    <div class="cnh">
+      <img src="icon-192.png" alt="" width="38" height="38">
+      <div><h2 id="wmTitle">Weather <i>Map</i></h2><div class="cnsub"><span id="wmSrc">Rain radar and clouds, last 90 minutes</span><span class="vt">Whether <i class="yor">(or not)</i> <span id="wmVer"></span></span></div></div>
+      <button id="wmClose" type="button" data-hint="Close the map">Done</button>
+    </div>
+    <div class="wmb">
+      <div id="wmMap"></div>
+      <div class="wmtop">
+        <button id="wmRad" type="button" style="--c:#2f9bff" data-hint="Show or hide the rain radar"><i></i>Rain</button>
+        <button id="wmCld" type="button" style="--c:#e8eef7" data-hint="Show or hide the satellite clouds"><i></i>Clouds</button>
+        <button id="wmCtr" type="button" style="--c:#f4b942" data-hint="Centre the map on this location"><i></i>Recentre</button>
+      </div>
+      <div class="wmctl">
+        <button id="wmPlay" type="button" data-hint="Play or pause the animation"></button>
+        <div class="wmtl"><input id="wmSlide" type="range" min="0" max="0" value="0" data-hint="Drag to pick a time"><div class="wmtk"><span id="wmT0"></span><span id="wmT1"></span></div></div>
+        <div class="wmtm" id="wmTm"><b>--:--</b><span></span></div>
+        <div class="wmleg"><i></i><div><span>Light</span><span>Heavy</span></div></div>
+      </div>
+      <div class="wmmsg" id="wmMsg">Loading the map…</div>
+    </div>
+  </div>
+</div>
 <div id="cn" hidden role="dialog" aria-modal="true" aria-labelledby="cnTitle">
   <div class="cnc">
     <div class="cnh">
@@ -1583,7 +1655,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.178';
+const VER='2.179';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2300,6 +2372,80 @@ const TW=(()=>{
   const snap=()=>({token:!!st.token,home:isHome(),fresh:fresh(),raw:st.raw,cc:st.cc,gh:st.gh,bh:st.bh,hw:st.hw});   // v2.173
   return {overlay,mount,start,fcT,fcNow,wind,snap,at:()=>st.obs?st.obs.t*1000:Date.now()};
 })();
+/* v2.179: Weather Map pop-up: Environment Canada rain radar (6-min frames) + GOES-West clouds (10-min), animated over the last 90 minutes. iPad landscape only; proven first in Sandbox Map Test v0.97. */
+const WM=(()=>{
+  const btn=document.getElementById('mapBtn'), ov=document.getElementById('wm');
+  if(!btn||!ov) return {};
+  const GEO='https://geo.weather.gc.ca/geomet', RAD='RADAR_1KM_RRAI', CLD='GOES-West_1km_DayVis-NightIR';
+  const LJS='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js', LCSS='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
+  const $m=id=>document.getElementById(id), msg=$m('wmMsg'), sl=$m('wmSlide');
+  const PLAY='<svg viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></svg>', PAUSE='<svg viewBox="0 0 24 24"><path d="M6 4h4.5v16H6zM13.5 4H18v16h-4.5z"/></svg>';
+  const fmt=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+  let open=false, map=null, pin=null, frames=[], idx=0, timer=0, showR=true, showC=true, loadedAt=0, libP=null, busy=false;
+  const say=t=>{ msg.textContent=t; msg.hidden=!t };
+  function lib(){ if(window.L) return Promise.resolve(); if(libP) return libP;
+    libP=new Promise((ok,no)=>{ const c=document.createElement('link'); c.rel='stylesheet'; c.href=LCSS; document.head.appendChild(c);
+      const j=document.createElement('script'); j.src=LJS; j.onload=ok; j.onerror=()=>{ libP=null; no(new Error('map library')) }; document.head.appendChild(j) });
+    return libP }
+  async function times(layer,keepMin){
+    const r=await fetch(`${GEO}?service=WMS&version=1.3.0&request=GetCapabilities&layer=${layer}&LAYERS_REFRESH_RATE=PT1M`,{cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const x=new DOMParser().parseFromString(await r.text(),'text/xml');
+    const d=[...x.getElementsByTagName('Dimension')].find(n=>n.getAttribute('name')==='time'); if(!d) throw new Error('no times');
+    const v=d.textContent.trim(); let out=[];
+    if(v.includes('/')){ const [a,b,p]=v.split('/'); const step=(+(p.match(/(\d+)M/)||[0,10])[1])*60000; for(let t=+new Date(b); t>=+new Date(a)&&out.length<200; t-=step) out.unshift(new Date(t)) }
+    else out=v.split(',').map(z=>new Date(z));
+    const cut=Date.now()-keepMin*60000; return out.filter(t=>+t>=cut) }
+  const wms=(layer,t)=>L.tileLayer.wms(GEO,{layers:layer,format:'image/png',transparent:true,version:'1.3.0',time:t.toISOString().replace('.000',''),tileSize:512,zoomOffset:-1,opacity:0,attribution:''});
+  function build(){
+    map=L.map('wmMap',{zoomControl:false,attributionControl:true,zoomSnap:.5,minZoom:3,maxZoom:11}).setView([S.loc.lat,S.loc.lon],7);
+    map.attributionControl.setPrefix(false);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:12,attribution:'© OpenStreetMap © CARTO · Radar and satellite: Environment Canada'}).addTo(map);
+    map.createPane('lbl'); map.getPane('lbl').style.zIndex=450; map.getPane('lbl').style.pointerEvents='none';
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:12,pane:'lbl'}).addTo(map);
+    pin=L.marker([S.loc.lat,S.loc.lon],{interactive:false,icon:L.divIcon({className:'',html:'<div class="wmpin"></div>',iconSize:[18,18],iconAnchor:[9,9]})}).addTo(map) }
+  function clear(){ frames.forEach(f=>{ map.removeLayer(f.r); f.c&&map.removeLayer(f.c) }); frames=[] }
+  async function load(){
+    if(busy) return; busy=true; say(frames.length?'':'Loading rain radar and clouds…');
+    try{
+      const [rF,cF]=await Promise.all([times(RAD,90),times(CLD,100).catch(()=>[])]);
+      if(!rF.length) throw new Error('no radar');
+      clear();
+      frames=rF.map(t=>{ const c=cF.filter(x=>+x<=+t).pop()||cF[0]; return {t,r:wms(RAD,t),c:c?wms(CLD,c):null} });
+      frames.forEach(f=>{ f.c&&f.c.addTo(map); f.r.addTo(map) });
+      loadedAt=Date.now(); sl.max=frames.length-1;
+      $m('wmT0').textContent=fmt(frames[0].t); $m('wmT1').textContent='Now';
+      $m('wmCld').hidden=!cF.length;
+      idx=frames.length-1; show(idx); say(''); play(true);
+    }catch(e){ say(frames.length?'':'The radar could not be reached. Check the connection and open the map again.') }
+    busy=false }
+  function show(i){ if(!frames.length) return; const p=frames[idx]; if(p){ p.r.setOpacity(0); p.c&&p.c.setOpacity(0) }
+    idx=i; const f=frames[i]; f.r.setOpacity(showR?.85:0); f.c&&f.c.setOpacity(showC?.55:0); sl.value=i;
+    const last=i===frames.length-1, ago=Math.round((Date.now()-f.t)/60000), tm=$m('wmTm');
+    tm.classList.toggle('now',last); tm.querySelector('b').textContent=fmt(f.t); tm.querySelector('span').textContent=last?'Latest':ago+' min ago' }
+  function step(){ show((idx+1)%frames.length); clearTimeout(timer); timer=setTimeout(step,idx===frames.length-1?1600:420) }   // hold on the latest frame, then loop
+  function play(on){ clearTimeout(timer); timer=0; $m('wmPlay').innerHTML=on?PAUSE:PLAY; $m('wmPlay').dataset.on=on?1:''; if(on&&frames.length) timer=setTimeout(step,idx===frames.length-1?1600:420) }
+  async function showMap(){
+    open=true; ov.hidden=false; $m('wmVer').textContent='(v'+VER+')'; $m('wmSrc').textContent=S.loc.name+' · rain radar and clouds, last 90 minutes';
+    try{ await lib() }catch(e){ say('The map could not load. Check the connection and try again.'); return }
+    if(!map) build(); else { map.invalidateSize(); map.setView([S.loc.lat,S.loc.lon],map.getZoom()); pin.setLatLng([S.loc.lat,S.loc.lon]) }
+    setTimeout(()=>map&&map.invalidateSize(),350);
+    if(!frames.length||Date.now()-loadedAt>6*60000) load(); else play(true) }
+  function hide(){ open=false; ov.hidden=true; play(false) }
+  btn.addEventListener('click',showMap);
+  $m('wmClose').addEventListener('click',hide);
+  ov.addEventListener('click',e=>{ if(e.target===ov) hide() });
+  addEventListener('keydown',e=>{ if(e.key==='Escape'&&open) hide() });
+  $m('wmPlay').addEventListener('click',()=>play(!$m('wmPlay').dataset.on));
+  sl.addEventListener('input',()=>{ play(false); show(+sl.value) });
+  $m('wmRad').addEventListener('click',e=>{ showR=!showR; e.currentTarget.classList.toggle('off',!showR); show(idx) });
+  $m('wmCld').addEventListener('click',e=>{ showC=!showC; e.currentTarget.classList.toggle('off',!showC); show(idx) });
+  $m('wmCtr').addEventListener('click',()=>map&&map.setView([S.loc.lat,S.loc.lon],7));
+  /* swipes inside the map must pan the map, not change location or view */
+  ['touchstart','touchmove','touchend','pointerdown','pointermove','pointerup','wheel'].forEach(t=>ov.addEventListener(t,e=>e.stopPropagation(),{passive:true}));
+  return {open:()=>open};
+})();
+
 /* v2.173: Conditions pop-up: every reading from the Tempest, each with a comment. iPad landscape, Home only. */
 const CN=(()=>{
   const btn=document.getElementById('condBtn'), ov=document.getElementById('cn'), grid=document.getElementById('cnGrid');
@@ -3251,7 +3397,7 @@ $('#d10close').onclick=()=>set10(false);
    sideways switches Today / 10-day on iPhone-style layouts, and on iPad landscape moves through the hourly panel. Not on Mac. ---- */
 (function(){
   const de=document.documentElement; let acc={x:0,y:0}, quiet=null, locked=false;
-  const blocked=t=>!$('#sheet').hidden||!$('#settings').hidden||!$('#guide').hidden||!$('#wx').hidden||!$('#cn').hidden||(t&&t.closest&&t.closest('input,textarea,#sheet,#settings,#guide,#wx,#cn'));
+  const blocked=t=>!$('#sheet').hidden||!$('#settings').hidden||!$('#guide').hidden||!$('#wx').hidden||!$('#cn').hidden||!$('#wm').hidden||(t&&t.closest&&t.closest('input,textarea,#sheet,#settings,#guide,#wx,#cn,#wm'));   // v2.179: + Map
   const canScroll=(t,ax,d)=>{ for(let el=t;el&&el!==document.body;el=el.parentElement){ const cs=getComputedStyle(el), o=ax==='y'?cs.overflowY:cs.overflowX;
       if(!/(auto|scroll)/.test(o)) continue;
       if(ax==='y'?el.scrollHeight>el.clientHeight+2:el.scrollWidth>el.clientWidth+2){ const pos=ax==='y'?el.scrollTop:el.scrollLeft, max=ax==='y'?el.scrollHeight-el.clientHeight:el.scrollWidth-el.clientWidth;
@@ -3326,7 +3472,7 @@ $('#stBtn').onclick=()=>{ closeSheet(); openSettings() }; $('#stClose').onclick=
 $('#stLoc').onclick=()=>{ closeSettings(); openSheet() };   // v2.172: Locations button beside Done in Settings
 $('#settings').addEventListener('click',e=>{ if(e.target.id==='settings') closeSettings() });
 addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('#settings').hidden) closeSettings() });
-function openGuide(){ $('#gShoe').innerHTML=SHOE; $('#gVer').innerHTML='<span class="gw1">Whether</span><span class="gor">(or not)</span><span class="gv2">(v'+VER+')</span>'; guideHours(); { const gt=$('#gTemps'); if(gt) gt.hidden=!IPADL() }   // v2.178: yellow vs white temps explained, iPad landscape only
+function openGuide(){ $('#gShoe').innerHTML=SHOE; $('#gVer').innerHTML='<span class="gw1">Whether</span><span class="gor">(or not)</span><span class="gv2">(v'+VER+')</span>'; guideHours(); { const gt=$('#gTemps'), gm=$('#gMap'); if(gt) gt.hidden=!IPADL(); if(gm) gm.hidden=!IPADL() }   // v2.178: yellow vs white temps explained, iPad landscape only
   { const gb=$('#guide .gb'), bi=$('#gBice'), on=!$('#bice').hidden; if(bi) on?gb.prepend(bi):gb.append(bi) }   // v2.58: black ice leads the guide only when it applies, otherwise it sits last
   $('#guide').hidden=false; $('#guide .gb').scrollTop=0 }
 function closeGuide(){ $('#guide').hidden=true }
