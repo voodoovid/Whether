@@ -1585,7 +1585,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.190) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.191) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1607,7 +1607,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.190) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.191) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1707,7 +1707,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.190';
+const VER='2.191';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2432,7 +2432,7 @@ const TW=(()=>{
 const WM=(()=>{
   const btn=document.getElementById('mapBtn'), ov=document.getElementById('wm');
   if(!btn||!ov) return {};
-  const ZM=8;   // v2.188: a bit wider, like Tempest's map (was 10)
+  const ZM=10;   // v2.191: 2 levels closer (v2.188 was 8)
   const GEO='https://geo.weather.gc.ca/geomet', LAY={type:'Radar_1km_SfcPrecipType',rate:'RADAR_1KM_RRAI'}, CLD='GOES-West_1km_DayVis-NightIR', MIN=180;
   const ESRI='https://server.arcgisonline.com/ArcGIS/rest/services/';
   const LJS='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js', LCSS='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
@@ -2471,6 +2471,13 @@ const WM=(()=>{
     const rest=F.map((f,i)=>({f,d:(i-idx+F.length)%F.length})).filter(o=>o.d).sort((a,b)=>a.d-b.d).map(o=>o.f);
     for(let i=0;i<rest.length;i+=4){ if(g!==gen) return; const b=rest.slice(i,i+4); b.forEach(f=>{ f.c&&f.c.addTo(map); f.r.addTo(map) }); await Promise.all(b.map(f=>ready(f.r,5000))) }
     if(g===gen&&wasP&&open){ wasP=false; play(true) } }
+  /* v2.191: Recentre didn't centre: the map was working from an old size for its box, so "the middle" was in the wrong place.
+     Now it re-measures the box first, then puts this location exactly in the middle (proven in Sandbox Map Test v0.99) */
+  let touched=false;
+  function centre(){ if(!map||touched) return; map.invalidateSize({pan:false});
+    const ll=[S.loc.lat,S.loc.lon], p=map.latLngToContainerPoint(ll), z=map.getSize();
+    if(map.getZoom()===ZM&&Math.hypot(p.x-z.x/2,p.y-z.y/2)<2) return;
+    map.setView(ll,ZM,{animate:false}) }
   function zoomBtns(){ if(!map) return; const z=map.getZoom(); $m('wmZin').disabled=z>=map.getMaxZoom(); $m('wmZout').disabled=z<=map.getMinZoom() }
   /* v2.189: pass/fail check of each map type (one tile at this location) each time the menu opens, green = loads, red = can't be reached */
   function probe(){
@@ -2513,6 +2520,8 @@ const WM=(()=>{
        v2.189: map type choice (Satellite / Map / Terrain / Dark); a type that won't load falls back to Satellite */
     setBase(base,true);
     map.on('zoomend',zoomBtns); zoomBtns();
+    map.on('dragstart',()=>{ touched=true }); map.getContainer().addEventListener('touchstart',e=>{ if(e.touches.length>1) touched=true },{passive:true});
+    if(window.ResizeObserver) new ResizeObserver(()=>map&&map.invalidateSize({pan:false})).observe($m('wmMap'));
     /* v2.190: zooming made every frame reload at once and the iPad ran out of memory. While the map moves only the frame on
        screen stays; the rest come back a few at a time once it settles, then the loop carries on */
     map.on('movestart',()=>{ const F=frames(); if(!F.length) return; gen++; if(timer) wasP=true; play(false);
@@ -2557,11 +2566,11 @@ const WM=(()=>{
     if(!F.length||Date.now()-loadedAt[m]>6*60000) load(m) }
   function legend(){ $m('wmKeyImg').src=legURL(LAY[mode]); $m('wmKeyT').textContent=mode==='type'?'Rain / Snow':'Rain rate' }
   async function showMap(){
-    open=true; ov.classList.remove('wmpre'); ov.hidden=false; $m('wmVer').textContent='(v'+VER+')'; $m('wmSrc').textContent=S.loc.name+' · radar, last 3 hours';
+    open=true; touched=false; ov.classList.remove('wmpre'); ov.hidden=false; $m('wmVer').textContent='(v'+VER+')'; $m('wmSrc').textContent=S.loc.name+' · radar, last 3 hours';
     legend();
     try{ await lib() }catch(e){ say('The map could not load. Check the connection and try again.'); return }
-    if(!map) build(); else { map.invalidateSize(); map.setView([S.loc.lat,S.loc.lon],ZM); pin.setLatLng([S.loc.lat,S.loc.lon]) }
-    setTimeout(()=>map&&map.invalidateSize(),350);
+    if(!map) build(); else pin.setLatLng([S.loc.lat,S.loc.lon]); centre()
+    setTimeout(centre,350); setTimeout(centre,800);   // v2.191: again once the pop-up has finished opening
     if(frames().length) play(true);   // ready straight away when it was loaded in the background
     if(!frames().length||Date.now()-loadedAt[mode]>6*60000) load() }
   function hide(){ open=false; ov.hidden=true; play(false); $m('wmKey').classList.remove('big'); menu(false) }
@@ -2572,7 +2581,7 @@ const WM=(()=>{
     try{ await lib() }catch(e){ return }
     if(open) return;
     ov.classList.add('wmpre'); ov.hidden=false;
-    if(!map) build(); else { map.invalidateSize(); map.setView([S.loc.lat,S.loc.lon],ZM); pin.setLatLng([S.loc.lat,S.loc.lon]) }
+    if(!map) build(); else pin.setLatLng([S.loc.lat,S.loc.lon]); centre()
     await load();
     if(!open){ ov.hidden=true; ov.classList.remove('wmpre') } }
   setTimeout(prewarm,4000); setInterval(prewarm,60000);
@@ -2589,10 +2598,10 @@ const WM=(()=>{
   $m('wmRad').addEventListener('click',e=>{ showR=!showR; e.currentTarget.classList.toggle('off',!showR); panes() });
   $m('wmCld').addEventListener('click',e=>{ showC=!showC; e.currentTarget.classList.toggle('off',!showC); panes();
     if(showC&&!(frames()[0]||{}).c){ loadedAt[mode]=0; load() } });   // clouds are only fetched once switched on
-  $m('wmCtr').addEventListener('click',()=>map&&map.setView([S.loc.lat,S.loc.lon],ZM));
+  $m('wmCtr').addEventListener('click',()=>{ touched=false; centre() });
   /* v2.189: zoom buttons and map type menu */
-  $m('wmZin').addEventListener('click',()=>map&&map.zoomIn(1));
-  $m('wmZout').addEventListener('click',()=>map&&map.zoomOut(1));
+  $m('wmZin').addEventListener('click',()=>{ touched=true; map&&map.zoomIn(1) });
+  $m('wmZout').addEventListener('click',()=>{ touched=true; map&&map.zoomOut(1) });
   $m('wmLyr').addEventListener('click',e=>{ e.stopPropagation(); menu($m('wmLm').hidden) });
   $m('wmLm').addEventListener('click',e=>{ e.stopPropagation(); const b=e.target.closest('button[data-b]'); if(!b||b.disabled) return; if(map&&b.dataset.b!==base) setBase(b.dataset.b); menu(false) });
   ov.querySelector('.wmb').addEventListener('click',()=>menu(false));
