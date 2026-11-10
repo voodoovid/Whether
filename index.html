@@ -1385,7 +1385,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 #wmMap .leaflet-control-attribution a{color:#bfe3ff}
 #wmMap .wmbase{filter:brightness(2.1) contrast(1.25)}   /* v2.183: lift the dark map so land, water and streets show under the rain */
 #wmMap .wmref{filter:brightness(1.6)}
-#wmMap .leaflet-rad-pane>.leaflet-layer,#wmMap .leaflet-cld-pane>.leaflet-layer{transition:opacity .55s linear}   /* v2.184: frames cross-fade into each other instead of jumping */
+#wmMap .leaflet-rad-pane>.leaflet-layer,#wmMap .leaflet-cld-pane>.leaflet-layer{transition:opacity .45s ease-out}   /* v2.184: frames cross-fade into each other instead of jumping */
 #wmMap.drag .leaflet-rad-pane>.leaflet-layer,#wmMap.drag .leaflet-cld-pane>.leaflet-layer{transition-duration:.12s}
 #wmMap .wmosm{filter:invert(1) hue-rotate(180deg) brightness(.85) saturate(.4)}
 .wmb .leaflet-bottom{bottom:84px}
@@ -1550,7 +1550,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.185) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.186) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1572,7 +1572,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.185) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.186) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1661,7 +1661,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.185';
+const VER='2.186';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2445,13 +2445,20 @@ const WM=(()=>{
       if(open||playing) play(true);
     }catch(e){ if(!frames.length) say('The radar could not be reached. Check the connection and open the map again.') }
     busy=false }
-  function show(i){ if(!frames.length) return; const p=frames[idx]; if(p){ p.r.setOpacity(0); p.c&&p.c.setOpacity(0) }
-    idx=i; const f=frames[i]; f.r.setOpacity(showR?.62:0); f.c&&f.c.setOpacity(showC?.22:0);   // v2.183: see-through rain and clouds so the map stays readable
+  /* v2.186: no pulsing. Each layer's see-through level is set once on its pane; the next frame fades in fully on top of
+     the current one (which stays solid underneath), and only then is the old frame removed, so brightness never dips */
+  let zTop=1;
+  function panes(){ if(!map) return; map.getPane('rad').style.opacity=showR?.62:0; map.getPane('cld').style.opacity=showC?.22:0 }
+  function show(i,fade){ if(!frames.length) return; panes(); const p=frames[idx], f=frames[i];
+    if(p&&p!==f){ clearTimeout(p.off); p.off=setTimeout(()=>{ if(frames[idx]!==p){ p.r.setOpacity(0); p.c&&p.c.setOpacity(0) } },fade?520:0) }
+    clearTimeout(f.off); zTop++; f.r.setZIndex(zTop); f.c&&f.c.setZIndex(zTop);
+    [f.r,f.c].forEach(l=>{ if(!l) return; const el=l.getContainer(); if(el) el.style.transitionDuration=fade?'':'0s'; l.setOpacity(1) });
+    idx=i;
     sl.value=i;   // v2.185: was accidentally inside the comment above, so the slider didn't follow the animation
     const last=i===frames.length-1, ago=Math.round((Date.now()-f.t)/60000), tm=$m('wmTm');
     tm.classList.toggle('now',last); tm.querySelector('b').textContent=fmt(f.t); tm.querySelector('span').textContent=last?'Latest':ago+' min ago' }
   const FR=550;   // v2.184: 550 ms per frame to match the cross-fade; v2.185: no pause on the latest frame, just loops
-  function step(){ show((idx+1)%frames.length); clearTimeout(timer); timer=setTimeout(step,FR) }
+  function step(){ show((idx+1)%frames.length,true); clearTimeout(timer); timer=setTimeout(step,FR) }
   function play(on){ clearTimeout(timer); timer=0; $m('wmPlay').innerHTML=on?PAUSE:PLAY; $m('wmPlay').dataset.on=on?1:''; if(on&&frames.length) timer=setTimeout(step,FR) }
   async function showMap(){
     open=true; ov.classList.remove('wmpre'); ov.hidden=false; $m('wmVer').textContent='(v'+VER+')'; $m('wmSrc').textContent=S.loc.name+' · rain radar and clouds, last 90 minutes';
