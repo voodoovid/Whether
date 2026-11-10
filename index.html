@@ -1350,6 +1350,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 #wm{position:fixed;inset:0;z-index:56;display:flex;align-items:center;justify-content:center;background:rgba(2,6,14,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
   padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 14px)}
 #wm[hidden]{display:none}
+#wm.wmpre{visibility:hidden;pointer-events:none}   /* v2.185: loading in the background */
 #wm,#wm *{text-shadow:none}
 .wmc{width:min(1240px,100%);height:100%;display:flex;flex-direction:column;overflow:hidden;color:#fff;
   background:rgba(10,18,34,.97);border:1px solid rgba(255,255,255,.18);border-radius:26px;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:wxIn .32s cubic-bezier(.2,.9,.3,1.15)}
@@ -1549,7 +1550,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.184) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.185) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1571,7 +1572,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.184) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.185) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1660,7 +1661,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.184';
+const VER='2.185';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2425,34 +2426,53 @@ const WM=(()=>{
     eb.on('tileerror',()=>{ if(swapped||++bad<3||good) return; swapped=true; map.removeLayer(eb); map.removeLayer(el);
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:13,className:'wmosm',attribution:'© OpenStreetMap contributors · Radar and satellite: Environment Canada'}).addTo(map) });
     pin=L.marker([S.loc.lat,S.loc.lon],{interactive:false,icon:L.divIcon({className:'',html:'<div class="wmpin"></div>',iconSize:[18,18],iconAnchor:[9,9]})}).addTo(map) }
-  function clear(){ frames.forEach(f=>{ map.removeLayer(f.r); f.c&&map.removeLayer(f.c) }); frames=[] }
+  /* v2.185: new frames load behind the ones on screen and swap in only once they're ready, so the loop never blanks or stalls */
+  const ready=(lay,ms)=>new Promise(ok=>{ let done=false; const fin=()=>{ if(!done){ done=true; ok() } }; lay.once('load',fin); setTimeout(fin,ms) });
   async function load(){
-    if(busy) return; busy=true; say(frames.length?'':'Loading rain radar and clouds…');
+    if(busy) return; busy=true; if(!frames.length) say('Loading rain radar and clouds…');
     try{
       const [rF,cF]=await Promise.all([times(RAD,90),times(CLD,100).catch(()=>[])]);
       if(!rF.length) throw new Error('no radar');
-      clear();
-      frames=rF.map(t=>{ const c=cF.filter(x=>+x<=+t).pop()||cF[0]; return {t,r:wms(RAD,t,'rad'),c:c?wms(CLD,c,'cld'):null} });
-      frames.forEach(f=>{ f.c&&f.c.addTo(map); f.r.addTo(map) });
-      loadedAt=Date.now(); sl.max=frames.length-1;
+      const nf=rF.map(t=>{ const c=cF.filter(x=>+x<=+t).pop()||cF[0]; return {t,r:wms(RAD,t,'rad'),c:c?wms(CLD,c,'cld'):null} });
+      nf.forEach(f=>{ f.c&&f.c.addTo(map); f.r.addTo(map) });
+      await Promise.all(nf.map(f=>ready(f.r,8000)));
+      const old=frames, playing=!!timer; play(false);
+      old.forEach(f=>{ map.removeLayer(f.r); f.c&&map.removeLayer(f.c) });
+      frames=nf; loadedAt=Date.now(); sl.max=frames.length-1;
       $m('wmT0').textContent=fmt(frames[0].t); $m('wmT1').textContent='Now';
       $m('wmCld').hidden=!cF.length;
-      idx=frames.length-1; show(idx); say(''); play(true);
-    }catch(e){ say(frames.length?'':'The radar could not be reached. Check the connection and open the map again.') }
+      idx=frames.length-1; show(idx); say('');
+      if(open||playing) play(true);
+    }catch(e){ if(!frames.length) say('The radar could not be reached. Check the connection and open the map again.') }
     busy=false }
   function show(i){ if(!frames.length) return; const p=frames[idx]; if(p){ p.r.setOpacity(0); p.c&&p.c.setOpacity(0) }
-    idx=i; const f=frames[i]; f.r.setOpacity(showR?.62:0); f.c&&f.c.setOpacity(showC?.22:0);   // v2.183: see-through rain and clouds so the map stays readable   // v2.180: lighter clouds so coastlines and rain show through sl.value=i;
+    idx=i; const f=frames[i]; f.r.setOpacity(showR?.62:0); f.c&&f.c.setOpacity(showC?.22:0);   // v2.183: see-through rain and clouds so the map stays readable
+    sl.value=i;   // v2.185: was accidentally inside the comment above, so the slider didn't follow the animation
     const last=i===frames.length-1, ago=Math.round((Date.now()-f.t)/60000), tm=$m('wmTm');
     tm.classList.toggle('now',last); tm.querySelector('b').textContent=fmt(f.t); tm.querySelector('span').textContent=last?'Latest':ago+' min ago' }
-  function step(){ show((idx+1)%frames.length); clearTimeout(timer); timer=setTimeout(step,idx===frames.length-1?1800:550) }   // hold on the latest frame, then loop; v2.184: 550 ms per frame to match the cross-fade
-  function play(on){ clearTimeout(timer); timer=0; $m('wmPlay').innerHTML=on?PAUSE:PLAY; $m('wmPlay').dataset.on=on?1:''; if(on&&frames.length) timer=setTimeout(step,idx===frames.length-1?1800:550) }
+  const FR=550;   // v2.184: 550 ms per frame to match the cross-fade; v2.185: no pause on the latest frame, just loops
+  function step(){ show((idx+1)%frames.length); clearTimeout(timer); timer=setTimeout(step,FR) }
+  function play(on){ clearTimeout(timer); timer=0; $m('wmPlay').innerHTML=on?PAUSE:PLAY; $m('wmPlay').dataset.on=on?1:''; if(on&&frames.length) timer=setTimeout(step,FR) }
   async function showMap(){
-    open=true; ov.hidden=false; $m('wmVer').textContent='(v'+VER+')'; $m('wmSrc').textContent=S.loc.name+' · rain radar and clouds, last 90 minutes';
+    open=true; ov.classList.remove('wmpre'); ov.hidden=false; $m('wmVer').textContent='(v'+VER+')'; $m('wmSrc').textContent=S.loc.name+' · rain radar and clouds, last 90 minutes';
     try{ await lib() }catch(e){ say('The map could not load. Check the connection and try again.'); return }
     if(!map) build(); else { map.invalidateSize(); map.setView([S.loc.lat,S.loc.lon],ZM); pin.setLatLng([S.loc.lat,S.loc.lon]) }
     setTimeout(()=>map&&map.invalidateSize(),350);
-    if(!frames.length||Date.now()-loadedAt>6*60000) load(); else play(true) }
+    if(frames.length) play(true);   // ready straight away when it was loaded in the background
+    if(!frames.length||Date.now()-loadedAt>6*60000) load() }
   function hide(){ open=false; ov.hidden=true; play(false) }
+  /* v2.185: load the map in the background (invisible) on iPad landscape, and keep it fresh every 6 minutes while Whether is open */
+  async function prewarm(){
+    if(open||busy||getComputedStyle(btn).display==='none'||document.visibilityState!=='visible') return;
+    if(frames.length&&Date.now()-loadedAt<6*60000) return;
+    try{ await lib() }catch(e){ return }
+    if(open) return;
+    ov.classList.add('wmpre'); ov.hidden=false;
+    if(!map) build(); else { map.invalidateSize(); map.setView([S.loc.lat,S.loc.lon],ZM); pin.setLatLng([S.loc.lat,S.loc.lon]) }
+    await load();
+    if(!open){ ov.hidden=true; ov.classList.remove('wmpre') } }
+  setTimeout(prewarm,4000); setInterval(prewarm,60000);
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') setTimeout(prewarm,1500) });
   btn.addEventListener('click',showMap);
   $m('wmClose').addEventListener('click',hide);
   ov.addEventListener('click',e=>{ if(e.target===ov) hide() });
@@ -3420,7 +3440,7 @@ $('#d10close').onclick=()=>set10(false);
    sideways switches Today / 10-day on iPhone-style layouts, and on iPad landscape moves through the hourly panel. Not on Mac. ---- */
 (function(){
   const de=document.documentElement; let acc={x:0,y:0}, quiet=null, locked=false;
-  const blocked=t=>!$('#sheet').hidden||!$('#settings').hidden||!$('#guide').hidden||!$('#wx').hidden||!$('#cn').hidden||!$('#wm').hidden||(t&&t.closest&&t.closest('input,textarea,#sheet,#settings,#guide,#wx,#cn,#wm'));   // v2.179: + Map
+  const blocked=t=>!$('#sheet').hidden||!$('#settings').hidden||!$('#guide').hidden||!$('#wx').hidden||!$('#cn').hidden||(!$('#wm').hidden&&!$('#wm').classList.contains('wmpre'))||(t&&t.closest&&t.closest('input,textarea,#sheet,#settings,#guide,#wx,#cn,#wm'));   // v2.179: + Map
   const canScroll=(t,ax,d)=>{ for(let el=t;el&&el!==document.body;el=el.parentElement){ const cs=getComputedStyle(el), o=ax==='y'?cs.overflowY:cs.overflowX;
       if(!/(auto|scroll)/.test(o)) continue;
       if(ax==='y'?el.scrollHeight>el.clientHeight+2:el.scrollWidth>el.clientWidth+2){ const pos=ax==='y'?el.scrollTop:el.scrollLeft, max=ax==='y'?el.scrollHeight-el.clientHeight:el.scrollWidth-el.clientWidth;
