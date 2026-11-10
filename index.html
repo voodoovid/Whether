@@ -1585,7 +1585,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.191) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.192) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1607,7 +1607,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.191) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.192) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1707,7 +1707,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.191';
+const VER='2.192';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2537,12 +2537,13 @@ const WM=(()=>{
       if(!rF.length) throw new Error('no radar');
       for(let i=rF.length-2;i>=0;i-=2) rF.splice(i,1);   // v2.190: every 12 minutes (16 frames over 3 hours, was 31) so the iPad doesn't run out of memory
       const nf=rF.map(t=>{ const c=cF.filter(x=>+x<=+t).pop()||cF[0]; return {t,r:wms(LAY[m],t,'rad'),c:c?wms(CLD,c,'cld'):null} });
-      for(let i=nf.length-1;i>=0;i-=4){ const b=nf.slice(Math.max(0,i-3),i+1); b.forEach(f=>{ f.c&&f.c.addTo(map); f.r.addTo(map) }); await Promise.all(b.map(f=>ready(f.r,8000))) }   // v2.190: 4 at a time, newest first
+      for(let i=nf.length-1;i>=0;i-=4){ const b=nf.slice(Math.max(0,i-3),i+1); b.forEach(f=>{ f.c&&f.c.addTo(map); f.r.addTo(map) }); await Promise.all(b.map(f=>ready(f.r,8000))); if(m!==mode) b.forEach(f=>{ map.removeLayer(f.r); f.c&&map.removeLayer(f.c) }) }   // v2.190: 4 at a time, newest first; v2.192: the colouring not on screen is loaded into the browser's cache, then taken off the map
       const old=sets[m], playing=!!timer;
       if(m===mode) play(false);
       old.forEach(f=>{ map.removeLayer(f.r); f.c&&map.removeLayer(f.c) });
       sets[m]=nf; loadedAt[m]=Date.now();
       if(m!==mode) nf.forEach(f=>{ map.removeLayer(f.r); f.c&&map.removeLayer(f.c) });   // v2.190: switched colouring while loading
+      if(m===mode) nf.forEach(f=>{ if(!map.hasLayer(f.r)){ f.c&&f.c.addTo(map); f.r.addTo(map) } });   // v2.192: switched to this colouring while it loaded in the background
       if(m===mode){ sl.max=nf.length-1; $m('wmT0').textContent=fmtT(nf[0].t); $m('wmT1').textContent='Now'; idx=nf.length-1; show(idx); say(''); if(open||playing) play(true) }
     }catch(e){ if(m===mode&&!frames().length) say('The radar could not be reached. Check the connection and open the map again.') }
     busy=false }
@@ -2575,16 +2576,28 @@ const WM=(()=>{
     if(!frames().length||Date.now()-loadedAt[mode]>6*60000) load() }
   function hide(){ open=false; ov.hidden=true; play(false); $m('wmKey').classList.remove('big'); menu(false) }
   /* v2.185: load the map in the background (invisible) on iPad landscape, and keep it fresh every 6 minutes while Whether is open */
+  /* v2.192: everything the map needs is loaded in the background as soon as Whether opens, so opening it, switching colouring
+     or switching map type never waits: both radars (Rain / Snow and Rain rate), both colour keys, and the other map types' tiles */
+  const stale=m=>!sets[m].length||Date.now()-loadedAt[m]>6*60000;
+  let basesWarm=0;
+  function warmBases(){
+    if(basesWarm&&Date.now()-basesWarm<30*60000) return; basesWarm=Date.now();
+    const z=ZM, la=S.loc.lat*Math.PI/180, n=2**z, cx=Math.floor((S.loc.lon+180)/360*n), cy=Math.floor((1-Math.log(Math.tan(la)+1/Math.cos(la))/Math.PI)/2*n);
+    Object.keys(BASES).filter(k=>k!==base).forEach(k=>{ const B=BASES[k];
+      [B.u,B.l].filter(Boolean).forEach(path=>{ for(let dx=-2;dx<=2;dx++) for(let dy=-1;dy<=1;dy++) new Image().src=ESRI+path+`/MapServer/tile/${z}/${cy+dy}/${cx+dx}` }) }) }
   async function prewarm(){
     if(open||busy||getComputedStyle(btn).display==='none'||document.visibilityState!=='visible') return;
-    if(frames().length&&Date.now()-loadedAt[mode]<6*60000) return;
+    if(!stale('type')&&!stale('rate')) return;
     try{ await lib() }catch(e){ return }
     if(open) return;
     ov.classList.add('wmpre'); ov.hidden=false;
-    if(!map) build(); else pin.setLatLng([S.loc.lat,S.loc.lon]); centre()
-    await load();
-    if(!open){ ov.hidden=true; ov.classList.remove('wmpre') } }
-  setTimeout(prewarm,4000); setInterval(prewarm,60000);
+    if(!map) build(); else pin.setLatLng([S.loc.lat,S.loc.lon]); centre();
+    new Image().src=legURL(LAY.type); new Image().src=legURL(LAY.rate);
+    if(stale(mode)) await load(mode);
+    const other=mode==='type'?'rate':'type';
+    if(stale(other)&&!open) await load(other);
+    if(!open){ ov.hidden=true; ov.classList.remove('wmpre'); warmBases() } }
+  setTimeout(prewarm,1500); setInterval(prewarm,60000);
   document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') setTimeout(prewarm,1500) });
   btn.addEventListener('click',showMap);
   $m('wmClose').addEventListener('click',hide);
