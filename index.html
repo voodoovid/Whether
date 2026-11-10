@@ -1384,6 +1384,8 @@ body:not(.locked) .loc svg{fill:#f4b942}
 #wmMap .leaflet-control-attribution a{color:#bfe3ff}
 #wmMap .wmbase{filter:brightness(2.1) contrast(1.25)}   /* v2.183: lift the dark map so land, water and streets show under the rain */
 #wmMap .wmref{filter:brightness(1.6)}
+#wmMap .leaflet-rad-pane>.leaflet-layer,#wmMap .leaflet-cld-pane>.leaflet-layer{transition:opacity .55s linear}   /* v2.184: frames cross-fade into each other instead of jumping */
+#wmMap.drag .leaflet-rad-pane>.leaflet-layer,#wmMap.drag .leaflet-cld-pane>.leaflet-layer{transition-duration:.12s}
 #wmMap .wmosm{filter:invert(1) hue-rotate(180deg) brightness(.85) saturate(.4)}
 .wmb .leaflet-bottom{bottom:84px}
 #cn{position:fixed;inset:0;z-index:56;display:flex;align-items:center;justify-content:center;background:rgba(2,6,14,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
@@ -1547,7 +1549,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.183) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.184) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1569,7 +1571,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.183) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.184) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1658,7 +1660,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.183';
+const VER='2.184';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2442,8 +2444,8 @@ const WM=(()=>{
     idx=i; const f=frames[i]; f.r.setOpacity(showR?.62:0); f.c&&f.c.setOpacity(showC?.22:0);   // v2.183: see-through rain and clouds so the map stays readable   // v2.180: lighter clouds so coastlines and rain show through sl.value=i;
     const last=i===frames.length-1, ago=Math.round((Date.now()-f.t)/60000), tm=$m('wmTm');
     tm.classList.toggle('now',last); tm.querySelector('b').textContent=fmt(f.t); tm.querySelector('span').textContent=last?'Latest':ago+' min ago' }
-  function step(){ show((idx+1)%frames.length); clearTimeout(timer); timer=setTimeout(step,idx===frames.length-1?1600:420) }   // hold on the latest frame, then loop
-  function play(on){ clearTimeout(timer); timer=0; $m('wmPlay').innerHTML=on?PAUSE:PLAY; $m('wmPlay').dataset.on=on?1:''; if(on&&frames.length) timer=setTimeout(step,idx===frames.length-1?1600:420) }
+  function step(){ show((idx+1)%frames.length); clearTimeout(timer); timer=setTimeout(step,idx===frames.length-1?1800:550) }   // hold on the latest frame, then loop; v2.184: 550 ms per frame to match the cross-fade
+  function play(on){ clearTimeout(timer); timer=0; $m('wmPlay').innerHTML=on?PAUSE:PLAY; $m('wmPlay').dataset.on=on?1:''; if(on&&frames.length) timer=setTimeout(step,idx===frames.length-1?1800:550) }
   async function showMap(){
     open=true; ov.hidden=false; $m('wmVer').textContent='(v'+VER+')'; $m('wmSrc').textContent=S.loc.name+' · rain radar and clouds, last 90 minutes';
     try{ await lib() }catch(e){ say('The map could not load. Check the connection and try again.'); return }
@@ -2456,7 +2458,9 @@ const WM=(()=>{
   ov.addEventListener('click',e=>{ if(e.target===ov) hide() });
   addEventListener('keydown',e=>{ if(e.key==='Escape'&&open) hide() });
   $m('wmPlay').addEventListener('click',()=>play(!$m('wmPlay').dataset.on));
-  sl.addEventListener('input',()=>{ play(false); show(+sl.value) });
+  sl.addEventListener('input',()=>{ play(false); $m('wmMap').classList.add('drag'); show(+sl.value) });
+  sl.addEventListener('change',()=>$m('wmMap').classList.remove('drag'));
+  $m('wmPlay').addEventListener('click',()=>$m('wmMap').classList.remove('drag'));
   $m('wmRad').addEventListener('click',e=>{ showR=!showR; e.currentTarget.classList.toggle('off',!showR); show(idx) });
   $m('wmCld').addEventListener('click',e=>{ showC=!showC; e.currentTarget.classList.toggle('off',!showC); show(idx) });
   $m('wmCtr').addEventListener('click',()=>map&&map.setView([S.loc.lat,S.loc.lon],ZM));
