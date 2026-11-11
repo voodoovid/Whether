@@ -1592,7 +1592,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.207) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.208) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1614,7 +1614,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.207) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.208) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -2201,6 +2201,8 @@ const TW=(()=>{
   function feels(t,rh,ms){ const v=ms*3.6;
     if(t<=10&&v>4.8) return 13.12+0.6215*t-11.37*Math.pow(v,.16)+0.3965*t*Math.pow(v,.16);
     if(t>=27&&rh>=40){ const e=6.11*Math.exp(5417.753*(1/273.16-1/(dew(t,rh)+273.15))); return t+0.5555*(e-10) }
+    /* v2.208: between 10° and 27° there was no adjustment at all, so feels-like just echoed the air temp. Now the same humidity + wind formula (Steadman, the one the forecast's hourly "Feels" uses) covers that range */
+    if(rh!=null&&!isNaN(rh)){ const e=(rh/100)*6.105*Math.exp(17.27*t/(237.7+t)); return t+0.33*e-0.70*ms-4.00 }
     return t }
   function rain1h(){ const cut=Date.now()/1000-3600; st.rainLog=st.rainLog.filter(r=>r.t>cut); return st.rainLog.reduce((a,r)=>a+r.mm,0) }
   const rainToday=()=>st.dayTotal==null?null:st.dayTotal+st.extra;
