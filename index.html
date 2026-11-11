@@ -1592,7 +1592,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.205) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.206) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1614,7 +1614,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.205) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.206) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1716,7 +1716,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.205';
+const VER='2.206';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1858,9 +1858,9 @@ const FX=(()=>{
   const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const R=(a,b)=>a+Math.random()*(b-a);
   let W=0,Hh=0,cfg=null,sig='',drops=[],flakes=[],streaks=[],clouds=[],stars=[],mists=[];
-  let T=0,last=0,raf=0,flashAt=-99,nextFlash=2.5,bolt=null,shoot=null,nextShoot=6,leaves=[],cow=null,nextCow=0;
+  let T=0,last=0,raf=0,flashAt=-99,nextFlash=2.5,bolt=null,shoot=null,nextShoot=6,leaves=[],cow=null,nextCow=0,ufo=null,nextUfo=0;
   const FL=document.getElementById('flash');
-  const COWQ=/[?&]cow=1/.test(location.search);
+  const COWQ=/[?&]cow=1/.test(location.search), UFOQ=/[?&]ufo=1/.test(location.search);
 
   // wind blowing toward the right is positive (meteorological direction = where it comes FROM)
   const windX=()=>{const d=(cfg.dir??270)*Math.PI/180;return -Math.sin(d)*(cfg.wind||0)};
@@ -1920,10 +1920,11 @@ const FX=(()=>{
     if(cfg.kind==='rain'){const n=Math.round((70+300*cfg.inten)*area);for(let i=0;i<n;i++)drops.push(newDrop(true))}
     if(cfg.kind==='snow'){const n=Math.round((60+200*cfg.inten)*area);for(let i=0;i<n;i++)flakes.push(newFlake(true))}
     const windy=(cfg.wind||0)>=20||(cfg.gust||0)>=40;
-    leaves=[];cow=null;
+    leaves=[];cow=null;ufo=null;
     if(windy){const n=clamp(Math.round(((cfg.wind||20)-10)/2.5),5,18);for(let i=0;i<n;i++)streaks.push(newStreak(true));
       const nl=clamp(Math.round(((cfg.wind||20)-8)/2.2),6,22)*(cfg.kind==='snow'?.5:1);for(let i=0;i<nl;i++)leaves.push(newLeaf(true));
-      if(COWQ||nextCow<=T) nextCow=T+(COWQ?1:R(240,600))}   // first cow in 4-10 min of windy weather
+      if(COWQ||nextCow<=T) nextCow=T+(COWQ?1:R(120,300));   // v2.206: twice as often: first cow in 2-5 min of windy weather
+      if(UFOQ||nextUfo<=T) nextUfo=T+(UFOQ?1:R(150,420))}   // v2.206: first flying saucer in 2.5-7 min of windy weather
     if(cfg.cloud>=20&&!cfg.fog){const n=clamp(Math.round(1+cfg.cloud/22),1,6);
       for(let i=0;i<n;i++){const sc=R(.75,1.5);clouds.push({img:puff(cfg.day,wet),x:R(-200,W),y:R(-60,Hh*.36),sc,v:(10+Math.abs(windX())*1.3)*windSign()*(.5+sc*.5)})}}
     if(!cfg.day&&cfg.cloud<80&&cfg.kind==='none'){const n=Math.round(110*(1-cfg.cloud/100)*area)+12;
@@ -2000,7 +2001,13 @@ const FX=(()=>{
       if(cow){cow.t+=dt;cow.x+=cow.s*cow.v*dt;cow.rot+=cow.s*1.9*dt;
         const y=cow.y0+Math.sin(cow.t*2.1)*22+Math.sin(cow.t*5.3)*5;
         x.save();x.translate(cow.x,y);x.rotate(cow.rot);x.scale(cow.s*cow.sc,cow.sc);drawCow(x,cow.t);x.restore();
-        if((cow.s>0&&cow.x>W+110)||(cow.s<0&&cow.x<-110)){cow=null;nextCow=T+(COWQ?5:R(600,1500))}}
+        if((cow.s>0&&cow.x>W+110)||(cow.s<0&&cow.x<-110)){cow=null;nextCow=T+(COWQ?5:R(300,750))}}   // v2.206: twice as often: a cow every 5-12.5 min
+      // v2.206: the occasional cartoon flying saucer, either direction, gently wobbling
+      if(!ufo&&T>nextUfo){const s=Math.random()<.5?-1:1;ufo={s,x:s>0?-80:W+80,y0:R(Hh*.05,Hh*.2),v:R(130,185),t:0,sc:clamp(W/430,.72,1.05)}}
+      if(ufo){ufo.t+=dt;ufo.x+=ufo.s*ufo.v*dt;
+        const y=ufo.y0+Math.sin(ufo.t*1.7)*14+Math.sin(ufo.t*6.1)*2.5;
+        x.save();x.translate(ufo.x,y);x.rotate(Math.sin(ufo.t*2.4)*.1);x.scale(ufo.sc,ufo.sc);drawUfo(x,ufo.t);x.restore();
+        if((ufo.s>0&&ufo.x>W+90)||(ufo.s<0&&ufo.x<-90)){ufo=null;nextUfo=T+(UFOQ?5:R(420,1000))}}
     }
     // lightning: flash the whole screen, bolt on the sky
     if(cfg.storm){
@@ -2038,6 +2045,20 @@ const FX=(()=>{
     g.fillStyle='#fff';g.beginPath();g.arc(-6,-5,5.5,0,7);g.arc(6,-5,5.5,0,7);g.fill();g.beginPath();g.arc(-6,-5,5.5,0,7);g.stroke();g.beginPath();g.arc(6,-5,5.5,0,7);g.stroke();
     g.fillStyle=ink;g.beginPath();g.arc(-5,-7.5,2,0,7);g.arc(7,-7.5,2,0,7);g.fill();
     g.restore();
+  }
+  /* v2.206: cartoon flying saucer with a little green alien at the controls, ~100px wide, drawn around its middle */
+  function drawUfo(g,t){
+    const ink='#1c1c22', wv=Math.sin(t*7)*3;
+    g.lineJoin='round';g.lineCap='round';g.lineWidth=2.4;g.strokeStyle=ink;
+    g.beginPath();g.moveTo(0,-33);g.quadraticCurveTo(-3,-42,-8+wv,-46);g.stroke();   // antenna
+    g.fillStyle='#8fd16a';g.beginPath();g.arc(-8+wv,-47,2.8,0,7);g.fill();g.stroke();
+    g.fillStyle='#8fd16a';g.beginPath();g.ellipse(0,-20,9,11,0,0,7);g.fill();g.stroke();   // alien head
+    g.fillStyle=ink;g.beginPath();g.ellipse(-3.8,-20,2.2,3.6,.5,0,7);g.ellipse(3.8,-20,2.2,3.6,-.5,0,7);g.fill();
+    g.beginPath();g.moveTo(-2.6,-13);g.quadraticCurveTo(0,-11,2.6,-13);g.stroke();
+    g.fillStyle='rgba(190,235,255,.45)';g.beginPath();g.ellipse(0,-6,23,26,0,Math.PI,0);g.closePath();g.fill();g.stroke();   // glass dome
+    g.fillStyle='#9aa1af';g.beginPath();g.ellipse(0,5,27,8,0,0,7);g.fill();g.stroke();   // lower hull
+    g.fillStyle='#d3d8e2';g.beginPath();g.ellipse(0,-1,50,12.5,0,0,7);g.fill();g.stroke();   // saucer
+    for(let i=0;i<7;i++){const lx=-36+i*12, on=Math.sin(t*9+i*1.4)>0;g.fillStyle=on?'#f4b942':'#fff6d8';g.beginPath();g.arc(lx,-0.5+Math.abs(lx)*.04,2.6,0,7);g.fill();g.lineWidth=1.4;g.stroke();g.lineWidth=2.4}
   }
   function frame(ts){raf=requestAnimationFrame(frame);const dt=Math.min(.05,last?(ts-last)/1000:0);last=ts;T+=dt;draw(dt)}
   function start(){if(still||raf||document.hidden||!cfg)return;last=0;raf=requestAnimationFrame(frame)}
