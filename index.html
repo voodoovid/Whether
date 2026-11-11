@@ -1586,7 +1586,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.196) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.197) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1608,7 +1608,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.196) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.197) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1708,7 +1708,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.196';
+const VER='2.197';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1772,7 +1772,7 @@ function rainIcon(code,mm,daily){
   return lv===1?'rain1':lv===2?'rain':lv===3?'rain4':'rain6';
 }
 /* v2.195: rain/drizzle/showers wording follows how hard it is actually falling (mm in the hour), not just the forecast's weather code */
-function rainWd(mm,sh){ const w=mm<.3?'Drizzle':mm<1?'Light rain':mm<3?'Rain':mm<8?'Heavy rain':'Very heavy rain'; return sh&&mm>=.3?(mm<1?'Light showers':mm<3?'Showers':'Heavy showers'):w }
+function rainWd(mm,sh){ const w=mm<.3?'Drizzle':mm<1?'Light rain':mm<2.5?'Rain':mm<10?'Heavy rain':'Very heavy rain'; return sh&&mm>=.3?(mm<1?'Light showers':mm<2.5?'Showers':'Heavy showers'):w }
 function wx(code,day=1,mm=null,daily=false){
   const n=!day;
   if(code===0) return {i:n?'moon':'sun',t:n?'Clear':'Sunny'};
@@ -2780,7 +2780,7 @@ function render(){
   document.querySelectorAll('#drows .drow').forEach((r,i)=>r.classList.toggle('viewing',!!DV&&i===dd));
   { const hd=DV?`${dayName(DV.date)} hourly`:'Next 24 hours'; document.querySelectorAll('#strip .ph h2,#hourly .ph h2').forEach(h=>h.textContent=hd); }
 
-  const w=wx(V.weather_code,V.is_day,V.precipitation);
+  const w=wx(V.weather_code,V.is_day,(!DV&&V._rain1h!=null)?V._rain1h:V.precipitation);   // v2.197: wording follows the station's rain over the last hour when live
   $('#nowIcon').innerHTML=icoA(w.i);
   { const ipadL=V._live&&!phoneMQ.matches&&matchMedia('(hover:none) and (pointer:coarse)').matches;
     const tfc=(ipadL&&!E&&!DV)?(TW.fcNow()??TW.fcT(nowStr)):null;   // v2.158: Tempest's own forecast for right now (by clock time; falls back to this hour)
