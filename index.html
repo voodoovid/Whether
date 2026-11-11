@@ -1586,7 +1586,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.194) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.195) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1608,7 +1608,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.194) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.195) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1709,7 +1709,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.194';
+const VER='2.195';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1772,6 +1772,8 @@ function rainIcon(code,mm,daily){
   if(mm!=null&&isFinite(mm)){ const t=daily?[1,4,12]:[.3,1,3]; lv=mm<t[0]?1:mm<t[1]?2:mm<t[2]?3:4 }
   return lv===1?'rain1':lv===2?'rain':lv===3?'rain4':'rain6';
 }
+/* v2.195: rain/drizzle/showers wording follows how hard it is actually falling (mm in the hour), not just the forecast's weather code */
+function rainWd(mm,sh){ const w=mm<.3?'Drizzle':mm<1?'Light rain':mm<3?'Rain':mm<8?'Heavy rain':'Very heavy rain'; return sh&&mm>=.3?(mm<1?'Light showers':mm<3?'Showers':'Heavy showers'):w }
 function wx(code,day=1,mm=null,daily=false){
   const n=!day;
   if(code===0) return {i:n?'moon':'sun',t:n?'Clear':'Sunny'};
@@ -1779,10 +1781,10 @@ function wx(code,day=1,mm=null,daily=false){
   if(code===2) return {i:n?'partn':'part',t:'Partly cloudy'};
   if(code===3) return {i:'cloud2',t:'Overcast'};
   if(code===45||code===48) return {i:'fog',t:'Fog'};
-  if(code>=51&&code<=57) return {i:rainIcon(code,mm,daily),t:code>=56?'Freezing drizzle':'Drizzle'};
-  if(code>=61&&code<=67) return {i:rainIcon(code,mm,daily),t:code>=66?'Freezing rain':code===65?'Heavy rain':code===61?'Light rain':'Rain'};
+  if(code>=51&&code<=57) return {i:rainIcon(code,mm,daily),t:code>=56?'Freezing drizzle':(!daily&&mm!=null&&isFinite(mm)&&mm>0)?rainWd(mm):'Drizzle'};
+  if(code>=61&&code<=67) return {i:rainIcon(code,mm,daily),t:code>=66?'Freezing rain':(!daily&&mm!=null&&isFinite(mm)&&mm>0)?rainWd(mm):code===65?'Heavy rain':code===61?'Light rain':'Rain'};
   if(code>=71&&code<=77) return {i:'snow',t:'Snow'};
-  if(code>=80&&code<=82) return {i:rainIcon(code,mm,daily),t:'Showers'};
+  if(code>=80&&code<=82) return {i:rainIcon(code,mm,daily),t:(!daily&&mm!=null&&isFinite(mm)&&mm>0)?rainWd(mm,1):'Showers'};
   if(code===85||code===86) return {i:'snow',t:'Snow showers'};
   if(code>=95) return {i:'thunder',t:'Thunderstorms'};
   return {i:'cloud',t:'Cloudy'};
