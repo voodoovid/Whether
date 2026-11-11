@@ -1586,7 +1586,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.193) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.194) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1608,7 +1608,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.193) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.194) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1709,7 +1709,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.193';
+const VER='2.194';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2570,7 +2570,9 @@ const WM=(()=>{
     $m('wmSrc').textContent=S.loc.name+(fu?' · radar forecast, next hour':' · radar, last 3 hours');
     const F=frames(); if(F.length){ sl.max=F.length-1; $m('wmT0').textContent=fu?'Now':fmtT(F[0].t); $m('wmT1').textContent=fu?fmtT(F[F.length-1].t):'Now'; idx=fu?0:F.length-1; F[idx].c&&F[idx].c.addTo(map); F[idx].r.addTo(map); show(idx); wasP=true; restore(++gen) }
     if(!F.length||Date.now()-loadedAt[m]>6*60000) load(m) }
-  function legend(){ $m('wmKeyImg').src=legURL(LAY[mode]); $m('wmKeyT').textContent=mode==='fut'?'Forecast strength':mode==='type'?'Rain / Snow':'Rain rate' }
+  function legend(){ const k=$m('wmKey'), im=$m('wmKeyImg'), u=legURL(LAY[mode]), t=mode==='fut'?'Forecast strength':mode==='type'?'Rain / Snow':'Rain rate';
+    if(im.dataset.u===u&&im.complete&&im.naturalWidth){ $m('wmKeyT').textContent=t; k.style.visibility=''; return }   // v2.194: key stays invisible until its image is loaded (no blank box)
+    k.style.visibility='hidden'; const pre=new Image(); pre.onload=()=>{ if(legURL(LAY[mode])!==u) return; im.src=u; im.dataset.u=u; $m('wmKeyT').textContent=t; k.style.visibility='' }; pre.onerror=()=>{ if(legURL(LAY[mode])===u) k.style.visibility='hidden' }; pre.src=u }
   async function showMap(){
     open=true; touched=false; ov.classList.remove('wmpre'); ov.hidden=false; $m('wmVer').textContent='(v'+VER+')'; $m('wmSrc').textContent=S.loc.name+(mode==='fut'?' · radar forecast, next hour':' · radar, last 3 hours');
     legend();
