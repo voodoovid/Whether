@@ -1592,7 +1592,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.203) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.204) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1614,7 +1614,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.203) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.204) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1716,7 +1716,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.203';
+const VER='2.204';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2482,7 +2482,7 @@ const WM=(()=>{
   async function restore(g){
     const F=frames(); if(g!==gen||!F.length) return;
     const rest=F.map((f,i)=>({f,d:(i-idx+F.length)%F.length})).filter(o=>o.d).sort((a,b)=>a.d-b.d).map(o=>o.f);
-    for(let i=0;i<rest.length;i+=4){ if(g!==gen) return; const b=rest.slice(i,i+4); b.forEach(f=>{ f.c&&f.c.addTo(map); f.r.addTo(map) }); await Promise.all(b.map(f=>ready(f.r,5000))) }
+    for(let i=0;i<rest.length;i+=4){ if(g!==gen) return; const b=rest.slice(i,i+4); b.forEach(f=>{ f.c&&f.c.addTo(map); f.r.addTo(map) }); await wait(b,5000) }
     if(g===gen&&wasP&&open){ wasP=false; play(true) } }
   /* v2.191: Recentre didn't centre: the map was working from an old size for its box, so "the middle" was in the wrong place.
      Now it re-measures the box first, then puts this location exactly in the middle (proven in Sandbox Map Test v0.99) */
@@ -2538,11 +2538,14 @@ const WM=(()=>{
     /* v2.190: zooming made every frame reload at once and the iPad ran out of memory. While the map moves only the frame on
        screen stays; the rest come back a few at a time once it settles, then the loop carries on */
     map.on('movestart',()=>{ const F=frames(); if(!F.length) return; gen++; if(timer) wasP=true; play(false);
-      F.forEach((f,i)=>{ if(i!==idx){ map.removeLayer(f.r); f.c&&map.removeLayer(f.c) } }) });
+      F.forEach((f,i)=>{ if(i!==idx) rm(f) }) });
     map.on('moveend',()=>{ const g=++gen; setTimeout(()=>restore(g),450) });
     pin=L.marker([S.loc.lat,S.loc.lon],{interactive:false,icon:L.divIcon({className:'',html:'<div class="wmpin"></div>',iconSize:[18,18],iconAnchor:[9,9]})}).addTo(map) }
   /* v2.185: new frames load behind the ones on screen and swap in only once they're ready, so the loop never blanks or stalls */
-  const ready=(lay,ms)=>new Promise(ok=>{ let done=false; const fin=()=>{ if(!done){ done=true; ok() } }; lay.once('load',fin); setTimeout(fin,ms) });
+  const ready=(lay,ms)=>new Promise(ok=>{ let done=false; const fin=v=>{ if(!done){ done=true; ok(v) } }; lay.once('load',()=>fin(true)); setTimeout(()=>fin(false),ms) });
+  /* v2.204: a frame counts as ready only once its tiles have really loaded; the loop skips frames still loading, so the map never blanks */
+  const wait=(b,ms)=>Promise.all(b.map(f=>ready(f.r,ms).then(v=>{ f.rd=v })));
+  const rm=f=>{ f.rd=false; map.removeLayer(f.r); f.c&&map.removeLayer(f.c) };
   async function load(m=mode){
     if(busy) return; busy=true; if(m===mode&&!frames().length) say('Loading the radar…');
     try{
@@ -2550,12 +2553,12 @@ const WM=(()=>{
       if(!rF.length) throw new Error('no radar');
       if(m!=='fut') for(let i=rF.length-2;i>=0;i-=2) rF.splice(i,1); else for(let i=rF.length-1;i>=0;i--) if(i%2) rF.splice(i,1);   // forecast: every 12 minutes too   // v2.190: every 12 minutes (16 frames over 3 hours, was 31) so the iPad doesn't run out of memory
       const nf=rF.map(t=>{ const c=cF.filter(x=>+x<=+t).pop()||cF[0]; return {t,r:wms(LAY[m],t,'rad'),c:c?wms(CLD,c,'cld'):null} });
-      for(let i=nf.length-1;i>=0;i-=4){ const b=nf.slice(Math.max(0,i-3),i+1); b.forEach(f=>{ f.c&&f.c.addTo(map); f.r.addTo(map) }); await Promise.all(b.map(f=>ready(f.r,8000))); if(!on) b.forEach(f=>{ map.removeLayer(f.r); f.c&&map.removeLayer(f.c) }) }   // v2.190: 4 at a time, newest first; v2.192: the colouring not on screen is loaded into the browser's cache, then taken off the map
+      for(let i=nf.length-1;i>=0;i-=4){ const b=nf.slice(Math.max(0,i-3),i+1); b.forEach(f=>{ f.c&&f.c.addTo(map); f.r.addTo(map) }); await wait(b,8000); if(!on) b.forEach(rm) }   // v2.190: 4 at a time, newest first; v2.192: the colouring not on screen is loaded into the browser's cache, then taken off the map
       const old=sets[m], playing=!!timer;
       if(on) play(false);
-      old.forEach(f=>{ map.removeLayer(f.r); f.c&&map.removeLayer(f.c) });
+      old.forEach(rm);
       sets[m]=nf; loadedAt[m]=Date.now();
-      if(!on) nf.forEach(f=>{ map.removeLayer(f.r); f.c&&map.removeLayer(f.c) });   // v2.190: switched colouring while loading
+      if(!on) nf.forEach(rm);   // v2.190: switched colouring while loading
       if(on) nf.forEach(f=>{ if(!map.hasLayer(f.r)){ f.c&&f.c.addTo(map); f.r.addTo(map) } });   // v2.192: switched to this colouring while it loaded in the background
       if(on){ bounds(); idx=nowIdx(); show(idx); say(''); if(open||playing) play(true) }
     }catch(e){ if(on&&!frames().length) say('The radar could not be reached. Check the connection and open the map again.') }
@@ -2572,15 +2575,30 @@ const WM=(()=>{
     tm.querySelector('span').textContent=fu?(ah>0?'Forecast · in '+(ah>=60?Math.floor(ah/60)+' h '+(ah%60)+' min':ah+' min'):'Forecast · now'):last?'Latest · '+ago+' min ago':ago+' min ago';
     const fc=$m('wmFc'); fc.textContent=mode==='type'?'Forecast · rain rate':'Forecast'; fc.classList.toggle('on',fu); placeFc() }   // v2.198: "Forecast" badge beside the colour key while a forecast frame shows   // the colour key follows the frame on screen (past colouring vs forecast colouring)
   const FR=550;   // v2.185: no pause on the latest frame, just loops
-  function step(){ const n=frames().length; if(!n) return; show((idx+1)%n,true); clearTimeout(timer); timer=setTimeout(step,FR) }
+  function step(){ const F=frames(), n=F.length; if(!n) return; for(let k=1;k<=n;k++){ const c=(idx+k)%n; if(c!==idx&&F[c].rd){ show(c,true); break } } clearTimeout(timer); timer=setTimeout(step,FR) }   // v2.204: skips frames still loading
   function play(on){ clearTimeout(timer); timer=0; $m('wmPlay').innerHTML=on?PAUSE:PLAY; $m('wmPlay').dataset.on=on?1:''; if(on&&frames().length) timer=setTimeout(step,FR) }
-  function setMode(m){ if(m===mode||m==='fut') return; const was=!!timer||wasP; play(false); gen++;
-    sets[mode].forEach(f=>{ f.r.setOpacity(0); f.c&&f.c.setOpacity(0); if(map){ map.removeLayer(f.r); f.c&&map.removeLayer(f.c) } });   // v2.190: the other colouring's frames leave the map (both sets at once crashed the iPad)
-    mode=m; keyF=false;
-    $m('wmTyp').classList.toggle('on',m==='type'); $m('wmRte').classList.toggle('on',m==='rate'); legend();
-    const F=frames(); if(F.length){ bounds(); idx=nowIdx(); F[idx].c&&F[idx].c.addTo(map); F[idx].r.addTo(map); show(idx); wasP=was; restore(++gen) }
-    if(was) play(true);   // v2.201: switching colouring no longer leaves the loop paused
-    const kick=()=>{ if(m!==mode) return; if(busy){ setTimeout(kick,400); return } if(!sets[m].length||Date.now()-loadedAt[m]>6*60000) load(m) }; kick() }
+  /* v2.204: switching Rain rate <-> Rain / Snow no longer blanks the map. The other colouring is loaded behind the picture on screen
+     (which stays up, and keeps its colours, until the new newest frame is ready); the rest join the loop as they finish */
+  let swapping=false;
+  async function setMode(m){ if(m===mode||m==='fut'||swapping) return; swapping=true;
+    try{
+      $m('wmTyp').classList.toggle('on',m==='type'); $m('wmRte').classList.toggle('on',m==='rate');
+      const idle=async()=>{ while(busy) await new Promise(r=>setTimeout(r,150)) };
+      if(!fcOnly&&map){
+        if(!sets[m].length||Date.now()-loadedAt[m]>6*60000){ await idle(); await load(m) }   // old loop keeps playing meanwhile
+      }
+      const was=!!timer||wasP; play(false); gen++;
+      const hold=frames()[idx], oldSet=sets[mode], nf=sets[m];
+      if(!fcOnly&&map&&nf.length){
+        oldSet.forEach(f=>{ if(f!==hold) rm(f) });
+        const first=nf.slice(-4); first.forEach(f=>{ f.c&&f.c.addTo(map); f.r.addTo(map) }); await wait(first,6000);
+        if(oldSet.includes(hold)) rm(hold);
+      } else oldSet.forEach(rm);
+      mode=m; keyF=false; legend();
+      const F=frames(); if(F.length&&map){ bounds(); idx=nowIdx(); F[idx].c&&F[idx].c.addTo(map); F[idx].r.addTo(map); show(idx); wasP=was; restore(++gen) }
+      if(was) play(true);   // v2.201: switching colouring no longer leaves the loop paused
+      if(!sets[m].length) { await idle(); load(m) }
+    } finally { swapping=false } }
   function placeFc(){ const k=$m('wmKey'); $m('wmFc').style.left=(k.offsetLeft+k.offsetWidth+10)+'px' }
   function legend(){ const k=$m('wmKey'), im=$m('wmKeyImg'), cu=()=>legURL(LAY[mode]), u=cu(), t=mode==='rate'?'Rain rate / hr':'Rain / Snow';   // v2.201: the key never swaps while the loop runs; it follows the colouring choice only   // v2.198: forecast frames are rain-rate coloured, so the key reads Rain rate
     if(im.dataset.u===u&&im.complete&&im.naturalWidth){ $m('wmKeyT').textContent=t; k.style.visibility=''; return }   // v2.194: key stays invisible until its image is loaded (no blank box)
@@ -2630,7 +2648,7 @@ const WM=(()=>{
   /* v2.198: Forecast only: just the projected radar for the next hour (the past frames come off the map until it is switched off) */
   $m('wmFo').addEventListener('click',e=>{ fcOnly=!fcOnly; e.currentTarget.classList.toggle('off',!fcOnly); const was=!!timer||wasP; play(false); gen++;
     $m('wmSrc').textContent=S.loc.name+(fcOnly?' · radar forecast, next hour':' · radar, last 3 hours and next hour');
-    if(fcOnly&&map) sets[mode].forEach(f=>{ f.r.setOpacity(0); f.c&&f.c.setOpacity(0); map.removeLayer(f.r); f.c&&map.removeLayer(f.c) });
+    if(fcOnly&&map) sets[mode].forEach(f=>{ f.r.setOpacity(0); f.c&&f.c.setOpacity(0); rm(f) });
     const F=frames(); if(F.length&&map){ bounds(); idx=nowIdx(); F[idx].c&&F[idx].c.addTo(map); F[idx].r.addTo(map); show(idx); wasP=was; restore(++gen); if(was) play(true) }   // v2.203: the loop keeps playing when switching to or from Forecast only
     else { bounds(); if(!sets.fut.length||Date.now()-loadedAt.fut>6*60000) load('fut') } });
   $m('wmRad').addEventListener('click',e=>{ showR=!showR; e.currentTarget.classList.toggle('off',!showR); panes() });
