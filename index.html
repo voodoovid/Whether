@@ -1592,7 +1592,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.206) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.207) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1614,7 +1614,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.206) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.207) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1716,7 +1716,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.206';
+const VER='2.207';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2002,8 +2002,8 @@ const FX=(()=>{
         const y=cow.y0+Math.sin(cow.t*2.1)*22+Math.sin(cow.t*5.3)*5;
         x.save();x.translate(cow.x,y);x.rotate(cow.rot);x.scale(cow.s*cow.sc,cow.sc);drawCow(x,cow.t);x.restore();
         if((cow.s>0&&cow.x>W+110)||(cow.s<0&&cow.x<-110)){cow=null;nextCow=T+(COWQ?5:R(300,750))}}   // v2.206: twice as often: a cow every 5-12.5 min
-      // v2.206: the occasional cartoon flying saucer, either direction, gently wobbling
-      if(!ufo&&T>nextUfo){const s=Math.random()<.5?-1:1;ufo={s,x:s>0?-80:W+80,y0:R(Hh*.05,Hh*.2),v:R(130,185),t:0,sc:clamp(W/430,.72,1.05)}}
+      // v2.206: the occasional cartoon flying saucer; v2.207: blown the way the wind blows, like the cow, faster in stronger wind
+      if(!ufo&&T>nextUfo){const s=windSign();ufo={s,x:s>0?-80:W+80,y0:R(Hh*.05,Hh*.2),v:R(130,185)+(cfg.wind||0)*1.2,t:0,sc:clamp(W/430,.72,1.05)}}
       if(ufo){ufo.t+=dt;ufo.x+=ufo.s*ufo.v*dt;
         const y=ufo.y0+Math.sin(ufo.t*1.7)*14+Math.sin(ufo.t*6.1)*2.5;
         x.save();x.translate(ufo.x,y);x.rotate(Math.sin(ufo.t*2.4)*.1);x.scale(ufo.sc,ufo.sc);drawUfo(x,ufo.t);x.restore();
