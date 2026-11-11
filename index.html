@@ -1374,7 +1374,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 .wmkey b{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#bfe3ff}
 .wmkey img{display:block;height:92px;width:auto;max-width:180px;object-fit:contain;object-position:left top;background:#fff;border-radius:6px;padding:2px;transition:height .2s,max-width .2s}
 .wmkey{padding:10px 12px 12px}   /* v2.190: always shown large */
-.wmkey b{font-size:14px}
+.wmkey b{font-size:16px}
 .wmkey img{height:360px;max-height:calc(100vh - 330px);max-width:460px}
 .wmctl{position:absolute;left:12px;right:12px;bottom:12px;z-index:500;display:flex;align-items:center;gap:14px;padding:10px 16px;border-radius:20px;background:rgba(10,18,34,.86);border:1px solid rgba(255,255,255,.16);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .wmctl button{flex:none;width:46px;height:46px;display:grid;place-items:center;padding:0}
@@ -1590,7 +1590,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.200) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.201) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1612,7 +1612,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.200) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.201) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1693,7 +1693,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
         <div class="wmtl"><input id="wmSlide" type="range" min="0" max="0" value="0" data-hint="Drag to pick a time"><div class="wmtk"><span id="wmT0"></span><span id="wmT1"></span></div></div>
         <div class="wmtm" id="wmTm"><b>--:--</b><span></span></div>
       </div>
-      <div class="wmkey" id="wmKey" data-hint="Colour key for the radar"><b id="wmKeyT">Rain rate</b><img id="wmKeyImg" alt="Colour key"></div>
+      <div class="wmkey" id="wmKey" data-hint="Colour key for the radar"><b id="wmKeyT">Rain rate / hr</b><img id="wmKeyImg" alt="Colour key"></div>
       <div class="wmfc" id="wmFc">Forecast</div>
       <div class="wmmsg" id="wmMsg">Loading the map…</div>
     </div>
@@ -1714,7 +1714,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.200';
+const VER='2.201';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2568,19 +2568,19 @@ const WM=(()=>{
     const fu=sets.fut.includes(f), last=f===sets[mode][sets[mode].length-1], ago=Math.round((Date.now()-f.t)/60000), tm=$m('wmTm'), ah=-ago;
     tm.classList.toggle('now',last&&!fu); tm.classList.toggle('fc',fu); tm.querySelector('b').textContent=fmtD(f.t);
     tm.querySelector('span').textContent=fu?(ah>0?'Forecast · in '+(ah>=60?Math.floor(ah/60)+' h '+(ah%60)+' min':ah+' min'):'Forecast · now'):last?'Latest · '+ago+' min ago':ago+' min ago';
-    if(fu!==keyF){ keyF=fu; legend() }
-    $m('wmFc').classList.toggle('on',fu); placeFc() }   // v2.198: "Forecast" badge beside the colour key while a forecast frame shows   // the colour key follows the frame on screen (past colouring vs forecast colouring)
+    const fc=$m('wmFc'); fc.textContent=mode==='type'?'Forecast · rain rate':'Forecast'; fc.classList.toggle('on',fu); placeFc() }   // v2.198: "Forecast" badge beside the colour key while a forecast frame shows   // the colour key follows the frame on screen (past colouring vs forecast colouring)
   const FR=550;   // v2.185: no pause on the latest frame, just loops
   function step(){ const n=frames().length; if(!n) return; show((idx+1)%n,true); clearTimeout(timer); timer=setTimeout(step,FR) }
   function play(on){ clearTimeout(timer); timer=0; $m('wmPlay').innerHTML=on?PAUSE:PLAY; $m('wmPlay').dataset.on=on?1:''; if(on&&frames().length) timer=setTimeout(step,FR) }
-  function setMode(m){ if(m===mode||m==='fut') return; play(false); gen++;
+  function setMode(m){ if(m===mode||m==='fut') return; const was=!!timer||wasP; play(false); gen++;
     sets[mode].forEach(f=>{ f.r.setOpacity(0); f.c&&f.c.setOpacity(0); if(map){ map.removeLayer(f.r); f.c&&map.removeLayer(f.c) } });   // v2.190: the other colouring's frames leave the map (both sets at once crashed the iPad)
     mode=m; keyF=false;
     $m('wmTyp').classList.toggle('on',m==='type'); $m('wmRte').classList.toggle('on',m==='rate'); legend();
-    const F=frames(); if(F.length){ bounds(); idx=nowIdx(); F[idx].c&&F[idx].c.addTo(map); F[idx].r.addTo(map); show(idx); wasP=true; restore(++gen) }
-    if(!sets[m].length||Date.now()-loadedAt[m]>6*60000) load(m) }
+    const F=frames(); if(F.length){ bounds(); idx=nowIdx(); F[idx].c&&F[idx].c.addTo(map); F[idx].r.addTo(map); show(idx); wasP=was; restore(++gen) }
+    if(was) play(true);   // v2.201: switching colouring no longer leaves the loop paused
+    const kick=()=>{ if(m!==mode) return; if(busy){ setTimeout(kick,400); return } if(!sets[m].length||Date.now()-loadedAt[m]>6*60000) load(m) }; kick() }
   function placeFc(){ const k=$m('wmKey'); $m('wmFc').style.left=(k.offsetLeft+k.offsetWidth+10)+'px' }
-  function legend(){ const k=$m('wmKey'), im=$m('wmKeyImg'), cu=()=>legURL(keyF?LAY.fut:LAY[mode]), u=cu(), t=(keyF||mode==='rate')?'Rain rate':'Rain / Snow';   // v2.198: forecast frames are rain-rate coloured, so the key reads Rain rate
+  function legend(){ const k=$m('wmKey'), im=$m('wmKeyImg'), cu=()=>legURL(LAY[mode]), u=cu(), t=mode==='rate'?'Rain rate / hr':'Rain / Snow';   // v2.201: the key never swaps while the loop runs; it follows the colouring choice only   // v2.198: forecast frames are rain-rate coloured, so the key reads Rain rate
     if(im.dataset.u===u&&im.complete&&im.naturalWidth){ $m('wmKeyT').textContent=t; k.style.visibility=''; return }   // v2.194: key stays invisible until its image is loaded (no blank box)
     k.style.visibility='hidden'; const pre=new Image(); pre.onload=()=>{ if(cu()!==u) return; im.src=u; im.dataset.u=u; $m('wmKeyT').textContent=t; k.style.visibility=''; placeFc() }; pre.onerror=()=>{ if(cu()===u) k.style.visibility='hidden' }; pre.src=u }
   async function showMap(){
@@ -2644,6 +2644,7 @@ const WM=(()=>{
   /* v2.188: colour key: small in the top-left corner; tap to open it larger, still in the corner (away from the centre), tap again to shrink */
   /* swipes inside the map must pan the map, not change location or view */
   ['touchstart','touchmove','touchend','pointerdown','pointermove','pointerup','wheel'].forEach(t=>ov.addEventListener(t,e=>e.stopPropagation(),{passive:true}));
+  legend();   // v2.201: the colour key is loaded as soon as Whether starts, so it is complete the moment the map opens
   return {open:()=>open};
 })();
 
