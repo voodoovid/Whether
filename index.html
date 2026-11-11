@@ -1592,7 +1592,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.204) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.205) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1614,7 +1614,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.204) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.205) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1716,7 +1716,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.204';
+const VER='2.205';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2509,7 +2509,8 @@ const WM=(()=>{
       const j=document.createElement('script'); j.src=LJS; j.onload=ok; j.onerror=()=>{ libP=null; no(new Error('map library')) }; document.head.appendChild(j) });
     return libP }
   async function times(layer,keepMin){
-    const r=await fetch(`${GEO}?service=WMS&version=1.3.0&request=GetCapabilities&layer=${layer}&LAYERS_REFRESH_RATE=PT1M`,{cache:'no-store'});
+    const ac=new AbortController(), to=setTimeout(()=>ac.abort(),10000);   // v2.205: a request that hangs after the iPad sleeps can no longer block every later refresh
+    let r; try{ r=await fetch(`${GEO}?service=WMS&version=1.3.0&request=GetCapabilities&layer=${layer}&LAYERS_REFRESH_RATE=PT1M`,{cache:'no-store',signal:ac.signal}) } finally { clearTimeout(to) }
     if(!r.ok) throw new Error('HTTP '+r.status);
     const x=new DOMParser().parseFromString(await r.text(),'text/xml');
     const d=[...x.getElementsByTagName('Dimension')].find(n=>n.getAttribute('name')==='time'); if(!d) throw new Error('no times');
@@ -2557,7 +2558,7 @@ const WM=(()=>{
       const old=sets[m], playing=!!timer;
       if(on) play(false);
       old.forEach(rm);
-      sets[m]=nf; loadedAt[m]=Date.now();
+      sets[m]=nf; loadedAt[m]=Date.now(); if(m===mode||m==='fut') bounds();   // v2.205: the time labels and slider always follow the frames that are really loaded
       if(!on) nf.forEach(rm);   // v2.190: switched colouring while loading
       if(on) nf.forEach(f=>{ if(!map.hasLayer(f.r)){ f.c&&f.c.addTo(map); f.r.addTo(map) } });   // v2.192: switched to this colouring while it loaded in the background
       if(on){ bounds(); idx=nowIdx(); show(idx); say(''); if(open||playing) play(true) }
@@ -2565,7 +2566,7 @@ const WM=(()=>{
     busy=false }
   /* v2.186: no pulsing. See-through levels live on the panes; the next frame fades in fully on top of the current one, then the old one goes */
   function panes(){ if(!map) return; map.getPane('rad').style.opacity=showR?.55:0; map.getPane('cld').style.opacity=showC?.35:0 }
-  function show(i,fade){ const F=frames(); if(!F.length) return; panes(); const p=F[idx], f=F[i];
+  function show(i,fade){ const F=frames(); if(!F.length) return; panes(); bounds(); const p=F[idx], f=F[i];
     if(p&&p!==f){ clearTimeout(p.off); p.off=setTimeout(()=>{ if(frames()[idx]!==p){ p.r.setOpacity(0); p.c&&p.c.setOpacity(0) } },fade?520:0) }
     clearTimeout(f.off); zTop++; f.r.setZIndex(zTop); f.c&&f.c.setZIndex(zTop);
     [f.r,f.c].forEach(l=>{ if(!l) return; const el=l.getContainer(); if(el) el.style.transitionDuration=fade?'':'0s'; l.setOpacity(1) });
@@ -2603,14 +2604,19 @@ const WM=(()=>{
   function legend(){ const k=$m('wmKey'), im=$m('wmKeyImg'), cu=()=>legURL(LAY[mode]), u=cu(), t=mode==='rate'?'Rain rate / hr':'Rain / Snow';   // v2.201: the key never swaps while the loop runs; it follows the colouring choice only   // v2.198: forecast frames are rain-rate coloured, so the key reads Rain rate
     if(im.dataset.u===u&&im.complete&&im.naturalWidth){ $m('wmKeyT').textContent=t; k.style.visibility=''; return }   // v2.194: key stays invisible until its image is loaded (no blank box)
     k.style.visibility='hidden'; const pre=new Image(); pre.onload=()=>{ if(cu()!==u) return; im.src=u; im.dataset.u=u; $m('wmKeyT').textContent=t; k.style.visibility=''; placeFc() }; pre.onerror=()=>{ if(cu()===u) k.style.visibility='hidden' }; pre.src=u }
+  /* v2.205: after the iPad has slept, radar frames older than 10 minutes are thrown away (never shown as if current) and fetched fresh */
+  function purge(){ const old=Date.now()-10*60000; let any=false;
+    for(const k of ['type','rate','fut']){ if(sets[k].length&&loadedAt[k]<old){ if(map) sets[k].forEach(rm); sets[k]=[]; loadedAt[k]=0; any=true } }
+    if(any){ play(false); idx=0; bounds(); if(open&&map) say('Loading the radar…') } }
+  async function refresh(){ const idle=async()=>{ while(busy) await new Promise(r=>setTimeout(r,150)) }; await idle(); if(!sets[mode].length||stale(mode)) await load(); await idle(); if(stale('fut')) await load('fut') }
   async function showMap(){
-    open=true; touched=false; ov.classList.remove('wmpre'); ov.hidden=false; $m('wmVer').textContent='(v'+VER+')'; $m('wmSrc').textContent=S.loc.name+(fcOnly?' · radar forecast, next hour':' · radar, last 3 hours and next hour');
+    purge(); open=true; touched=false; ov.classList.remove('wmpre'); ov.hidden=false; $m('wmVer').textContent='(v'+VER+')'; $m('wmSrc').textContent=S.loc.name+(fcOnly?' · radar forecast, next hour':' · radar, last 3 hours and next hour');
     legend();
     try{ await lib() }catch(e){ say('The map could not load. Check the connection and try again.'); return }
     if(!map) build(); else pin.setLatLng([S.loc.lat,S.loc.lon]); centre()
     setTimeout(centre,350); setTimeout(centre,800);   // v2.191: again once the pop-up has finished opening
     if(frames().length) play(true);   // ready straight away when it was loaded in the background
-    (async()=>{ const idle=async()=>{ while(busy) await new Promise(r=>setTimeout(r,150)) }; await idle(); if(!sets[mode].length||stale(mode)) await load(); await idle(); if(stale('fut')) await load('fut') })() }   // v2.202: wait for a background load to finish instead of skipping the forecast   // v2.200: the forecast frames join the loop on their own (before, they only loaded after tapping Forecast only)
+    refresh() }   // v2.202: wait for a background load to finish instead of skipping the forecast   // v2.200: the forecast frames join the loop on their own (before, they only loaded after tapping Forecast only)
   function hide(){ open=false; ov.hidden=true; play(false); $m('wmKey').classList.remove('big'); menu(false) }
   /* v2.185: load the map in the background (invisible) on iPad landscape, and keep it fresh every 6 minutes while Whether is open */
   /* v2.192: everything the map needs is loaded in the background as soon as Whether opens, so opening it, switching colouring
@@ -2635,7 +2641,7 @@ const WM=(()=>{
     if(!open){ ov.hidden=true; ov.classList.remove('wmpre'); warmBases() } }
   setTimeout(prewarm,1500); setInterval(prewarm,60000);
   setInterval(()=>{ if(open&&!busy&&map&&stale('fut')) load('fut') },4000);   // v2.200: forecast frames refresh while the map is open
-  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') setTimeout(prewarm,1500) });
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'){ purge(); if(open) refresh(); else setTimeout(prewarm,1500) } });   // v2.205: waking the iPad with the map open refreshes it straight away
   btn.addEventListener('click',showMap);
   $m('wmClose').addEventListener('click',hide);
   ov.addEventListener('click',e=>{ if(e.target===ov) hide() });
