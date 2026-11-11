@@ -1374,7 +1374,9 @@ body:not(.locked) .loc svg{fill:#f4b942}
 .wmkey b{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#bfe3ff}
 .wmkey img{display:block;height:92px;width:auto;max-width:180px;object-fit:contain;object-position:left top;background:#fff;border-radius:6px;padding:2px;transition:height .2s,max-width .2s}
 .wmkey{padding:10px 12px 12px}   /* v2.190: always shown large */
-.wmkey b{font-size:16px}
+.wmkey b{font-size:13px;text-align:center;align-self:stretch}
+.wmkey{align-items:center}
+.wmkey img{object-position:center top}   /* v2.202: smaller title, graph centred in the box */
 .wmkey img{height:360px;max-height:calc(100vh - 330px);max-width:460px}
 .wmctl{position:absolute;left:12px;right:12px;bottom:12px;z-index:500;display:flex;align-items:center;gap:14px;padding:10px 16px;border-radius:20px;background:rgba(10,18,34,.86);border:1px solid rgba(255,255,255,.16);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .wmctl button{flex:none;width:46px;height:46px;display:grid;place-items:center;padding:0}
@@ -1590,7 +1592,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.201) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.202) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1612,7 +1614,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.201) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.202) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1714,7 +1716,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.201';
+const VER='2.202';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2590,7 +2592,7 @@ const WM=(()=>{
     if(!map) build(); else pin.setLatLng([S.loc.lat,S.loc.lon]); centre()
     setTimeout(centre,350); setTimeout(centre,800);   // v2.191: again once the pop-up has finished opening
     if(frames().length) play(true);   // ready straight away when it was loaded in the background
-    (async()=>{ if(!sets[mode].length||stale(mode)) await load(); if(stale('fut')) await load('fut') })() }   // v2.200: the forecast frames join the loop on their own (before, they only loaded after tapping Forecast only)
+    (async()=>{ const idle=async()=>{ while(busy) await new Promise(r=>setTimeout(r,150)) }; await idle(); if(!sets[mode].length||stale(mode)) await load(); await idle(); if(stale('fut')) await load('fut') })() }   // v2.202: wait for a background load to finish instead of skipping the forecast   // v2.200: the forecast frames join the loop on their own (before, they only loaded after tapping Forecast only)
   function hide(){ open=false; ov.hidden=true; play(false); $m('wmKey').classList.remove('big'); menu(false) }
   /* v2.185: load the map in the background (invisible) on iPad landscape, and keep it fresh every 6 minutes while Whether is open */
   /* v2.192: everything the map needs is loaded in the background as soon as Whether opens, so opening it, switching colouring
@@ -2614,7 +2616,7 @@ const WM=(()=>{
     for(const other of ['fut',mode==='rate'?'type':'rate']){ if(other!==mode&&stale(other)&&!open) await load(other) }   // v2.200: forecast right after the current colouring
     if(!open){ ov.hidden=true; ov.classList.remove('wmpre'); warmBases() } }
   setTimeout(prewarm,1500); setInterval(prewarm,60000);
-  setInterval(()=>{ if(open&&!busy&&map&&stale('fut')) load('fut') },30000);   // v2.200: forecast frames refresh while the map is open
+  setInterval(()=>{ if(open&&!busy&&map&&stale('fut')) load('fut') },4000);   // v2.200: forecast frames refresh while the map is open
   document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') setTimeout(prewarm,1500) });
   btn.addEventListener('click',showMap);
   $m('wmClose').addEventListener('click',hide);
