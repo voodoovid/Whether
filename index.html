@@ -1590,7 +1590,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.199) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.200) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1612,7 +1612,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.199) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.200) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1714,7 +1714,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.199';
+const VER='2.200';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2590,7 +2590,7 @@ const WM=(()=>{
     if(!map) build(); else pin.setLatLng([S.loc.lat,S.loc.lon]); centre()
     setTimeout(centre,350); setTimeout(centre,800);   // v2.191: again once the pop-up has finished opening
     if(frames().length) play(true);   // ready straight away when it was loaded in the background
-    if(!frames().length||Date.now()-loadedAt[mode]>6*60000) load() }
+    (async()=>{ if(!sets[mode].length||stale(mode)) await load(); if(stale('fut')) await load('fut') })() }   // v2.200: the forecast frames join the loop on their own (before, they only loaded after tapping Forecast only)
   function hide(){ open=false; ov.hidden=true; play(false); $m('wmKey').classList.remove('big'); menu(false) }
   /* v2.185: load the map in the background (invisible) on iPad landscape, and keep it fresh every 6 minutes while Whether is open */
   /* v2.192: everything the map needs is loaded in the background as soon as Whether opens, so opening it, switching colouring
@@ -2611,9 +2611,10 @@ const WM=(()=>{
     if(!map) build(); else pin.setLatLng([S.loc.lat,S.loc.lon]); centre();
     new Image().src=legURL(LAY.type); new Image().src=legURL(LAY.rate); new Image().src=legURL(LAY.fut);
     if(stale(mode)) await load(mode);
-    for(const other of ['type','rate','fut']){ if(other!==mode&&stale(other)&&!open) await load(other) }
+    for(const other of ['fut',mode==='rate'?'type':'rate']){ if(other!==mode&&stale(other)&&!open) await load(other) }   // v2.200: forecast right after the current colouring
     if(!open){ ov.hidden=true; ov.classList.remove('wmpre'); warmBases() } }
   setTimeout(prewarm,1500); setInterval(prewarm,60000);
+  setInterval(()=>{ if(open&&!busy&&map&&stale('fut')) load('fut') },30000);   // v2.200: forecast frames refresh while the map is open
   document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') setTimeout(prewarm,1500) });
   btn.addEventListener('click',showMap);
   $m('wmClose').addEventListener('click',hide);
