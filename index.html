@@ -1593,7 +1593,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.209) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.210) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1615,7 +1615,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.209) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.210) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1717,7 +1717,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.209';
+const VER='2.210';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2372,7 +2372,7 @@ const TW=(()=>{
       const d=await getJSON('/better_forecast',{station_id:st.station.id,units_temp:'c',units_wind:'kph',units_pressure:'mb',units_precip:'mm',units_distance:'km'});
       const c=d.current_conditions||{}; st.cc=c;
       { const nd=((d.forecast&&d.forecast.daily)||[]).length; gotFc=true; mark(5,nd?'pass':'fail',nd?`Forecast: ${nd} days received`:'Forecast: came back empty') }
-      try{ st.fc={}; st.fcE=[]; st.fcF={}; for(const h of (d.forecast&&d.forecast.hourly)||[]) if(h.feels_like!=null) st.fcF[h.local_day+'-'+h.local_hour]=h.feels_like; if(h.air_temperature!=null){ st.fc[h.local_day+'-'+h.local_hour]=h.air_temperature; if(h.time!=null) st.fcE.push({t:+h.time,v:+h.air_temperature}) } st.fcE.sort((a,b)=>a.t-b.t) }catch(e){ st.fc=null; st.fcE=null; st.fcF=null }   /* v2.158: also kept by clock time, so "right now" works even when Tempest's list starts at the next hour */   // v2.124 (temporary): Tempest's own hourly temperatures
+      try{ st.fc={}; st.fcE=[]; st.fcF={}; for(const h of (d.forecast&&d.forecast.hourly)||[]){ if(h.feels_like!=null) st.fcF[h.local_day+'-'+h.local_hour]=h.feels_like; if(h.air_temperature!=null){ st.fc[h.local_day+'-'+h.local_hour]=h.air_temperature; if(h.time!=null) st.fcE.push({t:+h.time,v:+h.air_temperature}) } } st.fcE.sort((a,b)=>a.t-b.t) }catch(e){ st.fc=null; st.fcE=null; st.fcF=null }   /* v2.158: also kept by clock time, so "right now" works even when Tempest's list starts at the next hour */   // v2.124 (temporary): Tempest's own hourly temperatures
       if(c.precip_accum_local_day==null) throw new Error('not provided');
       st.dayTotal=c.precip_accum_local_day; st.extra=0; st.dayMin=c.precip_minutes_local_day==null?null:c.precip_minutes_local_day; st.extraMin=0; st.seenT=Date.now()/1000;
       mark(3,'pass','Rain today: loaded');
