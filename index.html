@@ -118,6 +118,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .tpb{font-size:.42em;font-weight:800;color:#f4b942;margin-left:.2em;white-space:nowrap;letter-spacing:0}   /* v2.126 (temporary): Tempest values in the (or not) yellow */
 .tpy{color:#f4b942}
 .scol .fl b.tpy{color:#f4b942}   /* v2.159 */
+.scol .fl .flw{font-size:.78em;font-weight:700;color:#fff;margin-left:.25em;white-space:nowrap}   /* v2.209 */
 .tpw{font-size:.36em;font-weight:700;color:#fff;margin-left:.2em;white-space:nowrap;letter-spacing:0}   /* v2.156 */
 .bigt .tpb{color:#fff}
 .bigt .tpb{font-size:.3em;font-weight:700;margin-left:.15em;vertical-align:.55em}   /* v2.125 (temporary) */   /* v2.124 (temporary) */
@@ -1592,7 +1593,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.208) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.209) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1614,7 +1615,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.208) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.209) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1716,7 +1717,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.208';
+const VER='2.209';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2371,7 +2372,7 @@ const TW=(()=>{
       const d=await getJSON('/better_forecast',{station_id:st.station.id,units_temp:'c',units_wind:'kph',units_pressure:'mb',units_precip:'mm',units_distance:'km'});
       const c=d.current_conditions||{}; st.cc=c;
       { const nd=((d.forecast&&d.forecast.daily)||[]).length; gotFc=true; mark(5,nd?'pass':'fail',nd?`Forecast: ${nd} days received`:'Forecast: came back empty') }
-      try{ st.fc={}; st.fcE=[]; for(const h of (d.forecast&&d.forecast.hourly)||[]) if(h.air_temperature!=null){ st.fc[h.local_day+'-'+h.local_hour]=h.air_temperature; if(h.time!=null) st.fcE.push({t:+h.time,v:+h.air_temperature}) } st.fcE.sort((a,b)=>a.t-b.t) }catch(e){ st.fc=null; st.fcE=null }   /* v2.158: also kept by clock time, so "right now" works even when Tempest's list starts at the next hour */   // v2.124 (temporary): Tempest's own hourly temperatures
+      try{ st.fc={}; st.fcE=[]; st.fcF={}; for(const h of (d.forecast&&d.forecast.hourly)||[]) if(h.feels_like!=null) st.fcF[h.local_day+'-'+h.local_hour]=h.feels_like; if(h.air_temperature!=null){ st.fc[h.local_day+'-'+h.local_hour]=h.air_temperature; if(h.time!=null) st.fcE.push({t:+h.time,v:+h.air_temperature}) } st.fcE.sort((a,b)=>a.t-b.t) }catch(e){ st.fc=null; st.fcE=null; st.fcF=null }   /* v2.158: also kept by clock time, so "right now" works even when Tempest's list starts at the next hour */   // v2.124 (temporary): Tempest's own hourly temperatures
       if(c.precip_accum_local_day==null) throw new Error('not provided');
       st.dayTotal=c.precip_accum_local_day; st.extra=0; st.dayMin=c.precip_minutes_local_day==null?null:c.precip_minutes_local_day; st.extraMin=0; st.seenT=Date.now()/1000;
       mark(3,'pass','Rain today: loaded');
@@ -2451,13 +2452,14 @@ const TW=(()=>{
     if(st.token&&st.station&&(!st.ws||st.ws.readyState>1||Date.now()-st.lastMsg>45000)){ stopWS(); connect() } });
   addEventListener('pagehide',hideFeed);
   const fcT=t=>{ if(!st.token||!isHome()||!st.fc) return null; const v=st.fc[(+t.slice(8,10))+'-'+(+t.slice(11,13))]; return v==null?null:v };   // v2.124 (temporary)
+  const fcF=t=>{ if(!st.token||!isHome()||!st.fcF) return null; const v=st.fcF[(+t.slice(8,10))+'-'+(+t.slice(11,13))]; return v==null?null:v };   // v2.209: Tempest's own hourly feels-like forecast
   const fcNow=()=>{ if(!st.token||!isHome()||!st.fcE||!st.fcE.length) return null; const n=Date.now()/1000; let p=null,q=null;
     for(const e of st.fcE){ if(e.t<=n) p=e; else { q=e; break } }
     if(p&&q) return p.v+(q.v-p.v)*(n-p.t)/(q.t-p.t);
     const e=p||q; return Math.abs(e.t-n)<5400?e.v:null };   // v2.158: Tempest's forecast temperature for this very moment
   const wind=()=>shown()?{...windNow(),live:true,rapid:rapidOk()}:null;   // v2.140: for the Wind Studio pop-up
   const snap=()=>({token:!!st.token,home:isHome(),fresh:fresh(),raw:st.raw,cc:st.cc,gh:st.gh,bh:st.bh,hw:st.hw});   // v2.173
-  return {overlay,mount,start,fcT,fcNow,wind,snap,at:()=>st.obs?st.obs.t*1000:Date.now()};
+  return {overlay,mount,start,fcT,fcF,fcNow,wind,snap,at:()=>st.obs?st.obs.t*1000:Date.now()};
 })();
 /* v2.179: Weather Map pop-up (iPad landscape only).
    v2.188: Tempest-style rework, proven first in Sandbox Map Test v0.98: satellite base map with place names, Environment Canada
@@ -3092,6 +3094,8 @@ function blackIce(j,k,C){
 function biWorst(j,ks,curIdx,C){ let b=null; ks.forEach(k=>{const r=blackIce(j,k,k===curIdx?C:null); if(!b||r.l>b.l) b={...r,k}}); return b||{...biOf(0),k:0} }
 const DROP='<svg viewBox="0 0 12 12"><path d="M6 1C6 1 2 5.6 2 8a4 4 0 0 0 8 0C10 5.6 6 1 6 1z"/></svg>';
 
+/* v2.209: iPad landscape, Home only, next 24 hours: Tempest's own feels-like forecast in yellow, with the Environment Canada (Open-Meteo GEM) forecast smaller in white brackets after it */
+const flv=(c0,C,t,feel)=>{ if(c0&&C._live) return `<b class="tpy">${fT(feel)}</b>`; if(!c0&&IPADL()&&!inDay()){ const f=TW.fcF(t); if(f!=null) return `<b class="tpy">${fT(f)}</b><small class="flw">(${fT(feel)})</small>` } return `<b>${fT(feel)}</b>` };
 function renderStrip(j,C){
   const H=j.hourly, a=S.idx, N=Math.min(24,H.time.length-S.idx);   // fewer than 24 only on the last day, which opens at 6 AM
   const pr=i=>{const v=H.precipitation_probability[a+i];return v==null?0:clamp(v,0,100)};
@@ -3124,7 +3128,7 @@ function renderStrip(j,C){
     out+=`<div class="scol${c0?' cur':''}${night?' nt':''}">${tm}
       <div>${ico(wx(code,isDay,mm).i)}</div>
       <div class="tp">${(c0&&C._live)?`<span class="tpy">${fT(temp)}</span>`:tpMain(t,temp)}</div>
-      <div class="fl">Feels<b${(c0&&C._live)?' class="tpy"':''}>${fT(feel)}</b></div>
+      <div class="fl">Feels${flv(c0,C,t,feel)}</div>
       <div class="rc"><span class="p${pv>0?'':' z'}">${DROP}${p==null?'–':p+'%'}</span>${chart}
         <span class="mm${mmS>0?'':' z'}">${met()?(mmS>0?(mmS<10?mmS.toFixed(1):Math.round(mmS)):'0'):(mmS/25.4).toFixed(2)}<small>${met()?'mm':'in'}</small></span>
         ${bi.l>=BI_MIN?`<span class="bi${bi.l>=3?' hot':''}" style="--c:${bi.c}"><small>BLACK ICE</small><b>${bi.t}</b></span>`:`<span class="aw" style="color:${rw.c}">${rw.t}</span>`}</div>
