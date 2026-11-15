@@ -1366,6 +1366,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 .wmtop button i{width:10px;height:10px;border-radius:50%;background:var(--c)}
 .wmtop button.off{opacity:.45}
 .wmtop button.off i{background:transparent;box-shadow:inset 0 0 0 1.5px var(--c)}
+#wmFo.off{opacity:.85}   /* v2.211: Forecast only, when off, stays easy to read (it looked unavailable) */
 .wmseg{display:flex;padding:3px;border-radius:999px;background:rgba(10,18,34,.82);border:1.5px solid rgba(255,255,255,.32);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 .wmtop .wmseg button{background:none;border:0;padding:6px 12px;font-size:14px;-webkit-backdrop-filter:none;backdrop-filter:none}
 .wmtop .wmseg button.on{background:#f4b942;color:#0a1222}
@@ -1522,7 +1523,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 <div id="flash" aria-hidden="true"></div>
 <div id="app">
   <button id="condBtn" type="button" hidden aria-haspopup="dialog" data-hint="Every reading from your weather station"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14a8 8 0 0 1 16 0"/><path d="M12 14l4-4"/><path d="M4 18h16"/></svg>Conditions</button>
-  <button id="mapBtn" type="button" aria-haspopup="dialog" data-hint="Moving rain radar and clouds"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg>Map</button>
+  <button id="mapBtn" type="button" aria-haspopup="dialog" data-hint="Moving rain radar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg>Map</button>
   <section id="left">
     <div class="bar">
       <div class="brand"><img src="icon-192.png" alt="" width="32" height="32"><div class="ttl"><span class="t1">Whether</span><span class="t2">(or not)</span></div><span class="vtag" id="vtag"></span></div>
@@ -1593,7 +1594,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.210) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.211) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1615,7 +1616,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.210) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.211) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1643,7 +1644,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">Settings</span></div></div><div class="gx"><b>Settings</b><span>Beside Done at the top of the Location menu: Dark mode (On, Off or Auto) and your <span class="amk">Amankenzie</span> Weather Station. It also runs the station’s connection tests (green is good, red shows what failed); Run tests again repeats them. Its own Locations button takes you back to the location list.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-title"><img src="icon-192.png" alt="" width="26" height="26"><div class="tt"><b>Whether</b><i>(or not)</i></div></div></div><div class="gx"><b>Go Home</b><span>Press and hold the Whether <em class="yor">(or not)</em> title to jump to your Home location, the first one in your saved list.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">Conditions</span></div></div><div class="gx"><b>Conditions</b><span>iPad landscape, at Home: opens every reading your station reports, each with a cheeky comment. Press Done or tap outside to close it.</span></div></div>
-      <div class="gi" id="gMap" hidden><div class="gv"><div class="v-row"><span class="v-pill">Map</span></div></div><div class="gx"><b>Map</b><span>Left of Conditions: radar on a satellite map. The last 3 hours of radar flow straight into Environment Canada&#8217;s projected radar for about the next hour (shown in yellow, with a Forecast tag). Forecast only shows just the projected part, with a Forecast tag beside the key. Rain rate (the default, like Environment Canada) colours it by how hard it falls, Rain / Snow by type; Radar and Clouds switch layers on and off, Recentre goes back to this city. Use + and − on the right (or pinch) to zoom, and the layers button below them to pick Satellite, Map, Terrain or Dark. Drag to move.</span></div></div>
+      <div class="gi" id="gMap" hidden><div class="gv"><div class="v-row"><span class="v-pill">Map</span></div></div><div class="gx"><b>Map</b><span>Left of Conditions: radar on a satellite map. The last 3 hours of radar flow straight into Environment Canada&#8217;s projected radar for about the next hour (shown in yellow, with a Forecast tag). It opens on Forecast only, which shows just the projected part, with a Forecast tag beside the key; switch it off to add the last 3 hours. Rain rate (the default, like Environment Canada) colours it by how hard it falls, Rain / Snow by type; Radar switches the layer on and off, Recentre goes back to this city. Use + and − on the right (or pinch) to zoom, and the layers button below them to pick Satellite, Map, Terrain or Dark. Drag to move.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill v-stn"><i class="ld" style="display:inline-block;flex:none;width:9px;height:9px;border-radius:50%;background:#5fd3a0"></i><span><span class="amk">Amankenzie</span> <br>Station</span></span></div></div><div class="gx"><b><span class="amk">Amankenzie</span> Station</b><span>At Home, with your Tempest connected, the temperature, Feels like, wind (with its live dial), rain and shoe conditions come from your own station. Everything else stays forecast.</span></div></div>
       <div class="gi" id="gTemps" hidden><div class="gv"><div class="v-row" style="font-size:30px;font-weight:800;align-items:baseline;gap:4px"><span style="color:#f4b942">7°</span><span style="font-size:15px;color:#fff">(6°)</span><span style="font-size:15px;color:#f4b942">(7°)</span></div></div><div class="gx"><b>Yellow vs white temperatures</b><span><b style="color:#f4b942">Yellow</b> is your <span class="amk">Amankenzie</span> Station: the big temperature is its live reading, and yellow brackets are its own forecast. <b>White brackets</b> are the Environment Canada forecast. In Next 24 hours the yellow figure is the station’s hourly forecast with Environment Canada’s in white brackets; Now is the live reading.</span></div></div>
       <div class="gi gwx"><div class="gv"><svg class="v-wx" viewBox="0 0 58 58" aria-hidden="true"><circle class="o" cx="29" cy="29" r="26"/><circle class="r" cx="29" cy="29" r="20"/><path d="M29 12l-7 15h14z"/></svg></div><div class="gx"><b>Wind <i class="yor">Studio</i></b><span>Press and hold the Wind box for six live views of the wind.</span></div></div>
@@ -1676,9 +1677,8 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div id="wmMap"></div>
       <div class="wmtop">
         <div class="wmseg" role="group" aria-label="Radar colours"><button id="wmRte" type="button" class="on" data-hint="Colour the radar by how hard it is falling (Environment Canada's own colours)">Rain rate</button><button id="wmTyp" type="button" data-hint="Colour the radar by rain, snow or mixed">Rain / Snow</button></div>
-        <button id="wmFo" type="button" class="off" style="--c:#f4b942" data-hint="Show only the forecast radar for the next hour"><i></i>Forecast only</button>
+        <button id="wmFo" type="button" style="--c:#f4b942" data-hint="Show only the forecast radar for the next hour"><i></i>Forecast only</button>
         <button id="wmRad" type="button" style="--c:#2f9bff" data-hint="Show or hide the radar"><i></i>Radar</button>
-        <button id="wmCld" type="button" class="off" style="--c:#e8eef7" data-hint="Show or hide moving satellite clouds"><i></i>Clouds</button>
         <button id="wmCtr" type="button" style="--c:#f4b942" data-hint="Centre the map on this location"><i></i>Recentre</button>
       </div>
       <div class="wmzm">
@@ -1717,7 +1717,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.210';
+const VER='2.211';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -1780,6 +1780,8 @@ function rainIcon(code,mm,daily){
   if(mm!=null&&isFinite(mm)){ const t=daily?[1,4,12]:[.3,1,3]; lv=mm<t[0]?1:mm<t[1]?2:mm<t[2]?3:4 }
   return lv===1?'rain1':lv===2?'rain':lv===3?'rain4':'rain6';
 }
+/* v2.211: Tempest's own rain categories (rain rate, mm/h); the Conditions pop-up and the iPad landscape condition wording share this */
+const tpRainWord=r=>r<0.25?'Very light rain':r<1?'Light rain':r<4?'Moderate rain':r<16?'Heavy rain':r<50?'Very heavy rain':'Extreme rain';
 /* v2.195: rain/drizzle/showers wording follows how hard it is actually falling (mm in the hour), not just the forecast's weather code */
 function rainWd(mm,sh){ const w=mm<.3?'Drizzle':mm<1?'Light rain':mm<2.5?'Rain':mm<10?'Heavy rain':'Very heavy rain'; return sh&&mm>=.3?(mm<1?'Light showers':mm<2.5?'Showers':'Heavy showers'):w }
 function wx(code,day=1,mm=null,daily=false){
@@ -2218,7 +2220,7 @@ const TW=(()=>{
     if(!wet10&&WET(code)){ const cc=C.cloud_cover??90; code=cc>=85?3:cc>=50?2:1; pr=0 }
     else if(wet10&&!WET(code)&&!SNOWY(code)){ const mmh=(o.rain||0)*60; code=mmh>=7.6?65:mmh>=2.5?63:61; pr=Math.max(pr||0,o.rain||0) }
     return {...C,weather_code:code,precipitation:pr,temperature_2m:o.temp,apparent_temperature:feels(o.temp,o.rh,w.kmh/3.6),relative_humidity_2m:(IPADL()&&o.rh!=null)?o.rh:C.relative_humidity_2m,wind_speed_10m:w.kmh,wind_gusts_10m:w.gust,wind_direction_10m:w.dir,
-      _live:1,_uv:o.uv,_rain1h:rain1h(),_raining:o.ptype>0,_today:rainToday(),_rmin:rainMinToday(),_t:o.t*1000};
+      _live:1,_uv:o.uv,_rain1h:rain1h(),_rate:(o.rain||0)*60,_raining:o.ptype>0,_today:rainToday(),_rmin:rainMinToday(),_t:o.t*1000};
   }
 
   /* ---------- mini wind dial ---------- */
@@ -2477,7 +2479,7 @@ const WM=(()=>{
   const fmtT=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
   const fmtD=d=>d.toLocaleDateString([],{month:'short',day:'numeric'})+' at '+fmtT(d);
   const legURL=l=>`${GEO}?service=WMS&version=1.3.0&request=GetLegendGraphic&sld_version=1.1.0&format=image/png&layer=${l}`;
-  let open=false, map=null, pin=null, mode='rate', sets={type:[],rate:[],fut:[]}, loadedAt={type:0,rate:0,fut:0}, keyF=false, fcOnly=false, idx=0, timer=0, showR=true, showC=false, libP=null, busy=false, zTop=1;
+  let open=false, map=null, pin=null, mode='rate', sets={type:[],rate:[],fut:[]}, loadedAt={type:0,rate:0,fut:0}, keyF=false, fcOnly=true, idx=0, timer=0, showR=true, showC=false, libP=null, busy=false, zTop=1;
   const frames=()=>fcOnly?sets.fut.slice():sets[mode].concat(sets.fut);   // v2.196: past (3 h) and forecast (next hour) are one timeline
   const nowIdx=()=>fcOnly?0:Math.max(0,sets[mode].length-1);
   function bounds(){ const F=frames(); sl.max=Math.max(0,F.length-1); $m('wmT0').textContent=F.length?fmtT(F[0].t):''; $m('wmT1').textContent=F.length?(sets.fut.length?fmtT(F[F.length-1].t):'Now'):''; $m('wmT1').classList.toggle('fc',!!sets.fut.length); $m('wmT0').classList.toggle('fc',fcOnly&&!!sets.fut.length) }
@@ -2683,8 +2685,6 @@ const WM=(()=>{
     const F=frames(); if(F.length&&map){ bounds(); idx=nowIdx(); F[idx].c&&F[idx].c.addTo(map); F[idx].r.addTo(map); show(idx); wasP=was; restore(++gen); if(was) play(true) }   // v2.203: the loop keeps playing when switching to or from Forecast only
     else { bounds(); if(!sets.fut.length||Date.now()-loadedAt.fut>6*60000) load('fut') } });
   $m('wmRad').addEventListener('click',e=>{ showR=!showR; e.currentTarget.classList.toggle('off',!showR); panes() });
-  $m('wmCld').addEventListener('click',e=>{ showC=!showC; e.currentTarget.classList.toggle('off',!showC); panes();
-    if(showC&&!(frames()[0]||{}).c){ loadedAt[mode]=0; load() } });   // clouds are only fetched once switched on
   $m('wmCtr').addEventListener('click',()=>{ touched=false; centre() });
   /* v2.189: zoom buttons and map type menu */
   $m('wmZin').addEventListener('click',()=>{ touched=true; map&&map.zoomIn(1) });
@@ -2715,7 +2715,7 @@ const CN=(()=>{
     if((h+T)/2>=80){ h=-42.379+2.04901523*T+10.14333127*rh-0.22475541*T*rh-0.00683783*T*T-0.05481717*rh*rh+0.00122874*T*T*rh+0.00085282*T*rh*rh-0.00000199*T*T*rh*rh;
       if(rh<13&&T>=80&&T<=112) h-=((13-rh)/4)*Math.sqrt((17-Math.abs(T-95))/17); else if(rh>85&&T>=80&&T<=87) h+=((rh-85)/10)*((87-T)/5) }
     return (h-32)*5/9 };
-  const rainWord=r=>!(r>0)?'No rain':r<0.25?'Very light rain':r<1?'Light rain':r<4?'Moderate rain':r<16?'Heavy rain':r<50?'Very heavy rain':'Extreme rain';
+  const rainWord=r=>!(r>0)?'No rain':tpRainWord(r);
   const dewWord=d=>d<5?'Dry':d<10?'Comfortable':d<16?'Slightly humid':d<21?'Humid':'Muggy';
   const uvWord=u=>u<3?'Low':u<6?'Moderate':u<8?'High':u<11?'Very high':'Extreme';
   const band=(v,list)=>{ for(const [lim,txt] of list) if(v<lim) return txt; return list[list.length-1][1] };
@@ -2848,6 +2848,8 @@ function render(){
   { const hd=DV?`${dayName(DV.date)} hourly`:'Next 24 hours'; document.querySelectorAll('#strip .ph h2,#hourly .ph h2').forEach(h=>h.textContent=hd); }
 
   const w=wx(V.weather_code,V.is_day,(!DV&&V._rain1h!=null)?V._rain1h:V.precipitation);   // v2.197: wording follows the station's rain over the last hour when live
+  { const c=V.weather_code;   // v2.211: iPad landscape only: while the station is raining, the wording is Tempest's own category for the rain rate right now (freezing rain stays as is)
+    if(V._live&&!E&&!DV&&V._rate>0&&!phoneMQ.matches&&matchMedia('(hover:none) and (pointer:coarse)').matches&&((c>=51&&c<=55)||(c>=61&&c<=65)||(c>=80&&c<=82))) w.t=tpRainWord(V._rate) }
   $('#nowIcon').innerHTML=icoA(w.i);
   { const ipadL=V._live&&!phoneMQ.matches&&matchMedia('(hover:none) and (pointer:coarse)').matches;
     const tfc=(ipadL&&!E&&!DV)?(TW.fcNow()??TW.fcT(nowStr)):null;   // v2.158: Tempest's own forecast for right now (by clock time; falls back to this hour)
