@@ -1370,6 +1370,13 @@ body:not(.locked) .loc svg{fill:#f4b942}
 .wmtop .wmseg button{background:none;border:0;padding:6px 12px;font-size:14px;-webkit-backdrop-filter:none;backdrop-filter:none}
 .wmtop .wmseg button.on{background:#f4b942;color:#0a1222}
 .wmseg.dis{opacity:.45;pointer-events:none}
+/* v2.213: Forecast / History on-off switches */
+.wmtop button.wsw{gap:9px;padding:6px 8px 6px 13px;font-size:14px}
+.wmtop button.wsw.off{opacity:1}
+.wsw s{position:relative;width:34px;height:20px;border-radius:999px;background:rgba(255,255,255,.22);transition:background .18s}
+.wsw s::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.45);transition:transform .18s}
+.wsw[aria-checked="true"] s{background:#34c759}
+.wsw[aria-checked="true"] s::after{transform:translateX(14px)}
 .wmkey{position:absolute;top:12px;left:12px;z-index:520;display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:6px 8px 8px;border-radius:12px;color:#fff;
   background:rgba(10,18,34,.86);border:1px solid rgba(255,255,255,.2);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:padding .2s}
 .wmkey b{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#bfe3ff}
@@ -1593,7 +1600,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
     <button class="locksw" id="lockSw" role="switch" aria-checked="false" aria-label="Location Lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="ll">Location Lock</span><i class="tk"><b></b></i></button>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.212) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.213) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1615,7 +1622,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.212) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.213) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1643,7 +1650,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">Settings</span></div></div><div class="gx"><b>Settings</b><span>Beside Done at the top of the Location menu: Dark mode (On, Off or Auto) and your <span class="amk">Amankenzie</span> Weather Station. It also runs the station’s connection tests (green is good, red shows what failed); Run tests again repeats them. Its own Locations button takes you back to the location list.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-title"><img src="icon-192.png" alt="" width="26" height="26"><div class="tt"><b>Whether</b><i>(or not)</i></div></div></div><div class="gx"><b>Go Home</b><span>Press and hold the Whether <em class="yor">(or not)</em> title to jump to your Home location, the first one in your saved list.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill">Conditions</span></div></div><div class="gx"><b>Conditions</b><span>iPad landscape, at Home: opens every reading your station reports, each with a cheeky comment. Press Done or tap outside to close it.</span></div></div>
-      <div class="gi" id="gMap" hidden><div class="gv"><div class="v-row"><span class="v-pill">Map</span></div></div><div class="gx"><b>Map</b><span>Left of Conditions: radar on a satellite map. The last 3 hours of radar flow straight into Environment Canada&#8217;s projected radar for about the next hour (shown in yellow, with a Forecast tag). Forecast only shows just the projected part, with a Forecast tag beside the key. Rain rate (the default, like Environment Canada) colours it by how hard it falls, Rain / Snow by type; Radar and Clouds switch layers on and off, Recentre goes back to this city. Use + and − on the right (or pinch) to zoom, and the layers button below them to pick Satellite, Map, Terrain or Dark. Drag to move.</span></div></div>
+      <div class="gi" id="gMap" hidden><div class="gv"><div class="v-row"><span class="v-pill">Map</span></div></div><div class="gx"><b>Map</b><span>Left of Conditions: radar on a satellite map. The last 3 hours of radar flow straight into Environment Canada&#8217;s projected radar for about the next hour (shown in yellow, with a Forecast tag). The Forecast and History switches turn each part on or off (History starts off, so the map opens on the forecast). Rain rate (the default, like Environment Canada) colours it by how hard it falls, Rain / Snow by type; Radar and Clouds switch layers on and off, Recentre goes back to this city. Use + and − on the right (or pinch) to zoom, and the layers button below them to pick Satellite, Map, Terrain or Dark. Drag to move.</span></div></div>
       <div class="gi"><div class="gv"><div class="v-row"><span class="v-pill v-stn"><i class="ld" style="display:inline-block;flex:none;width:9px;height:9px;border-radius:50%;background:#5fd3a0"></i><span><span class="amk">Amankenzie</span> <br>Station</span></span></div></div><div class="gx"><b><span class="amk">Amankenzie</span> Station</b><span>At Home, with your Tempest connected, the temperature, Feels like, wind (with its live dial), rain and shoe conditions come from your own station. Everything else stays forecast.</span></div></div>
       <div class="gi" id="gTemps" hidden><div class="gv"><div class="v-row" style="font-size:30px;font-weight:800;align-items:baseline;gap:4px"><span style="color:#f4b942">7°</span><span style="font-size:15px;color:#fff">(6°)</span><span style="font-size:15px;color:#f4b942">(7°)</span></div></div><div class="gx"><b>Yellow vs white temperatures</b><span><b style="color:#f4b942">Yellow</b> is your <span class="amk">Amankenzie</span> Station: the big temperature is its live reading, and yellow brackets are its own forecast. <b>White brackets</b> are the Environment Canada forecast. In Next 24 hours the yellow figure is the station’s hourly forecast with Environment Canada’s in white brackets; Now is the live reading.</span></div></div>
       <div class="gi gwx"><div class="gv"><svg class="v-wx" viewBox="0 0 58 58" aria-hidden="true"><circle class="o" cx="29" cy="29" r="26"/><circle class="r" cx="29" cy="29" r="20"/><path d="M29 12l-7 15h14z"/></svg></div><div class="gx"><b>Wind <i class="yor">Studio</i></b><span>Press and hold the Wind box for six live views of the wind.</span></div></div>
@@ -1676,7 +1683,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div id="wmMap"></div>
       <div class="wmtop">
         <div class="wmseg" role="group" aria-label="Radar colours"><button id="wmRte" type="button" class="on" data-hint="Colour the radar by how hard it is falling (Environment Canada's own colours)">Rain rate</button><button id="wmTyp" type="button" data-hint="Colour the radar by rain, snow or mixed">Rain / Snow</button></div>
-        <button id="wmFo" type="button" class="off" style="--c:#f4b942" data-hint="Show only the forecast radar for the next hour"><i></i>Forecast only</button>
+        <button id="wmFo" type="button" class="wsw" role="switch" aria-checked="true" data-hint="Forecast radar for the next hour: on or off">Forecast<s></s></button><button id="wmHi" type="button" class="wsw" role="switch" aria-checked="false" data-hint="Radar from the last 3 hours: on or off">History<s></s></button>
         <button id="wmRad" type="button" style="--c:#2f9bff" data-hint="Show or hide the radar"><i></i>Radar</button>
         <button id="wmCld" type="button" class="off" style="--c:#e8eef7" data-hint="Show or hide moving satellite clouds"><i></i>Clouds</button>
         <button id="wmCtr" type="button" style="--c:#f4b942" data-hint="Centre the map on this location"><i></i>Recentre</button>
@@ -1717,7 +1724,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.212';
+const VER='2.213';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2477,10 +2484,11 @@ const WM=(()=>{
   const fmtT=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
   const fmtD=d=>d.toLocaleDateString([],{month:'short',day:'numeric'})+' at '+fmtT(d);
   const legURL=l=>`${GEO}?service=WMS&version=1.3.0&request=GetLegendGraphic&sld_version=1.1.0&format=image/png&layer=${l}`;
-  let open=false, map=null, pin=null, mode='rate', sets={type:[],rate:[],fut:[]}, loadedAt={type:0,rate:0,fut:0}, keyF=false, fcOnly=false, idx=0, timer=0, showR=true, showC=false, libP=null, busy=false, zTop=1;
-  const frames=()=>fcOnly?sets.fut.slice():sets[mode].concat(sets.fut);   // v2.196: past (3 h) and forecast (next hour) are one timeline
-  const nowIdx=()=>fcOnly?0:Math.max(0,sets[mode].length-1);
-  function bounds(){ const F=frames(); sl.max=Math.max(0,F.length-1); $m('wmT0').textContent=F.length?fmtT(F[0].t):''; $m('wmT1').textContent=F.length?(sets.fut.length?fmtT(F[F.length-1].t):'Now'):''; $m('wmT1').classList.toggle('fc',!!sets.fut.length); $m('wmT0').classList.toggle('fc',fcOnly&&!!sets.fut.length) }
+  let open=false, map=null, pin=null, mode='rate', sets={type:[],rate:[],fut:[]}, loadedAt={type:0,rate:0,fut:0}, keyF=false, fc=true, hist=false, idx=0, timer=0, showR=true, showC=false, libP=null, busy=false, zTop=1;
+  const frames=()=>(hist?sets[mode]:[]).concat(fc?sets.fut:[]);   // v2.196: past (3 h) and forecast (next hour) are one timeline; v2.213: Forecast and History switches
+  const nowIdx=()=>hist?Math.max(0,sets[mode].length-1):0;
+  const srcT=()=>S.loc.name+(hist&&fc?' · radar, last 3 hours and next hour':hist?' · radar, last 3 hours':' · radar forecast, next hour');
+  function bounds(){ const F=frames(); sl.max=Math.max(0,F.length-1); $m('wmT0').textContent=F.length?fmtT(F[0].t):''; $m('wmT1').textContent=F.length?(fc&&sets.fut.length?fmtT(F[F.length-1].t):'Now'):''; $m('wmT1').classList.toggle('fc',fc&&!!sets.fut.length); $m('wmT0').classList.toggle('fc',!hist&&!!sets.fut.length) }
   /* v2.189: map types (all Esri, keyless). lbl = separate place-name layer drawn above the radar */
   const BASES={sat:{n:'Satellite',u:'World_Imagery',l:'Reference/World_Boundaries_and_Places',a:'Imagery © Esri'},
     map:{n:'Map',u:'World_Street_Map',a:'Map © Esri'},
@@ -2507,7 +2515,8 @@ const WM=(()=>{
   async function restore(g){
     const F=frames(); if(g!==gen||!F.length) return;
     const rest=F.map((f,i)=>({f,d:(i-idx+F.length)%F.length})).filter(o=>o.d).sort((a,b)=>a.d-b.d).map(o=>o.f);
-    for(let i=0;i<rest.length;i+=4){ if(g!==gen) return; const b=rest.slice(i,i+4); b.forEach(f=>{ f.c&&f.c.addTo(map); f.r.addTo(map) }); await wait(b,5000) }
+    const todo=rest.filter(f=>!map.hasLayer(f.r));   // v2.213: frames already on the map keep their 'ready' mark (re-waiting on them timed out and froze the loop)
+    for(let i=0;i<todo.length;i+=4){ if(g!==gen) return; const b=todo.slice(i,i+4); b.forEach(f=>{ f.c&&f.c.addTo(map); f.r.addTo(map) }); await wait(b,5000) }
     if(g===gen&&wasP&&open){ wasP=false; play(true) } }
   /* v2.191: Recentre didn't centre: the map was working from an old size for its box, so "the middle" was in the wrong place.
      Now it re-measures the box first, then puts this location exactly in the middle (proven in Sandbox Map Test v0.99) */
@@ -2573,9 +2582,9 @@ const WM=(()=>{
   const wait=(b,ms)=>Promise.all(b.map(f=>ready(f.r,ms).then(v=>{ f.rd=v })));
   const rm=f=>{ f.rd=false; map.removeLayer(f.r); f.c&&map.removeLayer(f.c) };
   async function load(m=mode){
-    if(busy) return; busy=true; if(m===mode&&!frames().length) say('Loading the radar…');
+    if(busy) return; busy=true; if((m==='fut'?fc:m===mode&&hist)&&!frames().length) say('Loading the radar…');
     try{
-      const on=m==='fut'||(m===mode&&!fcOnly); const [rF,cF]=await Promise.all([times(LAY[m],m==='fut'?2:MIN),showC?times(CLD,MIN+10).catch(()=>[]):Promise.resolve([])]);
+      const on=m==='fut'?fc:(m===mode&&hist); const [rF,cF]=await Promise.all([times(LAY[m],m==='fut'?2:MIN),showC?times(CLD,MIN+10).catch(()=>[]):Promise.resolve([])]);
       if(!rF.length) throw new Error('no radar');
       if(m!=='fut') for(let i=rF.length-2;i>=0;i-=2) rF.splice(i,1); else for(let i=rF.length-1;i>=0;i--) if(i%2) rF.splice(i,1);   // forecast: every 12 minutes too   // v2.190: every 12 minutes (16 frames over 3 hours, was 31) so the iPad doesn't run out of memory
       const nf=rF.map(t=>{ const c=cF.filter(x=>+x<=+t).pop()||cF[0]; return {t,r:wms(LAY[m],t,'rad'),c:c?wms(CLD,c,'cld'):null} });
@@ -2583,7 +2592,7 @@ const WM=(()=>{
       const old=sets[m], playing=!!timer;
       if(on) play(false);
       old.forEach(rm);
-      sets[m]=nf; loadedAt[m]=Date.now(); if(m===mode||m==='fut') bounds();   // v2.205: the time labels and slider always follow the frames that are really loaded
+      sets[m]=nf; loadedAt[m]=Date.now(); bounds();   // v2.205: the time labels and slider always follow the frames that are really loaded
       if(!on) nf.forEach(rm);   // v2.190: switched colouring while loading
       if(on) nf.forEach(f=>{ if(!map.hasLayer(f.r)){ f.c&&f.c.addTo(map); f.r.addTo(map) } });   // v2.192: switched to this colouring while it loaded in the background
       if(on){ bounds(); idx=nowIdx(); show(idx); say(''); if(open||playing) play(true) }
@@ -2610,12 +2619,12 @@ const WM=(()=>{
     try{
       $m('wmTyp').classList.toggle('on',m==='type'); $m('wmRte').classList.toggle('on',m==='rate');
       const idle=async()=>{ while(busy) await new Promise(r=>setTimeout(r,150)) };
-      if(!fcOnly&&map){
+      if(hist&&map){
         if(!sets[m].length||Date.now()-loadedAt[m]>6*60000){ await idle(); await load(m) }   // old loop keeps playing meanwhile
       }
       const was=!!timer||wasP; play(false); gen++;
       const hold=frames()[idx], oldSet=sets[mode], nf=sets[m];
-      if(!fcOnly&&map&&nf.length){
+      if(hist&&map&&nf.length){
         oldSet.forEach(f=>{ if(f!==hold) rm(f) });
         const first=nf.slice(-4); first.forEach(f=>{ f.c&&f.c.addTo(map); f.r.addTo(map) }); await wait(first,6000);
         if(oldSet.includes(hold)) rm(hold);
@@ -2633,9 +2642,11 @@ const WM=(()=>{
   function purge(){ const old=Date.now()-10*60000; let any=false;
     for(const k of ['type','rate','fut']){ if(sets[k].length&&loadedAt[k]<old){ if(map) sets[k].forEach(rm); sets[k]=[]; loadedAt[k]=0; any=true } }
     if(any){ play(false); idx=0; bounds(); if(open&&map) say('Loading the radar…') } }
-  async function refresh(){ const idle=async()=>{ while(busy) await new Promise(r=>setTimeout(r,150)) }; await idle(); if(!sets[mode].length||stale(mode)) await load(); await idle(); if(stale('fut')) await load('fut') }
+  async function refresh(){ const idle=async()=>{ while(busy) await new Promise(r=>setTimeout(r,150)) };
+    if(!hist){ await idle(); if(stale('fut')) await load('fut') }   // v2.213: History off, so the forecast comes first
+    await idle(); if(!sets[mode].length||stale(mode)) await load(); await idle(); if(stale('fut')) await load('fut') }
   async function showMap(){
-    purge(); open=true; touched=false; ov.classList.remove('wmpre'); ov.hidden=false; $m('wmVer').textContent='(v'+VER+')'; $m('wmSrc').textContent=S.loc.name+(fcOnly?' · radar forecast, next hour':' · radar, last 3 hours and next hour');
+    purge(); open=true; touched=false; ov.classList.remove('wmpre'); ov.hidden=false; $m('wmVer').textContent='(v'+VER+')'; $m('wmSrc').textContent=srcT();
     legend();
     try{ await lib() }catch(e){ say('The map could not load. Check the connection and try again.'); return }
     if(!map) build(); else pin.setLatLng([S.loc.lat,S.loc.lon]); centre()
@@ -2661,6 +2672,7 @@ const WM=(()=>{
     ov.classList.add('wmpre'); ov.hidden=false;
     if(!map) build(); else pin.setLatLng([S.loc.lat,S.loc.lon]); centre();
     new Image().src=legURL(LAY.type); new Image().src=legURL(LAY.rate); new Image().src=legURL(LAY.fut);
+    if(!hist&&stale('fut')) await load('fut');   // v2.213
     if(stale(mode)) await load(mode);
     for(const other of ['fut',mode==='rate'?'type':'rate']){ if(other!==mode&&stale(other)&&!open) await load(other) }   // v2.200: forecast right after the current colouring
     if(!open){ ov.hidden=true; ov.classList.remove('wmpre'); warmBases() } }
@@ -2676,12 +2688,23 @@ const WM=(()=>{
   sl.addEventListener('change',()=>$m('wmMap').classList.remove('drag'));
   $m('wmTyp').addEventListener('click',()=>setMode('type'));
     $m('wmRte').addEventListener('click',()=>setMode('rate'));
-  /* v2.198: Forecast only: just the projected radar for the next hour (the past frames come off the map until it is switched off) */
-  $m('wmFo').addEventListener('click',e=>{ fcOnly=!fcOnly; e.currentTarget.classList.toggle('off',!fcOnly); const was=!!timer||wasP; play(false); gen++;
-    $m('wmSrc').textContent=S.loc.name+(fcOnly?' · radar forecast, next hour':' · radar, last 3 hours and next hour');
-    if(fcOnly&&map) sets[mode].forEach(f=>{ f.r.setOpacity(0); f.c&&f.c.setOpacity(0); rm(f) });
-    const F=frames(); if(F.length&&map){ bounds(); idx=nowIdx(); F[idx].c&&F[idx].c.addTo(map); F[idx].r.addTo(map); show(idx); wasP=was; restore(++gen); if(was) play(true) }   // v2.203: the loop keeps playing when switching to or from Forecast only
-    else { bounds(); if(!sets.fut.length||Date.now()-loadedAt.fut>6*60000) load('fut') } });
+  /* v2.213: Forecast and History switches (replace Forecast only). At least one stays on. Switching keeps the loop playing:
+     frames already on the map stay ready, frames switched off come off the map, frames switched on are added a few at a time */
+  function setParts(nf,nh){
+    if(!nf&&!nh){ if(fc) nh=true; else nf=true }
+    const was=!!timer||wasP; play(false); gen++;
+    const before=frames(); fc=nf; hist=nh;
+    $m('wmFo').setAttribute('aria-checked',fc); $m('wmHi').setAttribute('aria-checked',hist);
+    $m('wmSrc').textContent=srcT();
+    const F=frames();
+    if(map) before.forEach(f=>{ if(!F.includes(f)){ clearTimeout(f.off); f.r.setOpacity(0); f.c&&f.c.setOpacity(0); rm(f) } });
+    if(F.length&&map){ bounds(); idx=nowIdx(); const f=F[idx]; if(!map.hasLayer(f.r)){ f.c&&f.c.addTo(map); f.r.addTo(map); ready(f.r,5000).then(v=>{ f.rd=v }) }
+      F.forEach((o,k)=>{ if(k!==idx){ clearTimeout(o.off); o.r.setOpacity(0); o.c&&o.c.setOpacity(0) } });   // only the frame on screen shows
+      show(idx); wasP=false; restore(++gen); if(was||open) play(true) }
+    else bounds();
+    if(fc&&stale('fut')) load('fut'); else if(hist&&stale(mode)) load() }
+  $m('wmFo').addEventListener('click',()=>setParts(!fc,hist));
+  $m('wmHi').addEventListener('click',()=>setParts(fc,!hist));
   $m('wmRad').addEventListener('click',e=>{ showR=!showR; e.currentTarget.classList.toggle('off',!showR); panes() });
   $m('wmCld').addEventListener('click',e=>{ showC=!showC; e.currentTarget.classList.toggle('off',!showC); panes();
     if(showC&&!(frames()[0]||{}).c){ loadedAt[mode]=0; load() } });   // clouds are only fetched once switched on
