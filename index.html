@@ -1474,6 +1474,11 @@ body:not(.locked) .loc svg{fill:#f4b942}
 .cnt .cq{font-size:13.5px;font-weight:600;font-style:italic;line-height:1.25;margin-top:auto;padding-top:7px;color:#bfe3ff}
 .cnfoot{flex:none;padding:2px 18px 12px;font-size:12.5px;font-weight:600;text-align:center}
 @media (max-width:1100px){ .cnr{flex-wrap:wrap} .cns{flex-basis:calc(var(--n) * 150px)} .cnt .cv{font-size:30px} }
+/* v2.216: iPhone portrait only: drop the top row clear of the iOS status-bar blur so the Whether (or not) title stays sharp */
+@media (max-width:900px) and (orientation:portrait){
+  #app{padding-top:calc(env(safe-area-inset-top) + 20px)}
+  #daily{padding-top:calc(env(safe-area-inset-top) + 20px)}
+}
 </style>
 </head>
 <body>
@@ -1600,7 +1605,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div id="recent"></div>
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.215) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.216) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1622,7 +1627,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.215) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.216) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1723,7 +1728,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.215';
+const VER='2.216';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
