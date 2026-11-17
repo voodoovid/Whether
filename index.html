@@ -665,7 +665,8 @@ body.dayv #pager{display:none}
 /* v2.43: breathing room between the yellow frame and the text on a day page (phones) */
 @media (max-width:900px), (min-width:901px) and (min-height:600px) and (orientation:landscape){ body.dayv .now{padding:10px 12px 12px} body.dayv .nowbody{margin-top:6px} }
 body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shadow:none;font-size:11.5px;padding:6px 8px}
-@media (min-width:901px){ body.dayv #daily .drow.viewing{box-shadow:0 0 0 2px #ffd04a} }
+/* v2.217: iPad landscape: the chosen day in the 10-day list gets a clear yellow line all round (inset, so the scrolling list can't clip it) */
+@media (min-width:901px){ body.dayv #daily .drow.viewing{border-color:#ffd04a;box-shadow:inset 0 0 0 3px #ffd04a,0 6px 16px rgba(0,0,0,.22)} }
 
 /* v2.43: "?" button and the quick guide */
 .rbtn.hq{font-size:17px;font-weight:800;color:#fff;line-height:1;padding:0;text-shadow:none}
@@ -1605,7 +1606,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div id="recent"></div>
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.216) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.217) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1627,7 +1628,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.216) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.217) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1728,7 +1729,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.216';
+const VER='2.217';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
