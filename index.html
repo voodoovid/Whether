@@ -665,7 +665,7 @@ body.dayv #pager{display:none}
 /* v2.43: breathing room between the yellow frame and the text on a day page (phones) */
 @media (max-width:900px), (min-width:901px) and (min-height:600px) and (orientation:landscape){ body.dayv .now{padding:10px 12px 12px} body.dayv .nowbody{margin-top:6px} }
 body.dayv #btn10{background:#ffd04a;color:#1a1300;border-color:#ffd04a;text-shadow:none;font-size:11.5px;padding:6px 8px}
-/* v2.217: iPad landscape: the chosen day in the 10-day list gets a clear yellow line all round (inset, so the scrolling list can't clip it) */
+/* v2.218: the list is rebuilt after the class was set, so the row now gets it when built. v2.217: iPad landscape: the chosen day in the 10-day list gets a clear yellow line all round (inset, so the scrolling list can't clip it) */
 @media (min-width:901px){ body.dayv #daily .drow.viewing{border-color:#ffd04a;box-shadow:inset 0 0 0 3px #ffd04a,0 6px 16px rgba(0,0,0,.22)} }
 
 /* v2.43: "?" button and the quick guide */
@@ -1606,7 +1606,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div id="recent"></div>
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.217) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.218) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1628,7 +1628,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.217) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.218) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1729,7 +1729,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.217';
+const VER='2.218';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -3251,7 +3251,7 @@ function renderDaily(j){
     const ws=D.wind_speed_10m_max?.[d]??max(H.wind_speed_10m), gu=D.wind_gusts_10m_max?.[d]??max(H.wind_gusts_10m);
     const wword=ws==null?'':(()=>{const x=windWord(ws,gu);return WSHORT[x]||x})();
     const x=(lab,val,sub='',subc='',cls='')=>`<div class="dx ${cls}"><small>${lab}</small><b>${val}</b>${sub?`<i${subc?` style="color:${subc}"`:''}>${sub}</i>`:''}</div>`;
-    out+=`<div class="drow${d===0?' today':''}">
+    out+=`<div class="drow${d===0?' today':''}${S.day>0&&d===S.day?' viewing':''}">
       <div class="dd"><b>${d===0?'Today':dayName(date)}</b><span>${dayDate(date)}</span></div>
       <div class="ds">${ico(w.i)}<span>${esc(w.t)}</span></div>
       <div class="dw">${esc(w.t).replace('Thunderstorms','Thunder&shy;storms')}</div>
