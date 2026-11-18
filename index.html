@@ -1608,7 +1608,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div id="recent"></div>
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.219) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.220) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1630,7 +1630,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.219) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.220) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1731,7 +1731,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.219';
+const VER='2.220';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -2846,7 +2846,8 @@ function render(){
   // new location: every time view goes back to "now"
   if(S._shown!==key(S.loc)){ S._shown=key(S.loc); S.sel=0;
     ['#sscroll','#hscroll'].forEach(q=>{const el=$(q); if(el) el.scrollLeft=0}); const dr=$('#drows'); if(dr) dr.scrollTop=0;
-    const h=$('#hint'); if(h) h.classList.remove('gone'); S.mode='now' }
+    const h=$('#hint'); if(h) h.classList.remove('gone'); S.mode='now';
+    S.day=null; S.exiting=false }   // v2.220: a chosen day in the 10-day list is let go on a location change, so the new place opens on Current
   rainPass(j);
   const e=$('#err'); if(e) e.remove(); $('#right').style.display=''; $('.now').style.display=''; $('#tiles').style.display=''; $('#strip').style.visibility='';
   const H=j.hourly,D=j.daily;
