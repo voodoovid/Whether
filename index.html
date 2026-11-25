@@ -402,6 +402,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .dx i{font-style:normal;font-size:11.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .dx svg.shoe{width:20px;height:20px}
 svg.shoe,.st .gr svg.shoe,.scol .sh svg.shoe{fill:#000;stroke:#fff;stroke-width:1.5;stroke-linejoin:round;paint-order:stroke;overflow:visible;filter:none}
+/* v2.222: seasonal shoe colours (device date): Valentine's Feb 14, St. Patrick's Mar 17, Pride all June, Halloween Oct 24-31, Christmas Dec 1-26 */
+html[data-season=val] svg.shoe{fill:#c8102e !important}
+html[data-season=pat] svg.shoe{fill:#169b45 !important}
+html[data-season=pride] svg.shoe{fill:url(#szPride) !important}
+html[data-season=hall] svg.shoe{fill:url(#szHall) !important}
+html[data-season=xmas] svg.shoe{fill:url(#szXmas) !important}
 .st .gr b,.scol .sh b{color:var(--c,#fff);text-shadow:-1px -1px 0 rgba(0,0,0,.7),1px -1px 0 rgba(0,0,0,.7),-1px 1px 0 rgba(0,0,0,.7),1px 1px 0 rgba(0,0,0,.7)}
 .drow .dx b span,.drow .dx i,.drow .dhl,.drow .dd,.drow .ds{text-shadow:-1px -1px 0 rgba(0,0,0,.6),1px -1px 0 rgba(0,0,0,.6),-1px 1px 0 rgba(0,0,0,.6),1px 1px 0 rgba(0,0,0,.6)}
 @media (min-width:901px) and (max-width:1290px){
@@ -1042,9 +1048,9 @@ body:not(.locked) .loc svg{fill:#f4b942}
   #nowWind .st.wind.hasd .w{font-size:15.5px;line-height:1.05;white-space:normal}
   #nowWind .st.wind.hasd .k{font-size:11.5px;line-height:1.1}
   #nowWind .st.wind .wdial{left:7px;right:auto;top:50%;width:80px;height:80px;margin-top:-40px}
-  #nowSide>.st:nth-child(2){padding:4px 12px 4px}
+  #nowSide>.st:nth-child(2){padding:8px 12px 8px}   /* v2.222: taller shoe box so the shoe can be bigger */
   #nowSide>.st:nth-child(2) .gr{font-size:25px}
-  #nowSide>.st:nth-child(2) .gr svg{width:25px;height:25px}
+  #nowSide>.st:nth-child(2) .gr svg{width:36px;height:36px}
   .st.hlb{display:grid;grid-template-columns:1fr 1fr;column-gap:6px;padding:3px 12px 4px}
   .st.hlb .hlc{display:flex;flex-direction:column;min-width:0}
   .st.hlb .k{font-size:11px;letter-spacing:.7px;line-height:1.15}
@@ -1485,6 +1491,11 @@ body:not(.locked) .loc svg{fill:#f4b942}
 </style>
 </head>
 <body>
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs>
+<linearGradient id="szXmas" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="24"><stop offset=".625" stop-color="#d62828"/><stop offset=".625" stop-color="#1f8a3c"/></linearGradient>
+<linearGradient id="szHall" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="24"><stop offset=".625" stop-color="#ff7a00"/><stop offset=".625" stop-color="#000"/></linearGradient>
+<linearGradient id="szPride" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="24"><stop offset=".2292" stop-color="#e40303"/><stop offset=".2292" stop-color="#ff8c00"/><stop offset=".375" stop-color="#ff8c00"/><stop offset=".375" stop-color="#ffed00"/><stop offset=".5208" stop-color="#ffed00"/><stop offset=".5208" stop-color="#008026"/><stop offset=".6583" stop-color="#008026"/><stop offset=".6583" stop-color="#004dff"/><stop offset=".7958" stop-color="#004dff"/><stop offset=".7958" stop-color="#750787"/></linearGradient>
+</defs></svg>
 
 <div id="rot" role="alert" aria-live="polite">
   <div class="rotc">
@@ -1608,7 +1619,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div id="recent"></div>
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.221) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.222) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1630,7 +1641,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.221) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.222) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -1731,7 +1742,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
 
 <script>
 'use strict';
-const VER='2.221';
+const VER='2.222';
 const LIKE=matchMedia('(max-width:900px), ' + '(min-width:901px) and (min-height:600px) and (orientation:landscape)');   // v2.59: phone look: phones, and iPad landscape
 /* v2.95: Mac only: the page is laid out on a fixed 16:9 stage (1600x900) and scaled to fit the window, so the layout never changes with window size */
 const MACMQ=matchMedia('(min-width:901px) and (min-height:600px) and (orientation:landscape) and (hover:hover) and (pointer:fine)');
@@ -4118,6 +4129,11 @@ setInterval(()=>{ if(document.hidden||!S.data||S.day>0) return; const j=S.data; 
   const ns=new Date(Date.now()+j.utc_offset_seconds*1000).toISOString().slice(0,13)+':00', i=j.hourly.time.findIndex(t=>t>=ns);
   if(i>=0&&Math.min(i,j.hourly.time.length-24)!==S.nowIdx) render() },15000);
 
+/* v2.222: seasonal shoe colours follow the device's date */
+function shoeSeason(){ const t=new Date(), m=t.getMonth()+1, d=t.getDate();
+  const z=(m===2&&d===14)?'val':(m===3&&d===17)?'pat':m===6?'pride':(m===10&&d>=24)?'hall':(m===12&&d<=26)?'xmas':'';
+  if(z) document.documentElement.dataset.season=z; else delete document.documentElement.dataset.season }
+shoeSeason(); setInterval(shoeSeason,60e3); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) shoeSeason() });
 /* ---------- boot ---------- */
 (function(){
   if(!S.locked&&awayLong()){ const h=homeLoc(); if(key(h)!==key(S.loc)){ S.loc={name:h.name,lat:h.lat,lon:h.lon}; LS.set('loc',S.loc); } }
