@@ -1619,7 +1619,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
     <div id="recent"></div>
     <div class="shh" id="savedH">Saved · top is Home · hold to drag</div>
     <div id="saved"></div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.222) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.223) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="stTitle">
@@ -1641,7 +1641,7 @@ body:not(.locked) .loc svg{fill:#f4b942}
       <div class="tpr" id="tpR7"><i></i><span>Rain today (cloud vs readings): not connected</span></div>
       <button class="tpx" id="tpRun" type="button" hidden data-hint="Run all the connection tests again">Run tests again</button>       <button class="tpx" id="tpCopy" type="button" hidden>Copy token</button> <button class="tpx" id="tpDel" type="button" hidden>Remove token</button>
     </div>
-    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.222) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
+    <div class="ver">Whether <span style="color:#f4b942">(or not)</span> (v2.223) · Environment Canada GEM via <a style="color:inherit" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a></div>
   </div>
 </div>
 <div id="tpConfirm" hidden role="alertdialog" aria-modal="true" aria-labelledby="tpcT">
@@ -2890,8 +2890,8 @@ function render(){
   { const hd=DV?`${dayName(DV.date)} hourly`:'Next 24 hours'; document.querySelectorAll('#strip .ph h2,#hourly .ph h2').forEach(h=>h.textContent=hd); }
 
   const w=wx(V.weather_code,V.is_day,(!DV&&V._rain1h!=null)?V._rain1h:V.precipitation);   // v2.197: wording follows the station's rain over the last hour when live
-  { const c=V.weather_code;   // v2.221: iPad landscape only: while the station is raining, the wording is Tempest's own category for the rain rate right now (freezing rain stays as is)
-    if(V._live&&!E&&!DV&&V._rate>0&&!phoneMQ.matches&&matchMedia('(hover:none) and (pointer:coarse)').matches&&((c>=51&&c<=55)||(c>=61&&c<=65)||(c>=80&&c<=82))) w.t=tpRainWord(V._rate) }
+  { const c=V.weather_code;   // v2.221: while the station is raining, the wording is Tempest's own category for the rain rate right now (freezing rain stays as is); v2.223: iPhone portrait too (was iPad landscape only), and the cloud icon's drops follow the same rate
+    if(V._live&&!E&&!DV&&V._rate>0&&matchMedia('(hover:none) and (pointer:coarse)').matches&&((c>=51&&c<=55)||(c>=61&&c<=65)||(c>=80&&c<=82))){ const r=V._rate; w.t=tpRainWord(r); w.i=r<0.25?'rain1':r<1?'rain':r<4?'rain4':'rain6' } }
   $('#nowIcon').innerHTML=icoA(w.i);
   { const ipadL=V._live&&!phoneMQ.matches&&matchMedia('(hover:none) and (pointer:coarse)').matches;
     const tfc=(ipadL&&!E&&!DV)?(TW.fcNow()??TW.fcT(nowStr)):null;   // v2.158: Tempest's own forecast for right now (by clock time; falls back to this hour)
